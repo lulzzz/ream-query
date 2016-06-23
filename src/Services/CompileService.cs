@@ -21,7 +21,7 @@ namespace QueryEngine.Services
         public CompileService(SchemaService schemaService) 
         {
             _schemaService = schemaService;
-            _projectjsonPath = Directory.GetCurrentDirectory();
+            _projectjsonPath = GetProjectJsonFolder();
             AssemblyLoadContext.InitializeDefaultContext(LibraryLoader.Instance.Value);
         }
 
@@ -74,6 +74,19 @@ namespace QueryEngine.Services
                 Assembly = asm,
                 Reference = MetadataReference.CreateFromStream(stream)
             };
+        }
+
+        private static string GetProjectJsonFolder() 
+        {
+            var dir = Directory.GetCurrentDirectory();
+            var devDir = Path.Combine(dir, "query");
+            var json = Path.Combine(dir, "project.json");
+            var devJson = Path.Combine(devDir, "project.json");
+            if (File.Exists(json)) 
+            {
+                return dir;
+            }
+            return devDir;
         }
     }
 }

@@ -1,0 +1,25 @@
+{
+    "version": "1.0.0-*",
+    "name": "QueryEngine.Test",
+    "testRunner": "xunit",
+    "buildOptions": {
+        "emitEntryPoint": false
+    },
+    "dependencies": {
+        "QueryEngine": "1.0.0-*",
+        "xunit": "2.2.0-*",
+        "dotnet-test-xunit": "2.2.0-*"
+    },
+    "frameworks": {
+        "netcoreapp1.0": {
+            "imports": ["dnxcore50", "portable-net45+win8"],
+            "dependencies": {
+                "Microsoft.NETCore.App": "1.0.1-*"
+            }
+        }
+    },
+    "runtimes": {
+        "win7-x64": {},
+        "ubuntu.14.04-x64": {}
+    }
+}

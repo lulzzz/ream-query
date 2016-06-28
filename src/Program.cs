@@ -15,10 +15,11 @@
             CultureInfo.CurrentUICulture = new CultureInfo("en-US");
             var config = new ConfigurationBuilder()
                 .AddCommandLine(new[] { "--server.urls", "http://localhost:8111" });
+
             var builder = new WebHostBuilder()
                 .UseConfiguration(config.Build())
-                .UseStartup(typeof(Startup))
-                .UseServer("Microsoft.AspNetCore.Server.Kestrel");
+                .UseKestrel()
+                .UseStartup(typeof(Startup));
 
             using (var app = builder.Build())
             {

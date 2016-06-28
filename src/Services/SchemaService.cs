@@ -63,7 +63,7 @@ namespace QueryEngine.Services
                     scaffoldingUtilities: scaffUtils,
                     cSharpUtilities: csUtils
                 ),
-                entityTypeWriter: new EntityTypeWriter(cSharpUtilities: csUtils, scaffoldingUtilities: scaffUtils)
+                entityTypeWriter: new EntityTypeWriter(cSharpUtilities: csUtils)
             );
 
             var rGen = new ReverseEngineeringGenerator(
@@ -120,10 +120,12 @@ namespace QueryEngine.Services
 
             var ssTypeMap = new Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerTypeMapper();
             var ssDbFac = new SqlServerDatabaseModelFactory(loggerFactory: loggerFactory);
+            var candNameSvc = new CandidateNamingService();
             var ssScaffoldFac = new SqlServerScaffoldingModelFactory(
                 loggerFactory: loggerFactory,
                 typeMapper: ssTypeMap,
-                databaseModelFactory: ssDbFac
+                databaseModelFactory: ssDbFac,
+                candidateNamingService: candNameSvc
             );
 
             var ssAnnotationProvider = new Microsoft.EntityFrameworkCore.Metadata.SqlServerAnnotationProvider();
@@ -142,7 +144,7 @@ namespace QueryEngine.Services
                     scaffoldingUtilities: scaffUtils,
                     cSharpUtilities: csUtils
                 ),
-                entityTypeWriter: new EntityTypeWriter(cSharpUtilities: csUtils, scaffoldingUtilities: scaffUtils)
+                entityTypeWriter: new EntityTypeWriter(cSharpUtilities: csUtils)
             );
 
             var rGen = new ReverseEngineeringGenerator(

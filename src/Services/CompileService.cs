@@ -22,7 +22,6 @@ namespace QueryEngine.Services
         {
             _schemaService = schemaService;
             _projectjsonPath = GetProjectJsonFolder();
-            AssemblyLoadContext.InitializeDefaultContext(LibraryLoader.Instance.Value);
         }
 
         public IEnumerable<MetadataReference> GetReferences() 
@@ -63,8 +62,7 @@ namespace QueryEngine.Services
                     Console.WriteLine("Error: {0}", r);
                 }
             }
-            LibraryLoader.Instance.Value.AssemblyStream = stream;
-            var asm = LibraryLoader.Instance.Value.LoadFromAssemblyName(new AssemblyName(assemblyName));
+            var asm = LibraryLoader.LoadFromStream(stream); 
             var programType = asm.GetTypes().Single(t => t.Name == "Main");
             stream.Position = 0;
 

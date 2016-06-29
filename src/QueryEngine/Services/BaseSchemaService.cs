@@ -2,14 +2,9 @@ namespace QueryEngine
 {
     using System;
     using System.Linq;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-    using Microsoft.Extensions.Configuration;
     using QueryEngine.Services;
     using Microsoft.EntityFrameworkCore.Scaffolding;
-    using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
     using QueryEngine.Models;
     using System.Text;

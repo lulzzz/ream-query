@@ -6,7 +6,6 @@ namespace QueryEngine.Services
 
     public class SchemaService 
     {
-        string _tempFolder;
         SqlServerSchemaService _sqlServer;
 
         NpgsqlSchemaService _npgsql;

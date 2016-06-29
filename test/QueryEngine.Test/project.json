@@ -13,7 +13,10 @@
         }
     },
     "scripts": {
-        "precompile": ["fix-json-config.cmd"]
+        "precompile": [
+            "fix-json-config.cmd",
+            "fix-json-config.sh"
+        ]
     },
     "dependencies": {
         "QueryEngine": "1.0.0-*",

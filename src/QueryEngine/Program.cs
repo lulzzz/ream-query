@@ -13,11 +13,14 @@
             // todo
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
             CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+
             var config = new ConfigurationBuilder()
                 .AddCommandLine(new[] { "--server.urls", "http://localhost:8111" });
 
+            Startup.Configuration = config.Build(); 
+
             var builder = new WebHostBuilder()
-                .UseConfiguration(config.Build())
+                .UseConfiguration(Startup.Configuration)
                 .UseKestrel()
                 .UseStartup(typeof(Startup));
 

@@ -1,17 +1,43 @@
 namespace QueryEngine.Test
 {
     using Xunit;
-    public class Class1
+    using QueryEngine.Services;
+    using QueryEngine.Models;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.Configuration;
+    using System.Net.Http;
+    using System;
+
+    public class SchemaServiceTests
     {
-        [Fact]
-        public void PassingTest()
+        TestServer _server;
+        HttpClient _client;
+        
+        public SchemaServiceTests()
         {
-            Assert.Equal(4, Add(2, 2));
+            var config = new ConfigurationBuilder()
+                .SetBasePath(@"C:\src\ream-editor\query")
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.test.json")
+                .Build()
+                ;
+            
+            QueryEngine.Startup.Configuration = config;
+
+            _server = new TestServer(
+                new WebHostBuilder()
+                    .UseConfiguration(QueryEngine.Startup.Configuration)
+                    .UseStartup<QueryEngine.Startup>()
+            );
+            _client = _server.CreateClient();
         }
 
-        int Add(int x, int y)
+        [Fact]
+        public async void CheckReadyStatusReturnsTrue()
         {
-            return x + y;
+            var res = await _client.GetStringAsync("/checkreadystatus");
+            Assert.Equal("true", res);
         }
     }
 }

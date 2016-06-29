@@ -1,16 +1,22 @@
 namespace QueryEngine 
 {
+    using System;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using QueryEngine.Services;
     using QueryEngine.Handlers;
+    using Microsoft.Extensions.Configuration;
 
     public class Startup
     {
+        public static IConfigurationRoot Configuration { get; set; }
+
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Debug);
+            var ll = LogLevel.Debug;
+            Enum.TryParse(Configuration.GetSection("Logging:LogLevel:Default").Value, out ll);
+            loggerFactory.AddConsole(ll);
             app.UseMiddleware<CheckReadyStatusHandler>();
             app.UseMiddleware<StopServerHandler>();
             app.UseMiddleware<ExecuteQueryHandler>();

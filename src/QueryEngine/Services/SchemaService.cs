@@ -8,6 +8,10 @@ namespace QueryEngine.Services
     using Microsoft.EntityFrameworkCore.Scaffolding;
     using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
     using QueryEngine.Models;
+    using Microsoft.EntityFrameworkCore.Design;
+    using System.Reflection;
+    using Microsoft.EntityFrameworkCore.Design.Internal;
+    using Microsoft.EntityFrameworkCore.Tools.Cli;
 
     public class SchemaService 
     {
@@ -25,6 +29,31 @@ namespace QueryEngine.Services
 
         public SchemaResult GetSchemaSource(string connectionString, DatabaseProviderType type, string assemblyNamespace, bool withUsings = true) 
         {
+            // https://github.com/aspnet/EntityFramework/issues/5577
+            // var projectDir = _tempFolder;
+            // var startupProjectDir = _tempFolder;
+            // var startupAssemblyName = "QueryEngine";
+            // var rootNamespace = "QueryEngine";
+
+            // var projectAssembly = Assembly.Load(new AssemblyName { Name = startupAssemblyName });
+            // var startupAssemblyLoader = new AssemblyLoader(Assembly.Load);
+            // var startupAssembly = startupAssemblyLoader.Load(startupAssemblyName);
+            // var databaseOperations = new DatabaseOperations(
+            //         new LoggerProvider(name => new ConsoleCommandLogger("logger")),
+            //         startupAssemblyLoader,
+            //         startupAssembly,
+            //         null,
+            //         projectDir,
+            //         startupProjectDir,
+            //         rootNamespace);
+
+            // ExecReverseEngineerAsync(
+            //     databaseOperations: databaseOperations,
+            //     connectionString: connectionString
+            // );
+            
+            // return null;
+
             // todo code is identical
             if (type == DatabaseProviderType.SqlServer) 
             {
@@ -34,6 +63,31 @@ namespace QueryEngine.Services
             {
                 return GetNpgSqlSchemaSource(connectionString, assemblyNamespace, withUsings);
             }
+        }
+
+        static async void ExecReverseEngineerAsync(DatabaseOperations databaseOperations, string connectionString)
+        {
+            var provider = "Microsoft.EntityFrameworkCore.SqlServer";
+            var outputDir = "C:\\ef-temp";
+            var dbContextClassName = "AContext";
+            string[] schemas = { "dbo" };
+            string[] tables = { "Foo" };
+
+            await databaseOperations.ReverseEngineerAsync(
+                provider,
+                connectionString,
+                outputDir,
+                dbContextClassName,
+                schemas,
+                tables,
+                false,
+                true
+            );
+        }
+
+        SchemaResult Get() 
+        {
+            return null;
         }
 
         SchemaResult GetNpgSqlSchemaSource(string connectionString, string assemblyNamespace, bool withUsings = true) 

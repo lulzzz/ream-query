@@ -7,6 +7,13 @@
     },
     "dependencies": {
         "QueryEngine": "1.0.0-*",
+        "Microsoft.AspNetCore.Hosting": "1.0.0-*",
+        "Microsoft.AspNetCore.TestHost": "1.0.0-*",
+        "Microsoft.Extensions.Configuration": "1.1.0-*",
+        "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
+        "Microsoft.Extensions.Logging": "1.1.0-*",
+        "Microsoft.Extensions.Logging.Console": "1.1.0-*",
+        "Microsoft.Extensions.Logging.Debug": "1.1.0-*",
         "xunit": "2.2.0-*",
         "dotnet-test-xunit": "2.2.0-*"
     },

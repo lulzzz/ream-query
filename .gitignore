@@ -1,3 +1,5 @@
 bin
 obj
 project.lock.json
+test/QueryEngine.Test/appsettings.json
+test/QueryEngine.Test/appsettings.test.json

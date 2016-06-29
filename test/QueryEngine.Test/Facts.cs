@@ -17,7 +17,7 @@ namespace QueryEngine.Test
         public SchemaServiceTests()
         {
             var config = new ConfigurationBuilder()
-                .SetBasePath(@"C:\src\ream-editor\query")
+                .SetBasePath(System.AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("appsettings.test.json")
                 .Build()

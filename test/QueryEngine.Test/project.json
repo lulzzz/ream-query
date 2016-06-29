@@ -3,7 +3,17 @@
     "name": "QueryEngine.Test",
     "testRunner": "xunit",
     "buildOptions": {
-        "emitEntryPoint": false
+        "emitEntryPoint": false,
+        "copyToOutput": {
+            "bullshit": "copyToOutput is not transititively applied, so duplicated from main project.json https://github.com/dotnet/cli/issues/2902",
+            "include": [
+                "appsettings.json",
+                "appsettings.test.json"
+            ]
+        }
+    },
+    "scripts": {
+        "precompile": ["fix-json-config.cmd"]
     },
     "dependencies": {
         "QueryEngine": "1.0.0-*",
@@ -14,6 +24,7 @@
         "Microsoft.Extensions.Logging": "1.1.0-*",
         "Microsoft.Extensions.Logging.Console": "1.1.0-*",
         "Microsoft.Extensions.Logging.Debug": "1.1.0-*",
+        "Microsoft.Extensions.PlatformAbstractions": "1.1.0-*",
         "xunit": "2.2.0-*",
         "dotnet-test-xunit": "2.2.0-*"
     },

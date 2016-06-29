@@ -3,7 +3,10 @@
     "name": "QueryEngine",
     "buildOptions": {
         "emitEntryPoint": true,
-        "preserveCompilationContext": true
+        "preserveCompilationContext": true,
+        "copyToOutput": {
+            "include": ["appsettings.json", "appsettings.test.json"]
+        }
     },
     "dependencies": {
         "System.Runtime.Serialization.Primitives": "4.1.1-*",

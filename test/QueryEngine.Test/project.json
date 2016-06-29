@@ -14,8 +14,7 @@
     },
     "scripts": {
         "precompile": [
-            "fix-json-config.cmd",
-            "fix-json-config.sh"
+            "fix-json-config.cmd"
         ]
     },
     "dependencies": {

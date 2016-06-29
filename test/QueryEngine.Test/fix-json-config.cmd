@@ -1,4 +1,7 @@
-rem https://github.com/dotnet/cli/issues/2902
-rem see fix in project.json for test project as well 
-copy ..\..\src\QueryEngine\appsettings.json appsettings.json
-copy ..\..\src\QueryEngine\appsettings.test.json appsettings.test.json
+rem(){ :;};rem '
+@goto b
+# https://github.com/dotnet/cli/issues/2902
+# see fix in project.json for test project as well
+';cp ../../src/QueryEngine/appsettings.* *;exit
+:b
+copy ..\..\src\QueryEngine\appsettings.* .

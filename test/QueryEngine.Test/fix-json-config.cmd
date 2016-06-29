@@ -1,7 +1,10 @@
+#!/usr/bin/env sh
 rem(){ :;};rem '
-@goto b
+@goto windows
+'
 # https://github.com/dotnet/cli/issues/2902
-# see fix in project.json for test project as well
-';cp ../../src/QueryEngine/appsettings.* *;exit
-:b
+# see fix in project.json as well
+cp ../../src/QueryEngine/appsettings.* .
+exit
+:windows
 copy ..\..\src\QueryEngine\appsettings.* .

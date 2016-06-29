@@ -15,6 +15,8 @@
             CultureInfo.CurrentUICulture = new CultureInfo("en-US");
 
             var config = new ConfigurationBuilder()
+                .SetBasePath(System.AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json")
                 .AddCommandLine(new[] { "--server.urls", "http://localhost:8111" });
 
             Startup.Configuration = config.Build(); 

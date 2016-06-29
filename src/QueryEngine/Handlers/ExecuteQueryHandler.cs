@@ -4,6 +4,7 @@ namespace QueryEngine.Handlers
     using Microsoft.AspNetCore.Http;
     using QueryEngine.Services;
     using QueryEngine.Models;
+    using System.Threading.Tasks;
 
     public class ExecuteQueryHandler : BaseHandler<QueryResult, QueryInput>
     {
@@ -19,15 +20,15 @@ namespace QueryEngine.Handlers
             return path.Contains("/executequery");
         }
 
-        protected override QueryResult Execute(QueryInput input)
+        protected override async Task<QueryResult> Execute(QueryInput input)
         {
             var res = _service.ExecuteQuery(input);
-            return new QueryResult
+            return await Task.FromResult(new QueryResult
             {
                 Id = Guid.NewGuid(),
                 Created = DateTime.Now,
                 Results = res
-            };
+            });
         }
     }
 }

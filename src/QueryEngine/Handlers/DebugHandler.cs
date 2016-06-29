@@ -3,6 +3,7 @@ namespace QueryEngine.Handlers
     using Microsoft.AspNetCore.Http;
     using QueryEngine.Services;
     using QueryEngine.Models;
+    using System.Threading.Tasks;
 
     public class DebugHandler : BaseHandler<string, QueryInput>
     {
@@ -22,13 +23,13 @@ namespace QueryEngine.Handlers
             return path.Contains("/debug");
         }
 
-        protected override string Execute(QueryInput input)
+        protected override async Task<string> Execute(QueryInput input)
         {
             var t = _dbContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
             // var schema = _schemaService.GetSchemaSource(input.ConnectionString, "debug");
             // var transformed = _compileService.TransformSource(input.Text, schema, "debug");
             // var x = new List<DebugHandler>();
-            return t.ToString();
+            return await Task.FromResult(t.ToString());
         }
     }
 }

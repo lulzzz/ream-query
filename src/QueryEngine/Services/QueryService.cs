@@ -19,6 +19,7 @@ namespace QueryEngine.Services
         >
     >;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public class QueryService
     {
@@ -35,12 +36,12 @@ namespace QueryEngine.Services
             _fragmentService = fragmentService;
         }
 
-        public DumpInternal ExecuteQuery(QueryInput input)
+        public async Task<DumpInternal> ExecuteQuery(QueryInput input)
         {
             var sw = new Stopwatch();
             sw.Start();
             var newInput = _fragmentService.Fix(input.Text);
-            var contextResult = _databaseContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
+            var contextResult = await _databaseContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var programSource = _template
                 .Replace("##SOURCE##", newInput)
@@ -62,11 +63,11 @@ namespace QueryEngine.Services
             return res;
         }
 
-        public TemplateResult GetTemplate(QueryInput input) 
+        public async Task<TemplateResult> GetTemplate(QueryInput input) 
         {
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
-            var schemaResult = _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);
+            var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);
             var schemaSrc = schemaResult.Schema;
             
             var src = _template

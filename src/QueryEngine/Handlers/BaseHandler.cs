@@ -31,7 +31,8 @@ namespace QueryEngine.Handlers
                 {
                     input = ReadIn(context.Request);
                 }
-                var res = Execute(input);
+                var res = await Execute(input);
+
                 context.Response.Headers.Add("X-Duration-Milliseconds", Math.Ceiling(sw.Elapsed.TotalMilliseconds).ToString());
                 if (typeof(TResult) == typeof(string))
                 {
@@ -74,6 +75,6 @@ namespace QueryEngine.Handlers
 
         protected abstract bool Handle(string path);
 
-        protected abstract TResult Execute(TInput input);
+        protected abstract Task<TResult> Execute(TInput input);
     }
 }

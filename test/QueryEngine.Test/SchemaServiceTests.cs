@@ -8,6 +8,8 @@ namespace QueryEngine.Test
     using Microsoft.Extensions.Configuration;
     using System.Net.Http;
     using System;
+    using Newtonsoft.Json;
+    using System.Threading.Tasks;
 
     public class SchemaServiceTests
     {
@@ -34,10 +36,23 @@ namespace QueryEngine.Test
         }
 
         [Fact]
-        public async void CheckReadyStatusReturnsTrue()
+        public async void Can_Query_SqlServer_And_Return_Expected_Template()
         {
-            var res = await _client.GetStringAsync("/checkreadystatus");
-            Assert.Equal("true", res);
+            var request = new QueryInput 
+            {
+                ServerType = DatabaseProviderType.SqlServer,
+                ConnectionString = @"Data Source=.\sqlexpress; Integrated Security=True; Initial Catalog=testdb",
+                Namespace = "foo",
+                Text = ""
+            };
+            var json = JsonConvert.SerializeObject(request);
+            var res = await _client
+                .PostAsync("/querytemplate", new StringContent(json))
+                ;
+            
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<TemplateResult>(jsonRes);
+            Assert.Contains("public partial class Foo", output.Template);
         }
     }
 }

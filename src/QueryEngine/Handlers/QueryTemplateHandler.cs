@@ -3,6 +3,7 @@ namespace QueryEngine.Handlers
     using Microsoft.AspNetCore.Http;
     using QueryEngine.Services;
     using QueryEngine.Models;
+    using System.Threading.Tasks;
 
     public class QueryTemplateHandler : BaseHandler<TemplateResult, QueryInput>
     {
@@ -18,9 +19,9 @@ namespace QueryEngine.Handlers
             return path.Contains("/querytemplate");
         }
 
-        protected override TemplateResult Execute(QueryInput input)
+        protected override async Task<TemplateResult> Execute(QueryInput input)
         {
-            return _queryService.GetTemplate(input);
+            return await _queryService.GetTemplate(input);
         }
     }
 }

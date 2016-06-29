@@ -1,5 +1,6 @@
 namespace QueryEngine.Handlers
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
     public class StopServerHandler : BaseHandler<bool, string>
@@ -11,10 +12,10 @@ namespace QueryEngine.Handlers
             return path.Contains("/stopserver");
         }
 
-        protected override bool Execute(string input)
+        protected override async Task<bool> Execute(string input)
         {
             QueryEngine.Program.AppLifeTime.StopApplication();
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

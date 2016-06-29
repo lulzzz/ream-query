@@ -7,6 +7,7 @@ namespace QueryEngine
     using QueryEngine.Services;
     using QueryEngine.Handlers;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
     public class Startup
     {
@@ -26,7 +27,10 @@ namespace QueryEngine
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var schemaService = new SchemaService();
+            var sqlServerSchemaSvc = new SqlServerSchemaService();
+            // todo: blocked by https://github.com/npgsql/Npgsql.EntityFrameworkCore.PostgreSQL/issues/48
+            // var npgsqlSchemaSvc = new NpgsqlSchemaService();
+            var schemaService = new SchemaService(sqlServerSchemaSvc, null);
             var fragmentService = new FragmentService();
             var compiler = new CompileService(schemaService);
             var dbContextService = new DatabaseContextService(schemaService, compiler);

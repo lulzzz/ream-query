@@ -2,6 +2,7 @@ namespace QueryEngine.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using QueryEngine.Models;
 
     /// <summary>
@@ -24,12 +25,12 @@ namespace QueryEngine.Services
         /// Returns the database context for the given connection string, 
         /// optionally loading and compiling the types if missing.
         /// </summary>
-        public CompileResult GetDatabaseContext(string connectionString, DatabaseProviderType type)
+        public async Task<CompileResult> GetDatabaseContext(string connectionString, DatabaseProviderType type)
         {
             if (!_map.ContainsKey(connectionString))
             {
                 var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
-                var schemaResult = _schemaService.GetSchemaSource(connectionString, type, assmName);
+                var schemaResult = await _schemaService.GetSchemaSource(connectionString, type, assmName);
                 var result = _compileService.LoadType(schemaResult.Schema, assmName);
                 _map.Add(connectionString, result);
             }

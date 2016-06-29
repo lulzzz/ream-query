@@ -1,5 +1,6 @@
 namespace QueryEngine.Handlers
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
     public class CheckReadyStatusHandler : BaseHandler<bool, string>
@@ -11,9 +12,9 @@ namespace QueryEngine.Handlers
             return path.Contains("/checkreadystatus");
         }
 
-        protected override bool Execute(string input)
+        protected override async Task<bool> Execute(string input)
         {
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

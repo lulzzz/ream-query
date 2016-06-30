@@ -14,6 +14,8 @@ namespace ReamQuery.Test
     {
         protected TestServer _server;
         protected HttpClient _client;
+
+        protected dynamic SqlData;
         
         public E2EBase()
         {
@@ -32,6 +34,10 @@ namespace ReamQuery.Test
                     .UseStartup<ReamQuery.Startup>()
             );
             _client = _server.CreateClient();
+            
+            var path = Path.Combine(AppContext.BaseDirectory, "db.sql.json");
+            var json = File.ReadAllText(path);
+            SqlData = JArray.Parse(json);
         }
 
         protected static IEnumerable<object[]> Connections() 

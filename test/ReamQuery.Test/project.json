@@ -9,7 +9,8 @@
             "include": [
                 "connections.json",
                 "appsettings.json",
-                "appsettings.test.json"
+                "appsettings.test.json",
+                "db.sql.json"
             ]
         }
     },

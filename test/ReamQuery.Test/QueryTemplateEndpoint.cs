@@ -28,9 +28,9 @@ namespace ReamQuery.Test
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResult>(jsonRes);
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
-            
+
             Assert.Single(nodes.OfType<ClassDeclarationSyntax>(), cls => {
-                return cls.Identifier.ToString() == "Foo";
+                return cls.Identifier.ToString() == SqlData[0][1].ToString();
             });
         }
     }

@@ -5,7 +5,7 @@ rem(){ :;};rem '
 # https://github.com/dotnet/cli/issues/2902
 # see fix in project.json as well
 cp ../../src/QueryEngine/appsettings.* .
-cp ../../src/QueryEngine/project.* bin/Debug/netcoreapp1.0/ubuntu-x64
+cp ../../src/QueryEngine/project.* bin/Debug/netcoreapp1.0/ubuntu.14.04-x64
 exit
 :windows
 copy ..\..\src\QueryEngine\appsettings.* .

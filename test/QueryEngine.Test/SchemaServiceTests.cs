@@ -60,7 +60,7 @@ namespace QueryEngine.Test
         public static IEnumerable<object[]> Connections() 
         {
             var path = Path.Combine(AppContext.BaseDirectory, "connections.json");
-            var json = System.IO.File.ReadAllText(path);
+            var json = File.ReadAllText(path);
             dynamic data = JObject.Parse(json);
             return new object[][]
             {

@@ -22,7 +22,7 @@ namespace ReamQuery.Handlers
 
         protected override async Task<QueryResult> Execute(QueryInput input)
         {
-            var res = _service.ExecuteQuery(input);
+            var res = await _service.ExecuteQuery(input);
             return await Task.FromResult(new QueryResult
             {
                 Id = Guid.NewGuid(),

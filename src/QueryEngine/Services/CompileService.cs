@@ -76,7 +76,7 @@ namespace QueryEngine.Services
 
         private static string GetProjectJsonFolder() 
         {
-            var dir = Directory.GetCurrentDirectory();
+            var dir = System.AppContext.BaseDirectory;
             var devDir = Path.Combine(dir, "query");
             var json = Path.Combine(dir, "project.json");
             var devJson = Path.Combine(devDir, "project.json");

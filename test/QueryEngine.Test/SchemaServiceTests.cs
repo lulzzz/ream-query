@@ -1,15 +1,16 @@
 namespace QueryEngine.Test
 {
     using Xunit;
-    using QueryEngine.Services;
+    using System.IO;
     using QueryEngine.Models;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Configuration;
     using System.Net.Http;
-    using System;
     using Newtonsoft.Json;
-    using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using System;
+    using Newtonsoft.Json.Linq;
 
     public class SchemaServiceTests
     {
@@ -35,14 +36,15 @@ namespace QueryEngine.Test
             _client = _server.CreateClient();
         }
 
-        [Fact]
-        public async void Can_Query_SqlServer_And_Return_Expected_Template()
+        [Theory, MemberData("Connections")]
+        [Trait("Category", "Integration")]
+        public async void Can_Query_SqlServer_And_Return_Expected_Template(string connectionString, DatabaseProviderType dbType)
         {
             var request = new QueryInput 
             {
-                ServerType = DatabaseProviderType.SqlServer,
-                ConnectionString = @"Data Source=.\sqlexpress; Integrated Security=True; Initial Catalog=testdb",
-                Namespace = "foo",
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Namespace = "ns",
                 Text = ""
             };
             var json = JsonConvert.SerializeObject(request);
@@ -53,6 +55,18 @@ namespace QueryEngine.Test
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResult>(jsonRes);
             Assert.Contains("public partial class Foo", output.Template);
+        }
+
+        public static IEnumerable<object[]> Connections() 
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "connections.json");
+            var json = System.IO.File.ReadAllText(path);
+            dynamic data = JObject.Parse(json);
+            return new object[][]
+            {
+                new object[] { data.local.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
+                new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql }
+            };
         }
     }
 }

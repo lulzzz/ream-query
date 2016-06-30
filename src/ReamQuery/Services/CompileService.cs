@@ -11,6 +11,7 @@ namespace ReamQuery.Services
     using Microsoft.CodeAnalysis.Emit;
     using Microsoft.CodeAnalysis.CSharp;
     using ReamQuery.Models;
+    using Microsoft.Extensions.PlatformAbstractions;
 
     public class CompileService
     {
@@ -18,10 +19,10 @@ namespace ReamQuery.Services
         string _projectjsonPath;
         IEnumerable<MetadataReference> _references;
 
-        public CompileService(SchemaService schemaService) 
+        public CompileService(SchemaService schemaService, string projectJsonDirectory) 
         {
             _schemaService = schemaService;
-            _projectjsonPath = GetProjectJsonFolder();
+            _projectjsonPath = projectJsonDirectory;
         }
 
         public IEnumerable<MetadataReference> GetReferences() 
@@ -72,19 +73,6 @@ namespace ReamQuery.Services
                 Assembly = asm,
                 Reference = MetadataReference.CreateFromStream(stream)
             };
-        }
-
-        private static string GetProjectJsonFolder() 
-        {
-            var dir = System.AppContext.BaseDirectory;
-            var devDir = Path.Combine(dir, "query");
-            var json = Path.Combine(dir, "project.json");
-            var devJson = Path.Combine(devDir, "project.json");
-            if (File.Exists(json)) 
-            {
-                return dir;
-            }
-            return devDir;
         }
     }
 }

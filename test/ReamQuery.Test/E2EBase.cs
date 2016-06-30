@@ -19,9 +19,13 @@ namespace ReamQuery.Test
         
         public E2EBase()
         {
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/ReamQuery"));
+            Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
+            
             var config = new ConfigurationBuilder()
-                .SetBasePath(System.AppContext.BaseDirectory)
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.test.json")
                 .Build()
                 ;

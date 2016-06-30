@@ -4,6 +4,7 @@ namespace ReamQuery.Test
     using ReamQuery.Models;
     using System.Net.Http;
     using Newtonsoft.Json;
+    using Microsoft.Extensions.PlatformAbstractions;
 
     public class ExecuteQueryEndpoint : E2EBase
     {
@@ -25,6 +26,7 @@ namespace ReamQuery.Test
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResult>(jsonRes);
+            // System.Console.WriteLine(JsonConvert.SerializeObject(output.Results, Formatting.Indented));
             Assert.NotNull(output.Results);
         }
     }

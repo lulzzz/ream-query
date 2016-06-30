@@ -64,7 +64,7 @@ namespace QueryEngine.Test
             dynamic data = JObject.Parse(json);
             return new object[][]
             {
-                new object[] { data.local.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
+                new object[] { data.local.sqlserver2[0].ToString(), DatabaseProviderType.SqlServer },
                 new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql }
             };
         }

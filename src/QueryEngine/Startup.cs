@@ -28,7 +28,6 @@ namespace QueryEngine
         public void ConfigureServices(IServiceCollection services)
         {
             var sqlServerSchemaSvc = new SqlServerSchemaService();
-            // todo: blocked by https://github.com/npgsql/Npgsql.EntityFrameworkCore.PostgreSQL/issues/48
             var npgsqlSchemaSvc = new NpgsqlSchemaService();
             var schemaService = new SchemaService(sqlServerSchemaSvc, npgsqlSchemaSvc);
             var fragmentService = new FragmentService();

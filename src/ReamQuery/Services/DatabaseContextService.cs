@@ -1,9 +1,9 @@
-namespace QueryEngine.Services
+namespace ReamQuery.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using QueryEngine.Models;
+    using ReamQuery.Models;
 
     /// <summary>
     /// Provides EF7 based database contexts

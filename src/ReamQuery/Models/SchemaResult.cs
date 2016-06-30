@@ -1,4 +1,4 @@
-namespace QueryEngine.Models 
+namespace ReamQuery.Models 
 {
     public class SchemaResult
     {

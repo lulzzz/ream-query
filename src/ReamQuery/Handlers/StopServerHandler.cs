@@ -1,4 +1,4 @@
-namespace QueryEngine.Handlers
+namespace ReamQuery.Handlers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -14,7 +14,7 @@ namespace QueryEngine.Handlers
 
         protected override async Task<bool> Execute(string input)
         {
-            QueryEngine.Program.AppLifeTime.StopApplication();
+            ReamQuery.Program.AppLifeTime.StopApplication();
             return await Task.FromResult(true);
         }
     }

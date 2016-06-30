@@ -1,11 +1,11 @@
-namespace QueryEngine 
+namespace ReamQuery 
 {
     using System;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using QueryEngine.Services;
-    using QueryEngine.Handlers;
+    using ReamQuery.Services;
+    using ReamQuery.Handlers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 

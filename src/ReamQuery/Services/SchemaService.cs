@@ -1,7 +1,7 @@
-namespace QueryEngine.Services
+namespace ReamQuery.Services
 {
     using System;
-    using QueryEngine.Models;
+    using ReamQuery.Models;
     using System.Threading.Tasks;
 
     public class SchemaService 

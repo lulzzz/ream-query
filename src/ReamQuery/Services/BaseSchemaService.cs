@@ -1,12 +1,12 @@
-namespace QueryEngine
+namespace ReamQuery
 {
     using System;
     using System.Linq;
     using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-    using QueryEngine.Services;
+    using ReamQuery.Services;
     using Microsoft.EntityFrameworkCore.Scaffolding;
     using System.Threading.Tasks;
-    using QueryEngine.Models;
+    using ReamQuery.Models;
     using System.Text;
     using System.Text.RegularExpressions;
 

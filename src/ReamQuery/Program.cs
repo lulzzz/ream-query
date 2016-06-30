@@ -1,4 +1,4 @@
-﻿namespace QueryEngine
+﻿namespace ReamQuery
 {
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Hosting;

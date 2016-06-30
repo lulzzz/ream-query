@@ -1,6 +1,6 @@
 {
     "version": "1.0.0-*",
-    "name": "QueryEngine.Test",
+    "name": "ReamQuery.Test",
     "testRunner": "xunit",
     "buildOptions": {
         "emitEntryPoint": false,
@@ -19,7 +19,7 @@
         ]
     },
     "dependencies": {
-        "QueryEngine": "1.0.0-*",
+        "ReamQuery": "1.0.0-*",
         "Microsoft.AspNetCore.Hosting": "1.0.0-*",
         "Microsoft.AspNetCore.TestHost": "1.0.0-*",
         "Microsoft.Extensions.Configuration": "1.1.0-*",

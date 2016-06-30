@@ -1,9 +1,9 @@
-namespace QueryEngine
+namespace ReamQuery
 {
     using System;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-    using QueryEngine.Services;
+    using ReamQuery.Services;
     using Microsoft.EntityFrameworkCore.Scaffolding;
     using Microsoft.Extensions.Logging;
 

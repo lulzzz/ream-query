@@ -1,9 +1,9 @@
-namespace QueryEngine.Services
+namespace ReamQuery.Services
 {
     using System;
     using System.Diagnostics;
     using System.Reflection;
-    using QueryEngine.Models;
+    using ReamQuery.Models;
     using System.Text.RegularExpressions;
     // cant reuse types from project itself so doing some silly stuff here
     using DumpInternal = System.Collections.Generic.IDictionary<
@@ -117,7 +117,7 @@ namespace ##NS##
         public static IDictionary<string, int> _counts;
         public static int _anonynousCount;
 
-        /// <summary>QueryEngine.Inlined.Dumper</summary>
+        /// <summary>ReamQuery.Inlined.Dumper</summary>
         public static T Dump<T>(this T o)
         {
             if (o != null)

@@ -1,8 +1,8 @@
-namespace QueryEngine.Test
+namespace ReamQuery.Test
 {
     using Xunit;
     using System.IO;
-    using QueryEngine.Models;
+    using ReamQuery.Models;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Configuration;
@@ -26,12 +26,12 @@ namespace QueryEngine.Test
                 .Build()
                 ;
             
-            QueryEngine.Startup.Configuration = config;
+            ReamQuery.Startup.Configuration = config;
 
             _server = new TestServer(
                 new WebHostBuilder()
-                    .UseConfiguration(QueryEngine.Startup.Configuration)
-                    .UseStartup<QueryEngine.Startup>()
+                    .UseConfiguration(ReamQuery.Startup.Configuration)
+                    .UseStartup<ReamQuery.Startup>()
             );
             _client = _server.CreateClient();
         }

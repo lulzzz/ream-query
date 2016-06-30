@@ -1,9 +1,9 @@
-namespace QueryEngine.Handlers
+namespace ReamQuery.Handlers
 {
     using System;
     using Microsoft.AspNetCore.Http;
-    using QueryEngine.Services;
-    using QueryEngine.Models;
+    using ReamQuery.Services;
+    using ReamQuery.Models;
     using System.Threading.Tasks;
 
     public class ExecuteQueryHandler : BaseHandler<QueryResult, QueryInput>

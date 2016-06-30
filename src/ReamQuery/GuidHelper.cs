@@ -1,4 +1,4 @@
-﻿namespace QueryEngine
+﻿namespace ReamQuery
 {
     using System;
 

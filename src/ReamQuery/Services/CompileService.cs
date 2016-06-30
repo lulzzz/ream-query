@@ -1,4 +1,4 @@
-namespace QueryEngine.Services
+namespace ReamQuery.Services
 {
     using System;
     using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace QueryEngine.Services
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Emit;
     using Microsoft.CodeAnalysis.CSharp;
-    using QueryEngine.Models;
+    using ReamQuery.Models;
 
     public class CompileService
     {

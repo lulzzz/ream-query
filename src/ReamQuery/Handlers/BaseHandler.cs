@@ -1,4 +1,4 @@
-namespace QueryEngine.Handlers
+namespace ReamQuery.Handlers
 {
     using System;
     using System.IO;
@@ -7,7 +7,7 @@ namespace QueryEngine.Handlers
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
-    using QueryEngine.Converters;
+    using ReamQuery.Converters;
 
     public abstract class BaseHandler<TResult, TInput>
     {

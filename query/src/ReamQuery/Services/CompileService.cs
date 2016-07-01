@@ -29,8 +29,16 @@ namespace ReamQuery.Services
         {
             if (_references == null)
             {
-                _references = new ProjectJsonWorkspace(_projectjsonPath)
-                    .CurrentSolution.Projects.First().MetadataReferences;
+                Console.WriteLine("projects: {0}",new ProjectJsonWorkspace(_projectjsonPath)
+                    .CurrentSolution.Projects.Count());
+                var projs = new ProjectJsonWorkspace(_projectjsonPath)
+                    .CurrentSolution.Projects;
+                foreach(var p in projs)
+                {
+                    Console.WriteLine("p: {0}", p.FilePath);
+                }
+                
+                _references = projs.SelectMany(p => p.MetadataReferences);
             }
             return _references;
         }

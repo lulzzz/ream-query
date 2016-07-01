@@ -1,5 +1,6 @@
 bin
 obj
 project.lock.json
-test/ReamQuery.Test/appsettings.json
-test/ReamQuery.Test/appsettings.test.json
+query/test/ReamQuery.Test/appsettings.json
+query/test/ReamQuery.Test/appsettings.test.json
+nuget

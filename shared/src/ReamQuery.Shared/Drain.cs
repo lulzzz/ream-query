@@ -14,12 +14,12 @@ namespace ReamQuery.Shared
     {
         public readonly Guid Id;
 
-        Subject<Tuple<string, string>> _columns = new Subject<Tuple<string, string>>();
+        Subject<ResultColumn> _columns = new Subject<ResultColumn>();
 
         Subject<object> _values = new Subject<object>();
         
         string _currentName = null;
-        IList<Tuple<string, string>> _currentColumns = new List<Tuple<string, string>>();
+        IList<ResultColumn> _currentColumns = new List<ResultColumn>();
 
         IList<object> _currentValues = new List<object>();
 
@@ -41,13 +41,13 @@ namespace ReamQuery.Shared
             if (!string.IsNullOrEmpty(_currentName))
             {
                 _dumps.Add(GetCurrent());
-                _currentColumns = new List<Tuple<string, string>>();
+                _currentColumns = new List<ResultColumn>();
                 _currentValues = new List<object>();
             }
             _currentName = name;
         }
 
-        public void EmitColumn(Tuple<string, string> column)
+        public void EmitColumn(ResultColumn column)
         {
             _columns.OnNext(column);
         }
@@ -74,8 +74,8 @@ namespace ReamQuery.Shared
             return new DumpResult
             {
                 Name = string.Format("{0} ({1})", _currentName, counter),
-                Columns = _currentColumns.AsEnumerable(),
-                Values = _currentValues.AsEnumerable(),
+                Columns = _currentColumns.ToArray(),
+                Values = _currentValues.ToArray(),
             };
         }
     }

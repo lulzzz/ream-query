@@ -22,16 +22,19 @@ namespace ReamQuery.Shared.Test
         [Theory, MemberData("Simple_Value_Expressions")]
         public void Dumps_Simple_Value_Expressions(object dumpExpression, DumpResult expected)
         {
+            var x1 = new ResultColumn { Name = "Foo" };
+            var x2 = new ResultColumn { Name = "Foo" };
+            Console.WriteLine("EQUALS {0}", x1 == x2);
             var queryId = Guid.NewGuid();
             dumpExpression.Dump(queryId);
             var drain = DrainContainer.CloseDrain(queryId);
             var result = drain.GetData().Single();
 
             Assert.Equal(expected.Name, result.Name);
-            Assert.Equal(expected.Columns, result.Columns);
+            Assert.Equal(expected.Columns, result.Columns, new ResultColumnComparer());
             Assert.Equal(expected.Values, result.Values);
         }
-        
+
         public static IEnumerable<object[]> Simple_Value_Expressions
         {
             get
@@ -44,7 +47,15 @@ namespace ReamQuery.Shared.Test
                         new DumpResult
                         {
                             Name = "int (1)",
-                            Columns = new Tuple<string, string>[] { Tuple.Create(ReamQuery.Shared.Dumper.RawValueColumnName, "int") },
+                            Columns = new ResultColumn[]
+                            {
+                                new ResultColumn
+                                {
+                                    SetId = 0,
+                                    Name = ReamQuery.Shared.Dumper.RawValueColumnName,
+                                    Type = "int"
+                                }
+                            },
                             Values = new object[] { 42 }
                         }
                     },
@@ -54,7 +65,10 @@ namespace ReamQuery.Shared.Test
                         new DumpResult
                         {
                             Name = "string (1)",
-                            Columns = new Tuple<string, string>[] { Tuple.Create(ReamQuery.Shared.Dumper.RawValueColumnName, "string") },
+                            Columns = new ResultColumn[]
+                            {
+                                new ResultColumn { Name = ReamQuery.Shared.Dumper.RawValueColumnName, Type = "string" }
+                            },
                             Values = new object[] { "hello world" }
                         }
                     },
@@ -68,7 +82,11 @@ namespace ReamQuery.Shared.Test
                         new DumpResult
                         {
                             Name = "TestClassForDump (2)",
-                            Columns = new Tuple<string, string>[] { Tuple.Create("Id", "int"), Tuple.Create("Foo", "string") },
+                            Columns = new ResultColumn[]
+                            {
+                                new ResultColumn { Name = "Id", Type = "int" },
+                                new ResultColumn { Name = "Foo", Type = "string" }
+                            },
                             Values = new object[] {
                                 new object[] { 1, "hello" },
                                 new object[] { 2, "world" },
@@ -85,7 +103,11 @@ namespace ReamQuery.Shared.Test
                         new DumpResult
                         {
                             Name = "AnonymousType (2)",
-                            Columns = new Tuple<string, string>[] { Tuple.Create("AnotherId", "int"), Tuple.Create("Bar", "string") },
+                            Columns = new ResultColumn[]
+                            {
+                                new ResultColumn { Name = "AnotherId", Type = "int" },
+                                new ResultColumn { Name = "Bar", Type = "string" }
+                            },
                             Values = new object[] {
                                 new object[] { 1, "baz" },
                                 new object[] { 2, "qux" },

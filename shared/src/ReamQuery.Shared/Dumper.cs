@@ -11,7 +11,6 @@ namespace ReamQuery.Shared
     using System.ComponentModel.DataAnnotations.Schema;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata;
-    using DumpType = System.Tuple<System.Collections.Generic.IEnumerable<System.Tuple<string, string>>, object>;
     using Newtonsoft.Json;
 
     public static class Dumper
@@ -50,6 +49,7 @@ namespace ReamQuery.Shared
             {
                 drain.EmitValue(o);
             }
+
             return o;
         }
 
@@ -65,13 +65,23 @@ namespace ReamQuery.Shared
                     if (propInfo != null)
                     {
                         props.Add(propInfo);
-                        drain.EmitColumn(Tuple.Create(m.Name, TypeDisplayName(propInfo.GetGetMethod().ReturnType)));
+                        drain.EmitColumn(new ResultColumn
+                        {
+                            SetId = 0,
+                            Name = m.Name,
+                            Type = TypeDisplayName(propInfo.GetGetMethod().ReturnType)
+                        });
                     }
                 }
             }
             else
             {
-                drain.EmitColumn(Tuple.Create(RawValueColumnName, TypeDisplayName(type)));
+                drain.EmitColumn(new ResultColumn
+                {
+                    SetId = 0,
+                    Name = RawValueColumnName,
+                    Type = TypeDisplayName(type)
+                });
             }
             propertyInfos = props.ToArray();
         }

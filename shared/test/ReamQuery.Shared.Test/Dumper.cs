@@ -23,7 +23,7 @@ namespace ReamQuery.Shared.Test
             var result = drain.GetData().Single();
 
             Assert.Equal(expected.Name, result.Name);
-            Assert.Equal(expected.Columns, result.Columns, new ResultColumnComparer());
+            Assert.Equal(expected.Columns, result.Columns);
             Assert.Equal(expected.Values, result.Values);
         }
 

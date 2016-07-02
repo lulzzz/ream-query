@@ -2,13 +2,8 @@ namespace ReamQuery.Shared.Test
 {
     using System;
     using Xunit;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using System.Net.Http;
-    using Newtonsoft.Json;
-    using Microsoft.Extensions.PlatformAbstractions;
     using ReamQuery.Shared;
 
     public class Dumper
@@ -22,9 +17,6 @@ namespace ReamQuery.Shared.Test
         [Theory, MemberData("Simple_Value_Expressions")]
         public void Dumps_Simple_Value_Expressions(object dumpExpression, DumpResult expected)
         {
-            var x1 = new ResultColumn { Name = "Foo" };
-            var x2 = new ResultColumn { Name = "Foo" };
-            Console.WriteLine("EQUALS {0}", x1 == x2);
             var queryId = Guid.NewGuid();
             dumpExpression.Dump(queryId);
             var drain = DrainContainer.CloseDrain(queryId);

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-
 namespace ReamQuery.Shared
 {
+    using System.Collections.Generic;
+
     public class ResultColumn
     {
         public int SetId { get; set; }

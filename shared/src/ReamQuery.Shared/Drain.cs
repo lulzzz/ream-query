@@ -1,14 +1,10 @@
 namespace ReamQuery.Shared
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using System.Reactive;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
-    using Newtonsoft.Json;
 
     public class Drain
     {

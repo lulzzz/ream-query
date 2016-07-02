@@ -1,17 +1,9 @@
 namespace ReamQuery.Shared
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata;
-    using Newtonsoft.Json;
 
     public static class Dumper
     {

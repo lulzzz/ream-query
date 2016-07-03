@@ -14,6 +14,20 @@ namespace ReamQuery.Shared.Test
             public string Foo { get; set; }
         }
 
+        [Fact]
+        public void Dumps_Typed_Null_Value()
+        {
+            var queryId = Guid.NewGuid();
+            
+            IEnumerable<string> o = null;
+            o.Dump(queryId);
+
+            var drain = DrainContainer.CloseDrain(queryId);
+            var result = drain.GetData().Single();
+
+            Assert.Equal("string (null)", result.Name);
+        }
+
         [Theory, MemberData("Simple_Value_Expressions")]
         public void Dumps_Simple_Value_Expressions(object dumpExpression, DumpResult expected)
         {
@@ -33,6 +47,16 @@ namespace ReamQuery.Shared.Test
             {
                 return new object[][]
                 {
+                    new object[]
+                    {
+                        null,
+                        new DumpResult
+                        {
+                            Name = "object (null)",
+                            Columns = new ResultColumn[] { },
+                            Values = new object[] { }
+                        }
+                    },
                     new object[]
                     {
                         42,

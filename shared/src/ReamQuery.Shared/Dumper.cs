@@ -1,6 +1,7 @@
 namespace ReamQuery.Shared
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -15,12 +16,7 @@ namespace ReamQuery.Shared
             var drain = DrainContainer.GetDrain(queryId);
             // prefer runtime type (to detect anonymous types)
             var asEnum = o as IEnumerable<object>;
-            var instanceList = asEnum != null && asEnum.Count() > 0;
-            var genericList = asEnum != null && asEnum.GetType().GenericTypeArguments.Count() > 0;
-
-            var targetType = instanceList ? asEnum.First().GetType() :
-                genericList ? asEnum.GetType().GenericTypeArguments.First() :
-                o != null ? o.GetType() : typeof(T);
+            var targetType = GetTargetType<T>(o);
             PropertyInfo[] propertyInfos;
             // will fail if the list contains mixed types
             DumpTypeInfo(drain, targetType, out propertyInfos);
@@ -29,20 +25,54 @@ namespace ReamQuery.Shared
                 var memberList = new List<PropertyInfo>();
                 foreach(var val in asEnum)
                 {
+                    var type = val.GetType();
                     var list = new List<object>();
                     foreach(var prop in propertyInfos)
                     {
-                        list.Add(prop.GetValue(val));
+                        var objVal = prop.GetValue(val) as object;
+                        list.Add(objVal);
                     }
                     drain.EmitValue(list.ToArray());
                 }
             }
-            else
+            else if (o != null)
             {
                 drain.EmitValue(o);
             }
 
             return o;
+        }
+
+        static Type[] GenericListTypes = new []
+        {
+            typeof(IEnumerable<>), typeof(IList<>), typeof(List<>)
+        };
+
+        static Type GetTargetType<T>(T o)
+        {
+            Type targetType = null;
+            var startType = o == null ? typeof(T) : o.GetType();
+            Type genericTypeDef = null;
+            try 
+            {
+                genericTypeDef = startType.GetGenericTypeDefinition();
+            }
+            catch(Exception) {}
+
+            if (startType.IsArray)
+            {
+                targetType = startType.GetElementType();
+            }
+            else if (genericTypeDef != null && GenericListTypes.Any(t => t.IsAssignableFrom(genericTypeDef)) && 
+                startType.GetGenericArguments().Count() == 1)
+            {
+                targetType = startType.GetGenericArguments().Single();
+            }
+            else
+            {
+                targetType = startType;
+            }
+            return targetType;
         }
 
         static void DumpTypeInfo(Drain drain, Type type, out PropertyInfo[] propertyInfos)
@@ -101,9 +131,13 @@ namespace ReamQuery.Shared
             {
                 return "AnonymousType";
             }
+            else if (type.FullName == "System.Object")
+            {
+                return "object";
+            }
             else
             {
-                return type.GetTypeInfo().Name;
+                return type.Name;
             }
         }
     }

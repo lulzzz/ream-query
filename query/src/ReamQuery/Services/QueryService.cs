@@ -3,23 +3,11 @@ namespace ReamQuery.Services
     using System;
     using System.Diagnostics;
     using System.Reflection;
-    using ReamQuery.Models;
     using System.Text.RegularExpressions;
-    // cant reuse types from project itself so doing some silly stuff here
-    using DumpInternal = System.Collections.Generic.IDictionary<
-        string,
-        System.Tuple<
-            System.Collections.Generic.IEnumerable<
-                System.Tuple<
-                    string,
-                    string
-                >
-            >,
-            object
-        >
-    >;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using ReamQuery.Models;
+    using ReamQuery.Shared;
 
     public class QueryService
     {
@@ -36,7 +24,7 @@ namespace ReamQuery.Services
             _fragmentService = fragmentService;
         }
 
-        public async Task<DumpInternal> ExecuteQuery(QueryInput input)
+        public async Task<IEnumerable<DumpResult>> ExecuteQuery(QueryInput input)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -47,7 +35,9 @@ namespace ReamQuery.Services
                 .Replace("##SOURCE##", newInput)
                 .Replace("##NS##", assmName)
                 .Replace("##SCHEMA##", "") // schema is linked
-                .Replace("##DB##", contextResult.Type.ToString());
+                .Replace("##DB##", contextResult.Type.ToString())
+                .Replace("##QUERYID##", Guid.NewGuid().ToString());
+
             var e1 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
             sw.Start();
@@ -57,7 +47,7 @@ namespace ReamQuery.Services
             var e2 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
             sw.Start();
-            var res = method.Invoke(programInstance, new object[] { }) as DumpInternal;
+            var res = method.Invoke(programInstance, new object[] { }) as IEnumerable<DumpResult>;
             var e3 = sw.Elapsed.TotalMilliseconds;
             //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
             return res;
@@ -73,7 +63,8 @@ namespace ReamQuery.Services
             var src = _template
                 .Replace("##NS##", assmName)
                 .Replace("##DB##", "Proxy")
-                .Replace("##SCHEMA##", schemaSrc);
+                .Replace("##SCHEMA##", schemaSrc)
+                .Replace("##QUERYID##", Guid.NewGuid().ToString());
                 
             var srcLineOffset = -1;
             var lines = src.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
@@ -107,21 +98,28 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using DumpType = System.Tuple<System.Collections.Generic.IEnumerable<System.Tuple<string, string>>, object>;
 using ReamQuery.Shared;
 ##SCHEMA##
 namespace ##NS## 
-{     
+{
+    public static class DumpWrapper
+    {
+        static Guid QueryId = Guid.Parse(""##QUERYID##"");
+
+        public static T Dump<T>(this T o)
+        {
+            return o.Dump(QueryId);
+        }
+    }
+
     public class Main : ##DB##
     {
-        public IDictionary<string, DumpType> Run()
+        public IEnumerable<DumpResult> Run()
         {
-            // todo need something better
-            Dumper._results = new Dictionary<string, DumpType>();
-            Dumper._counts = new Dictionary<string, int>();
-            Dumper._anonynousCount = 0;
             Query();
-            return Dumper._results;
+            var drain = DrainContainer.CloseDrain(Guid.Parse(""##QUERYID##""));
+            var result = drain.GetData();
+            return result;
         }
 
         void Query()
@@ -131,23 +129,5 @@ namespace ##NS##
     }
 }
 ";
-        static IEnumerable<Tuple<string, string>> TypeColumns(object o) 
-        {
-            var t = o.GetType();
-            if (o is IEnumerable<object>) 
-            {
-                t = t.GetTypeInfo().GenericTypeArguments[0];
-            }
-            var list = new List<Tuple<string, string>>();
-            foreach(var m in t.GetMembers())
-            {
-                var propInfo = m as System.Reflection.PropertyInfo;
-                if (propInfo != null)
-                {
-                    list.Add(Tuple.Create(m.Name, propInfo.GetGetMethod().ReturnType.Name));
-                }
-            }
-            return list;
-        }
     }
 }

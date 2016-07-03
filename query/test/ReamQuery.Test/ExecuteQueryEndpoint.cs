@@ -1,6 +1,10 @@
 namespace ReamQuery.Test
 {
     using Xunit;
+    using System;
+    using System.Linq;
+    using System.Collections;
+    using System.Collections.Generic;
     using ReamQuery.Models;
     using System.Net.Http;
     using Newtonsoft.Json;
@@ -26,8 +30,7 @@ namespace ReamQuery.Test
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResult>(jsonRes);
-            // System.Console.WriteLine(JsonConvert.SerializeObject(output.Results, Formatting.Indented));
-            Assert.NotNull(output.Results);
+            Assert.Equal(10, output.Results.Single().Values.Count());
         }
     }
 }

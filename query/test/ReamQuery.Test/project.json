@@ -5,19 +5,11 @@
     "buildOptions": {
         "emitEntryPoint": false,
         "copyToOutput": {
-            "bullshit": "copyToOutput is not transititively applied, so duplicated from main project.json https://github.com/dotnet/cli/issues/2902",
             "include": [
                 "connections.json",
-                "appsettings.json",
-                "appsettings.test.json",
                 "db.sql.json"
             ]
         }
-    },
-    "scripts": {
-        "precompile": [
-            "fix-json-config.cmd"
-        ]
     },
     "dependencies": {
         "ReamQuery": "1.0.0-*",

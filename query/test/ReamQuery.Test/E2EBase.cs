@@ -23,10 +23,10 @@ namespace ReamQuery.Test
             Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
             
             var config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
+                .SetBasePath(baseDir)
                 .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.test.json")
+                .AddEnvironmentVariables()
                 .Build()
                 ;
             

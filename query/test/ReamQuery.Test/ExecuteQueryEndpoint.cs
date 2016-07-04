@@ -12,8 +12,7 @@ namespace ReamQuery.Test
 
     public class ExecuteQueryEndpoint : E2EBase
     {
-        [Theory, MemberData("Connections")]
-        [Trait("Category", "Integration")]
+        [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
             var request = new QueryInput 
@@ -21,7 +20,7 @@ namespace ReamQuery.Test
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Namespace = "ns",
-                Text = "Foo.Take(10)"
+                Text = "City.Take(10)"
             };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client

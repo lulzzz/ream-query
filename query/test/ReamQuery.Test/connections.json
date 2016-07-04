@@ -1,6 +1,7 @@
 {
     "local": {
         "sqlserver": [
+            "Data Source=.\\sqlexpress; Integrated Security=True; Initial Catalog=world",
             "Data Source=.\\sqlexpress; Integrated Security=True; Initial Catalog=testdb",
             "Data Source=.\\sqlexpress; Integrated Security=True; Initial Catalog=testdb2"
         ],
@@ -9,6 +10,7 @@
             "Data Source=192.168.56.2; User Id=sa; Password=Password12!; Initial Catalog=testdb2"
         ],
         "npgsql": [
+            "Server=192.168.56.2; User Id=testuser; Password=Password12!; Database=world",
             "Server=192.168.56.2; User Id=testuser; Password=Password12!; Database=testdb",
             "Server=192.168.56.2; User Id=testuser; Password=Password12!; Database=testdb2"
         ]

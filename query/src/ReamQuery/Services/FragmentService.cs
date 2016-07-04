@@ -46,7 +46,7 @@ namespace ReamQuery.Services
                     var m = dumpRegex.Match(newNodeStr);
                     if (!m.Success)
                     {
-                        newNodeStr += ".Dump()";
+                        newNodeStr = "(" + newNodeStr + ").Dump()";
                     }
                     newStatement = string.Format("{0};{1}", newNodeStr, suffix);
                 }

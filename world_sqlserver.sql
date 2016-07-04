@@ -1,4 +1,5 @@
 USE [world];
+set nocount on;
 
 BEGIN TRANSACTION
 

@@ -20,8 +20,6 @@ install:
   - ps: $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 
 before_build:
-  # generates the scripts in the working folder
-  - npm run generate-for-sqlserver
   - ps: $sqlInstance = "(local)\SQL2014"
   - ps: sqlcmd -S "$sqlInstance" -U "sa" -P "Password12!" -Q "use master; create database world;"
   - ps: sqlcmd -S "$sqlInstance" -U "sa" -P "Password12!" -i $env:APPVEYOR_BUILD_FOLDER\world_sqlserver.sql

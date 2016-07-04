@@ -31,7 +31,7 @@ install:
  - dotnet --info
  - node -v
  - psql -c 'create database world;' -U postgres
- - psql -d testdb -U postgres -f $TRAVIS_BUILD_DIR/world_postgresql.sql
+ - psql -d world -U postgres -f $TRAVIS_BUILD_DIR/world_postgresql.sql
 
 script:
  - dotnet restore shared

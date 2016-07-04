@@ -49,11 +49,38 @@ namespace ReamQuery.Test
             var path = Path.Combine(AppContext.BaseDirectory, "connections.json");
             var json = File.ReadAllText(path);
             dynamic data = JObject.Parse(json);
-            return new object[][]
+            if (IsTravisCi())
             {
-                new object[] { data.local.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
-                //new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql }
-            };
-        }       
+                return new object[][]
+                {
+                    new object[] { data.travis.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
+                };
+            }
+            else if (IsAppveyorCi())
+            {
+                return new object[][]
+                {
+                    new object[] { data.appveyor.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
+                };
+            }
+            else
+            {
+                return new object[][]
+                {
+                    new object[] { data.local.sqlserver2[0].ToString(), DatabaseProviderType.SqlServer },
+                    new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
+                };
+            }
+        }
+
+        static bool IsTravisCi()
+        {
+            return Environment.GetEnvironmentVariable("TRAVIS") == "true";
+        }
+
+        static bool IsAppveyorCi()
+        {
+            return Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+        }
     }
 }

@@ -1,3 +1,5 @@
+USE [world];
+
 BEGIN TRANSACTION
 
 CREATE TABLE city (

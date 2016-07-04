@@ -45,7 +45,9 @@ namespace ReamQuery.Shared
 
         static Type[] GenericListTypes = new []
         {
-            typeof(IEnumerable<>), typeof(IList<>), typeof(List<>)
+            typeof(IEnumerable<>), typeof(IList<>), typeof(List<>),
+            // todo dont depend on internals
+            typeof(Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable<>)
         };
 
         static Type GetTargetType<T>(T o)

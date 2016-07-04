@@ -1,0 +1,37 @@
+version: 0.1.0.{build}
+branches:
+  only:
+    - master
+services:
+  - mssql2014
+
+environment:
+  CLI_VERSION: latest
+  CLI_ARCH: x64
+  DOTNETCLI_URL: https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0-preview2/scripts/obtain/dotnet-install.ps1
+
+install:
+  # see https://github.com/enricosada/fsharp-dotnet-cli-samples/blob/master/appveyor.yml
+  # Download install script to install .NET cli in .dotnet dir
+  - ps: mkdir -Force ".\scripts\obtain\" | Out-Null
+  - ps: Invoke-WebRequest "$env:DOTNETCLI_URL" -OutFile ".\scripts\obtain\install.ps1"
+  - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetcli"
+  - ps: '& .\scripts\obtain\install.ps1 -Channel "preview" -version "$env:CLI_VERSION" -Architecture "$env:CLI_ARCH" -InstallDir "$env:DOTNET_INSTALL_DIR" -NoPath'
+  - ps: $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+
+before_build:
+  # generates the scripts in the working folder
+  - npm run generate-for-sqlserver
+  - ps: $sqlInstance = "(local)\SQL2014"
+  - ps: sqlcmd -S "$sqlInstance" -U "sa" -P "Password12!" -Q "use master; create database world;"
+  - ps: sqlcmd -S "$sqlInstance" -U "sa" -P "Password12!" -i $env:APPVEYOR_BUILD_FOLDER\world_sqlserver.sql
+  - dotnet --info
+          
+build_script:
+  - dotnet restore shared
+  - dotnet pack -o nuget shared\src\ReamQuery.Shared
+  - dotnet restore query
+
+test_script:
+  - dotnet test shared\test\ReamQuery.Shared.Test
+  - dotnet test query\test\ReamQuery.Test

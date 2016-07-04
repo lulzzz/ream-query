@@ -1,0 +1,41 @@
+sudo: required
+dist: trusty
+
+services:
+  - postgresql
+
+addons:
+  postgresql: "9.4"
+  apt:
+    packages:
+    - gettext
+    - libcurl4-openssl-dev
+    - libicu-dev
+    - libssl-dev
+    - libunwind8
+    - zlib1g
+
+env:
+  global:
+    - CLI_VERSION=latest
+    - CLI_ARCH=x64
+    - DOTNETCLI_URL=https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0-preview2/scripts/obtain/dotnet-install.sh
+    - DOTNET_INSTALL_DIR=$TRAVIS_BUILD_DIR/.dotnetcli
+
+before_install:
+ - ulimit -n 1024
+ - curl -sSL $DOTNETCLI_URL | bash /dev/stdin --version $CLI_VERSION --install-dir $DOTNET_INSTALL_DIR
+ - export PATH="$DOTNET_INSTALL_DIR:$PATH"
+
+install:
+ - dotnet --info
+ - node -v
+ - psql -c 'create database world;' -U postgres
+ - psql -d testdb -U postgres -f $TRAVIS_BUILD_DIR/world_postgresql.sql
+
+script:
+ - dotnet restore shared
+ - dotnet test shared\test\ReamQuery.Shared.Test
+ - dotnet pack -o nuget shared\src\ReamQuery.Shared
+ - dotnet restore query
+ - dotnet test query\test\ReamQuery.Test

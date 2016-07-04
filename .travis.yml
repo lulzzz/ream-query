@@ -35,7 +35,7 @@ install:
 
 script:
  - dotnet restore shared
- - dotnet test shared\test\ReamQuery.Shared.Test
- - dotnet pack -o nuget shared\src\ReamQuery.Shared
+ - dotnet test shared/test/ReamQuery.Shared.Test
+ - dotnet pack -o nuget shared/src/ReamQuery.Shared
  - dotnet restore query
- - dotnet test query\test\ReamQuery.Test
+ - dotnet test query/test/ReamQuery.Test

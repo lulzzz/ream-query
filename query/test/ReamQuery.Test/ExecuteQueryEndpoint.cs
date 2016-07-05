@@ -6,6 +6,7 @@ namespace ReamQuery.Test
     using System.Collections;
     using System.Collections.Generic;
     using ReamQuery.Models;
+    using ReamQuery.Api;
     using System.Net.Http;
     using Newtonsoft.Json;
     using Microsoft.Extensions.PlatformAbstractions;
@@ -15,7 +16,7 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
-            var request = new QueryInput 
+            var request = new QueryRequest 
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
@@ -28,14 +29,14 @@ namespace ReamQuery.Test
                 ;
             
             var jsonRes = await res.Content.ReadAsStringAsync();
-            var output = JsonConvert.DeserializeObject<QueryResult>(jsonRes);
+            var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(10, output.Results.Single().Values.Count());
         }
 
         [Theory, MemberData("WorldDatabase")]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
-            var request = new QueryInput 
+            var request = new QueryRequest 
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
@@ -52,7 +53,7 @@ select c
                 ;
             
             var jsonRes = await res.Content.ReadAsStringAsync();
-            var output = JsonConvert.DeserializeObject<QueryResult>(jsonRes);
+            var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.All(output.Results.Single().Values, (val) => val.ToString().StartsWith("C"));
         }
     }

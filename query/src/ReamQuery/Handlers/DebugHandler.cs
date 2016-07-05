@@ -2,10 +2,10 @@ namespace ReamQuery.Handlers
 {
     using Microsoft.AspNetCore.Http;
     using ReamQuery.Services;
-    using ReamQuery.Models;
+    using ReamQuery.Api;
     using System.Threading.Tasks;
 
-    public class DebugHandler : BaseHandler<string, QueryInput>
+    public class DebugHandler : BaseHandler<string, QueryRequest>
     {
         SchemaService _schemaService;
         CompileService _compileService;
@@ -23,7 +23,7 @@ namespace ReamQuery.Handlers
             return path.Contains("/debug");
         }
 
-        protected override async Task<string> Execute(QueryInput input)
+        protected override async Task<string> Execute(QueryRequest input)
         {
             var t = _dbContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
             // var schema = _schemaService.GetSchemaSource(input.ConnectionString, "debug");

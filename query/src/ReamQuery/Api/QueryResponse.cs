@@ -1,11 +1,10 @@
-namespace ReamQuery.Models
+namespace ReamQuery.Api
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using ReamQuery.Shared;
 
-    public class QueryResult 
+    public class QueryResponse 
     {
         public Guid Id { get; set; }
         public DateTime Created { get; set; } 

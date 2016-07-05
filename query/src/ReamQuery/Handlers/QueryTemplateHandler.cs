@@ -2,10 +2,10 @@ namespace ReamQuery.Handlers
 {
     using Microsoft.AspNetCore.Http;
     using ReamQuery.Services;
-    using ReamQuery.Models;
+    using ReamQuery.Api;
     using System.Threading.Tasks;
 
-    public class QueryTemplateHandler : BaseHandler<TemplateResult, QueryInput>
+    public class QueryTemplateHandler : BaseHandler<TemplateResponse, QueryRequest>
     {
         QueryService _queryService;
 
@@ -19,7 +19,7 @@ namespace ReamQuery.Handlers
             return path.Contains("/querytemplate");
         }
 
-        protected override async Task<TemplateResult> Execute(QueryInput input)
+        protected override async Task<TemplateResponse> Execute(QueryRequest input)
         {
             return await _queryService.GetTemplate(input);
         }

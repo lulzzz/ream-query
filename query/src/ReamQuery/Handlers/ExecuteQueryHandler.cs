@@ -3,10 +3,10 @@ namespace ReamQuery.Handlers
     using System;
     using Microsoft.AspNetCore.Http;
     using ReamQuery.Services;
-    using ReamQuery.Models;
+    using ReamQuery.Api;
     using System.Threading.Tasks;
 
-    public class ExecuteQueryHandler : BaseHandler<QueryResult, QueryInput>
+    public class ExecuteQueryHandler : BaseHandler<QueryResponse, QueryRequest>
     {
         QueryService _service;
 
@@ -20,10 +20,10 @@ namespace ReamQuery.Handlers
             return path.Contains("/executequery");
         }
 
-        protected override async Task<QueryResult> Execute(QueryInput input)
+        protected override async Task<QueryResponse> Execute(QueryRequest input)
         {
             var res = await _service.ExecuteQuery(input);
-            return await Task.FromResult(new QueryResult
+            return await Task.FromResult(new QueryResponse
             {
                 Id = Guid.NewGuid(),
                 Created = DateTime.Now,

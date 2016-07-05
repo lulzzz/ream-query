@@ -1,6 +1,6 @@
-namespace ReamQuery.Models
+namespace ReamQuery.Api
 {
-    public class TemplateResult 
+    public class TemplateResponse 
     {
         public string Namespace { get; set; }
         public string Template { get; set; }

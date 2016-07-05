@@ -4,6 +4,7 @@ namespace ReamQuery.Test
     using Xunit;
     using System.Linq;
     using ReamQuery.Models;
+    using ReamQuery.Api;
     using System.Net.Http;
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis.CSharp;
@@ -15,7 +16,7 @@ namespace ReamQuery.Test
         public async void Querytemplate_Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
             var ns = "ns";
-            var request = new QueryInput 
+            var request = new QueryRequest 
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
@@ -26,7 +27,7 @@ namespace ReamQuery.Test
 
             var res = await _client.PostAsync("/querytemplate", new StringContent(json));
             var jsonRes = await res.Content.ReadAsStringAsync();
-            var output = JsonConvert.DeserializeObject<TemplateResult>(jsonRes);
+            var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
             var tbls = nodes.OfType<AttributeSyntax>().Where(x => x.Name.ToString() == "Table");
             

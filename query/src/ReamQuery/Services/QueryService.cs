@@ -3,10 +3,9 @@ namespace ReamQuery.Services
     using System;
     using System.Diagnostics;
     using System.Reflection;
-    using System.Text.RegularExpressions;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using ReamQuery.Models;
+    using ReamQuery.Api;
     using ReamQuery.Shared;
 
     public class QueryService
@@ -24,7 +23,7 @@ namespace ReamQuery.Services
             _fragmentService = fragmentService;
         }
 
-        public async Task<IEnumerable<DumpResult>> ExecuteQuery(QueryInput input)
+        public async Task<IEnumerable<DumpResult>> ExecuteQuery(QueryRequest input)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -53,7 +52,7 @@ namespace ReamQuery.Services
             return res;
         }
 
-        public async Task<TemplateResult> GetTemplate(QueryInput input) 
+        public async Task<TemplateResponse> GetTemplate(QueryRequest input) 
         {
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
@@ -77,7 +76,7 @@ namespace ReamQuery.Services
             }
             var fullSrc = string.Join("\n", lines); // todo: newline constant?
             // the usage of the template should not require mapping the column value
-            return new TemplateResult 
+            return new TemplateResponse 
             {
                 Template = fullSrc,
                 Namespace = assmName,

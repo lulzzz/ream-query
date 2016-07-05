@@ -1,6 +1,8 @@
-namespace ReamQuery.Models
+namespace ReamQuery.Api
 {
-    public class QueryInput
+    using ReamQuery.Models;
+    
+    public class QueryRequest
     {
         public DatabaseProviderType ServerType { get; set; }
         public string ConnectionString { get; set; }

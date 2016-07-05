@@ -19,10 +19,10 @@ namespace ReamQuery.Services
         string _projectjsonPath;
         IEnumerable<MetadataReference> _references;
 
-        public CompileService(SchemaService schemaService, string projectJsonDirectory) 
+        public CompileService(SchemaService schemaService) 
         {
             _schemaService = schemaService;
-            _projectjsonPath = projectJsonDirectory;
+            _projectjsonPath = Startup.Configuration["REAMQUERY_BASEDIR"];
         }
 
         public IEnumerable<MetadataReference> GetReferences() 

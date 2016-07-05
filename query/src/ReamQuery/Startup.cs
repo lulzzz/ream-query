@@ -28,25 +28,13 @@ namespace ReamQuery
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // ProjectJsonWorkspace used by CompilerService has issues with project refs,
-            // this allows the test project to inject the correct base path when testing.
-            var baseDir = Configuration["REAMQUERY_BASEDIR"];
-            if (string.IsNullOrWhiteSpace(baseDir))
-            {
-                baseDir = System.AppContext.BaseDirectory;
-            }
-            var sqlServerSchemaSvc = new SqlServerSchemaService();
-            var npgsqlSchemaSvc = new NpgsqlSchemaService();
-            var schemaService = new SchemaService(sqlServerSchemaSvc, npgsqlSchemaSvc);
-            var fragmentService = new FragmentService();
-            var compiler = new CompileService(schemaService, baseDir);
-            var dbContextService = new DatabaseContextService(schemaService, compiler);
-            var queryService = new QueryService(compiler, dbContextService, schemaService, fragmentService);
-            services.AddSingleton<QueryService>(queryService);
-            services.AddSingleton<SchemaService>(schemaService);
-            services.AddSingleton<CompileService>(compiler);
-            services.AddSingleton<DatabaseContextService>(dbContextService);
-            services.AddSingleton<FragmentService>(fragmentService);
+            services.AddSingleton<SqlServerSchemaService, SqlServerSchemaService>();
+            services.AddSingleton<NpgsqlSchemaService, NpgsqlSchemaService>();
+            services.AddSingleton<QueryService, QueryService>();
+            services.AddSingleton<SchemaService, SchemaService>();
+            services.AddSingleton<CompileService, CompileService>();
+            services.AddSingleton<DatabaseContextService, DatabaseContextService>();
+            services.AddSingleton<FragmentService, FragmentService>();
         }
     }
 }

@@ -1,6 +1,5 @@
 namespace ReamQuery.Test
 {
-    using System;
     using Xunit;
     using System.Linq;
     using ReamQuery.Models;
@@ -8,9 +7,6 @@ namespace ReamQuery.Test
     using System.Net.Http;
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using System.Diagnostics;
 
     public class ExecuteQueryEndpoint : E2EBase
     {

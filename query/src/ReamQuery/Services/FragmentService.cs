@@ -8,17 +8,17 @@ namespace ReamQuery.Services
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using System.Text.RegularExpressions;
     using System.Text;
+    using Microsoft.CodeAnalysis.Text;
+    using ReamQuery.Models;
 
     public class FragmentService 
     {
-        const string _wrapperTemplate = @"class Foo { public void wrapper() { ##INPUT## }}";
-        public string Fix(string input) 
+        const string _wrapperTemplate = @"class Foo { public void wrapper() {##INPUT##}}";
+        public FragmentText Fix(string input) 
         {
-            var wrappedInp = _wrapperTemplate
-                .Replace("##INPUT##", input);
+            var wrappedInp = _wrapperTemplate.Replace("##INPUT##", input);
             var replacements = new Dictionary<SyntaxNode, SyntaxNode>();
-            var opts = new CSharpParseOptions()
-                .WithKind(SourceCodeKind.Script);
+            var singleLineLocations = new List<int>();
             var fragment = CSharpSyntaxTree.ParseText(wrappedInp);
             var methodBlock = fragment.GetRoot().DescendantNodes()
                 .OfType<MethodDeclarationSyntax>()
@@ -27,44 +27,80 @@ namespace ReamQuery.Services
                 .OfType<BlockSyntax>()
                 .Single()
                 ;
-            foreach (var node in methodBlock.ChildNodes())
+            
+            foreach (var node in methodBlock.Statements)
             {
-                var nodeStr = node.ToString();
-                var suffix = nodeStr.Substring(nodeStr.TrimEnd().Length);
-                string newStatement = null;
                 var localNode = node as LocalDeclarationStatementSyntax;
                 var exprNode = node as ExpressionStatementSyntax;
+                SyntaxNode replacementNode = null;
                 if (localNode != null && localNode.SemicolonToken.IsMissing)
                 {
-                    newStatement = string.Format("{0};{1}", nodeStr.TrimEnd(), suffix);
+                    replacementNode = SyntaxFactory.LocalDeclarationStatement(
+                        localNode.Modifiers,
+                        localNode.Declaration, 
+                        SyntaxFactory.Token(SyntaxKind.SemicolonToken)
+                    );
                 }
                 else if (exprNode != null && exprNode.SemicolonToken.IsMissing)
                 {
-                    // todo pretty dump
-                    var newNodeStr = nodeStr.TrimEnd();
-                    var dumpRegex = new Regex(@"\.\W*Dump\W*(\W*)\W*$", RegexOptions.Multiline);
-                    var m = dumpRegex.Match(newNodeStr);
-                    if (!m.Success)
+                    var dumpIdent = SyntaxFactory.IdentifierName("Dump");
+                    var parensExpr  = SyntaxFactory.ParenthesizedExpression(
+                        SyntaxFactory.Token(SyntaxKind.OpenParenToken),
+                        exprNode.Expression,
+                        SyntaxFactory.Token(SyntaxKind.CloseParenToken)
+                    );
+                    var simplMA = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, 
+                        exprNode.Expression, SyntaxFactory.Token(SyntaxKind.DotToken), dumpIdent);
+                    var dumpArgs = SyntaxFactory.ArgumentList(
+                        SyntaxFactory.Token(SyntaxKind.OpenParenToken),
+                        SyntaxFactory.SeparatedList<ArgumentSyntax>(),
+                        SyntaxFactory.Token(SyntaxKind.CloseParenToken)
+                    );
+                    var invoc = SyntaxFactory.InvocationExpression(simplMA, dumpArgs);
+                    replacementNode = SyntaxFactory.ExpressionStatement(invoc, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+                    int line;
+                    if (!IsMultiline(node, out line))
                     {
-                        newNodeStr = "(" + newNodeStr + ").Dump()";
+                        // should offset by -1 to compensate for opening parens
+                        singleLineLocations.Add(line);
                     }
-                    newStatement = string.Format("{0};{1}", newNodeStr, suffix);
                 }
 
-                if (!string.IsNullOrWhiteSpace(newStatement))
+                if (replacementNode != null)
                 {
-                    var newNode = SyntaxFactory.ParseStatement(newStatement);
-                    replacements.Add(node, newNode);
+                    replacements.Add(node, replacementNode);
                 }
             }
+            
             var newRoot = methodBlock.ReplaceNodes(replacements.Keys, (n1, n2) => replacements[n1]);
-            var str = new StringBuilder();
-            foreach(var stmt in newRoot.ChildNodes()) 
+            var openBraceRegex = new Regex(@"^\w\{", RegexOptions.Multiline);
+            
+            // todo print statements with trailing/leading trivia from brace tokens in methodblock
+            // for now just strip out leading/trailing trivia+brace from full src
+            var newFragment = Regex.Replace(newRoot.ToFullString(), @"^\w*\{", "");
+            newFragment = Regex.Replace(newFragment, @"\}\w*$", "");
+            return new FragmentText 
             {
-                str.Append(stmt.ToString());
+                Text = newFragment,
+                ExpressionLocations = singleLineLocations
+            };
+        }
+
+        bool IsMultiline(SyntaxNode node, out int line)
+        {
+            var startLoc = node.GetLocation().GetLineSpan().StartLinePosition;
+            if (node.HasLeadingTrivia)
+            {
+                startLoc = node.GetLeadingTrivia().First().GetLocation().GetLineSpan().StartLinePosition;
             }
-            // todo test for errs
-            return str.ToString();
+            var endLoc = node.GetLocation().GetLineSpan().EndLinePosition;
+            if (node.HasTrailingTrivia)
+            {
+                endLoc = node.GetTrailingTrivia().Last().GetLocation().GetLineSpan().EndLinePosition;
+            }
+            line = startLoc.Line;
+            return startLoc.Line != endLoc.Line;
         }
     }
 }

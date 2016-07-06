@@ -1,17 +1,15 @@
 namespace ReamQuery.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.IO;
-    using System.Reflection;
-    using System.Runtime.Loader;
     using Microsoft.DotNet.ProjectModel.Workspaces;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Emit;
     using Microsoft.CodeAnalysis.CSharp;
     using ReamQuery.Models;
-    using Microsoft.Extensions.PlatformAbstractions;
+    using Microsoft.CodeAnalysis.Text;
 
     public class CompileService
     {
@@ -49,31 +47,64 @@ namespace ReamQuery.Services
                 CSharpSyntaxTree.ParseText(source),
             };
 
+            LinePosition textOffset = LinePosition.Zero;
+            if (context != null)
+            {
+                textOffset = trees.Single().GetRoot()
+                    .DescendantNodes()
+                    .OfType<NamespaceDeclarationSyntax>()
+                    .Where(x => x.Name.ToString() == assemblyName)
+                    .Last()
+                    .DescendantNodes()
+                    .OfType<ClassDeclarationSyntax>()
+                    .Last(x => x.Identifier.ToString() == "Main")
+                    .DescendantNodes()
+                    .OfType<MethodDeclarationSyntax>()
+                    .Single(x => x.Identifier.ToString() == "Query")
+                    .Body
+                    .OpenBraceToken
+                    .GetLocation()
+                    .GetLineSpan()
+                    .EndLinePosition
+                    ;
+            }
             var compilation = CSharpCompilation.Create(assemblyName)
                 .WithOptions(compilerOptions)
                 .WithReferences(references)
                 .AddSyntaxTrees(trees);
 
+            var compileResult = new CompileResult();
             var stream = new MemoryStream();
             var compilationResult = compilation.Emit(stream, options: new EmitOptions());
             stream.Position = 0;
-            if (!compilationResult.Success) 
-            {
-                foreach(var r in compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)) 
-                {
-                    Console.WriteLine("Error: {0}", r);
-                }
-            }
-            var asm = LibraryLoader.LoadFromStream(stream); 
-            var programType = asm.GetTypes().Single(t => t.Name == "Main");
-            stream.Position = 0;
+            compileResult.Success = compilationResult.Success;
+            compileResult.Diagnostics = GetDiagnostics(compilationResult, textOffset.Line);
 
-            return new CompileResult 
+            if (compilationResult.Success) 
             {
-                Type = programType,
-                Assembly = asm,
-                Reference = MetadataReference.CreateFromStream(stream)
-            };
+                var asm = LibraryLoader.LoadFromStream(stream); 
+                var programType = asm.GetTypes().Single(t => t.Name == "Main");
+                stream.Position = 0;
+                compileResult.Type = programType;
+                compileResult.Assembly = asm;
+                compileResult.Reference = MetadataReference.CreateFromStream(stream);
+            }
+
+            return compileResult;
+        }
+
+        IEnumerable<CompileDiagnostics> GetDiagnostics(EmitResult result, int lineOffset)
+        {
+            return result.Diagnostics.Select(x => {
+                var start = x.Location.GetMappedLineSpan().StartLinePosition;
+                return new CompileDiagnostics
+                {
+                    Line = start.Line - lineOffset,
+                    Column = start.Character,
+                    Message = x.GetMessage(),
+                    Severity = x.Severity
+                };
+            });
         }
     }
 }

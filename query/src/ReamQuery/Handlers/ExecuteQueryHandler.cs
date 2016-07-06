@@ -1,6 +1,5 @@
 namespace ReamQuery.Handlers
 {
-    using System;
     using Microsoft.AspNetCore.Http;
     using ReamQuery.Services;
     using ReamQuery.Api;
@@ -22,13 +21,7 @@ namespace ReamQuery.Handlers
 
         protected override async Task<QueryResponse> Execute(QueryRequest input)
         {
-            var res = await _service.ExecuteQuery(input);
-            return await Task.FromResult(new QueryResponse
-            {
-                Id = Guid.NewGuid(),
-                Created = DateTime.Now,
-                Results = res
-            });
+            return await _service.ExecuteQuery(input);
         }
     }
 }

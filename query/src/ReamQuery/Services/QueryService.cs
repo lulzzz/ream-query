@@ -15,6 +15,8 @@ namespace ReamQuery.Services
         SchemaService _schemaService;
         FragmentService _fragmentService;
 
+        int _templateQueryOffset;
+
         public QueryService(CompileService compiler, DatabaseContextService databaseContextService, SchemaService schemaService, FragmentService fragmentService)
         {
             _compiler = compiler;
@@ -23,7 +25,7 @@ namespace ReamQuery.Services
             _fragmentService = fragmentService;
         }
 
-        public async Task<IEnumerable<DumpResult>> ExecuteQuery(QueryRequest input)
+        public async Task<QueryResponse> ExecuteQuery(QueryRequest input)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -31,7 +33,7 @@ namespace ReamQuery.Services
             var contextResult = await _databaseContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var programSource = _template
-                .Replace("##SOURCE##", newInput)
+                .Replace("##SOURCE##", newInput.Text)
                 .Replace("##NS##", assmName)
                 .Replace("##SCHEMA##", "") // schema is linked
                 .Replace("##DB##", contextResult.Type.ToString())
@@ -40,16 +42,28 @@ namespace ReamQuery.Services
             var e1 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
             sw.Start();
-            var result = _compiler.LoadType(programSource, assmName, contextResult.Reference);
-            var method = result.Type.GetMethod("Run");
-            var programInstance = Activator.CreateInstance(result.Type);
-            var e2 = sw.Elapsed.TotalMilliseconds;
-            sw.Reset();
-            sw.Start();
-            var res = method.Invoke(programInstance, new object[] { }) as IEnumerable<DumpResult>;
-            var e3 = sw.Elapsed.TotalMilliseconds;
-            //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
-            return res;
+            var compileResult = _compiler.LoadType(programSource, assmName, contextResult.Reference);
+            var queryResponse = new QueryResponse
+            {
+                Id = Guid.NewGuid(),
+                Created = DateTime.Now,
+                Diagnostics = compileResult.Diagnostics
+            };
+
+            if (compileResult.Success)
+            {
+                var method = compileResult.Type.GetMethod("Run");
+                var programInstance = Activator.CreateInstance(compileResult.Type);
+                var e2 = sw.Elapsed.TotalMilliseconds;
+                sw.Reset();
+                sw.Start();
+                var res = method.Invoke(programInstance, new object[] { }) as IEnumerable<DumpResult>;
+                var e3 = sw.Elapsed.TotalMilliseconds;
+                queryResponse.Results = res;
+                //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
+            }
+
+            return queryResponse;
         }
 
         public async Task<TemplateResponse> GetTemplate(QueryRequest input) 
@@ -122,9 +136,7 @@ namespace ##NS##
         }
 
         void Query()
-        {
-##SOURCE##
-        }
+{##SOURCE##}
     }
 }
 ";

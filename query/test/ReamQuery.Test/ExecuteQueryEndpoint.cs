@@ -1,15 +1,16 @@
 namespace ReamQuery.Test
 {
-    using Xunit;
     using System;
+    using Xunit;
     using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
     using ReamQuery.Models;
     using ReamQuery.Api;
     using System.Net.Http;
     using Newtonsoft.Json;
-    using Microsoft.Extensions.PlatformAbstractions;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using System.Diagnostics;
 
     public class ExecuteQueryEndpoint : E2EBase
     {
@@ -34,6 +35,33 @@ namespace ReamQuery.Test
         }
 
         [Theory, MemberData("WorldDatabase")]
+        public async void Handles_Malformed_Source_Code_In_Request(string connectionString, DatabaseProviderType dbType)
+        {
+            var queryStr = @"
+
+    NOT_DEFINED";
+            var request = new QueryRequest 
+            {
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Namespace = "ns",
+                Text = queryStr
+            };
+            var json = JsonConvert.SerializeObject(request);
+            
+            var res = await _client
+                .PostAsync("/executequery", new StringContent(json))
+                ;
+            
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
+
+            Assert.Equal(2, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Line);
+            Assert.Equal(4, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Column);
+            Assert.Null(output.Results);
+        }
+
+        //[Theory, MemberData("WorldDatabase")]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
             var request = new QueryRequest 
@@ -54,7 +82,7 @@ select c
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            Assert.All(output.Results.Single().Values, (val) => val.ToString().StartsWith("C"));
+            Assert.All(output.Results.Single().Values, (val) => val.ToString().StartsWith("Ca"));
         }
     }
 }

@@ -61,7 +61,7 @@ namespace ReamQuery.Test
             Assert.Null(output.Results);
         }
 
-        //[Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData("WorldDatabase")]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
             var request = new QueryRequest 

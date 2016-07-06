@@ -44,13 +44,14 @@ namespace ReamQuery.Services
                 else if (exprNode != null && exprNode.SemicolonToken.IsMissing)
                 {
                     var dumpIdent = SyntaxFactory.IdentifierName("Dump");
-                    var parensExpr  = SyntaxFactory.ParenthesizedExpression(
-                        SyntaxFactory.Token(SyntaxKind.OpenParenToken),
-                        exprNode.Expression,
-                        SyntaxFactory.Token(SyntaxKind.CloseParenToken)
-                    );
+                    var oldExpr = !IsQueryStatement(exprNode.Expression) ? exprNode.Expression :
+                        SyntaxFactory.ParenthesizedExpression(
+                            SyntaxFactory.Token(SyntaxKind.OpenParenToken),
+                            exprNode.Expression,
+                            SyntaxFactory.Token(SyntaxKind.CloseParenToken)
+                        ) as ExpressionSyntax;
                     var simplMA = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, 
-                        exprNode.Expression, SyntaxFactory.Token(SyntaxKind.DotToken), dumpIdent);
+                        oldExpr, SyntaxFactory.Token(SyntaxKind.DotToken), dumpIdent);
                     var dumpArgs = SyntaxFactory.ArgumentList(
                         SyntaxFactory.Token(SyntaxKind.OpenParenToken),
                         SyntaxFactory.SeparatedList<ArgumentSyntax>(),
@@ -85,6 +86,12 @@ namespace ReamQuery.Services
                 Text = newFragment,
                 ExpressionLocations = singleLineLocations
             };
+        }
+
+        bool IsQueryStatement(ExpressionSyntax exprNode)
+        {
+            var qExpr = exprNode.ChildNodes().OfType<QueryExpressionSyntax>();
+            return exprNode is QueryExpressionSyntax || qExpr.Count() > 0;
         }
 
         bool IsMultiline(SyntaxNode node, out int line)

@@ -19,7 +19,7 @@ namespace ReamQuery.Test
         
         public E2EBase()
         {
-            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/ReamQuery"));
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../query/src/ReamQuery"));
             Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
             
             var config = new ConfigurationBuilder()
@@ -67,8 +67,8 @@ namespace ReamQuery.Test
             {
                 return new object[][]
                 {
-                    new object[] { data.local.sqlserver2[0].ToString(), DatabaseProviderType.SqlServer },
-                    new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
+                    new object[] { data.local.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
+                    // new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
                 };
             }
         }

@@ -10,6 +10,8 @@ namespace ReamQuery.Test
 
     public class ExecuteQueryEndpoint : E2EBase
     {
+        protected override string EndpointAddress { get { return  "/executequery"; } }
+
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
@@ -22,7 +24,7 @@ namespace ReamQuery.Test
             };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client
-                .PostAsync("/executequery", new StringContent(json))
+                .PostAsync(EndpointAddress, new StringContent(json))
                 ;
             
             var jsonRes = await res.Content.ReadAsStringAsync();
@@ -46,12 +48,13 @@ namespace ReamQuery.Test
             var json = JsonConvert.SerializeObject(request);
             
             var res = await _client
-                .PostAsync("/executequery", new StringContent(json))
+                .PostAsync(EndpointAddress, new StringContent(json))
                 ;
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
 
+            Assert.Equal(StatusCode.CompilationError, output.Code);
             Assert.Equal(2, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Line);
             Assert.Equal(4, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Column);
             Assert.Null(output.Results);
@@ -73,12 +76,33 @@ select c
             };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client
-                .PostAsync("/executequery", new StringContent(json))
+                .PostAsync(EndpointAddress, new StringContent(json))
                 ;
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.All(output.Results.Single().Values, (val) => val.ToString().StartsWith("Ca"));
+        }
+
+        [Theory, MemberData("InvalidConnectionStrings")]
+        public async void Returns_Expected_StatusCode_For_Invalid_ConnectionString(string connectionString, DatabaseProviderType dbType, Api.StatusCode expectedCode)
+        {
+            var request = new QueryRequest 
+            {
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Namespace = "ns",
+                Text = ""
+            };
+            var json = JsonConvert.SerializeObject(request);
+            var res = await _client
+                .PostAsync(EndpointAddress, new StringContent(json))
+                ;
+            
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
+
+            Assert.Equal(expectedCode, output.Code);
         }
     }
 }

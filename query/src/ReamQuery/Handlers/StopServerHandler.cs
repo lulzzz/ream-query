@@ -1,9 +1,10 @@
 namespace ReamQuery.Handlers
 {
     using System.Threading.Tasks;
+    using ReamQuery.Api;
     using Microsoft.AspNetCore.Http;
 
-    public class StopServerHandler : BaseHandler<bool, string>
+    public class StopServerHandler : BaseHandler<StatusResponse, string>
     {
         public StopServerHandler(RequestDelegate next) : base(next) { }
 
@@ -12,10 +13,10 @@ namespace ReamQuery.Handlers
             return path.Contains("/stopserver");
         }
 
-        protected override async Task<bool> Execute(string input)
+        protected override async Task<StatusResponse> Execute(string input)
         {
             ReamQuery.Program.AppLifeTime.StopApplication();
-            return await Task.FromResult(true);
+            return await Task.FromResult(new StatusResponse());
         }
     }
 }

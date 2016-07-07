@@ -5,7 +5,7 @@ namespace ReamQuery.Api
     using ReamQuery.Models;
     using ReamQuery.Shared;
 
-    public class QueryResponse 
+    public class QueryResponse : BaseResponse
     {
         public Guid Id { get; set; }
         public DateTime Created { get; set; } 

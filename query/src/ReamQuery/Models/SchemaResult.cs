@@ -1,6 +1,9 @@
+
 namespace ReamQuery.Models 
 {
-    public class SchemaResult
+    using ReamQuery.Api;
+
+    public class SchemaResult : BaseResponse
     {
         public string Schema { get; set; }
         public string DefaultTable { get; set; }

@@ -77,7 +77,7 @@ namespace ReamQuery.Services
             var stream = new MemoryStream();
             var compilationResult = compilation.Emit(stream, options: new EmitOptions());
             stream.Position = 0;
-            compileResult.Success = compilationResult.Success;
+            compileResult.Code = compilationResult.Success ? Api.StatusCode.Ok : Api.StatusCode.CompilationError;
             compileResult.Diagnostics = GetDiagnostics(compilationResult, textOffset.Line);
 
             if (compilationResult.Success) 

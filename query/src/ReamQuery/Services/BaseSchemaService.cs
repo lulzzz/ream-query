@@ -9,6 +9,7 @@ namespace ReamQuery
     using ReamQuery.Models;
     using System.Text;
     using System.Text.RegularExpressions;
+    using ReamQuery.Helpers;
 
     public abstract class BaseSchemaService
     {
@@ -37,7 +38,15 @@ namespace ReamQuery
                 ProjectRootNamespace = assemblyNamespace,
                 OutputPath = _tempFolder
             };
-            var resFiles = await Generator.GenerateAsync(conf);
+            ReverseEngineerFiles resFiles = null; 
+            try 
+            {
+                resFiles = await Generator.GenerateAsync(conf);
+            }
+            catch (System.Exception exn)
+            {
+                return new SchemaResult { Code = exn.StatusCode(), Message = exn.Message };
+            }
             var output = new StringBuilder();
             var dbCtx = CreateContext(InMemoryFiles.RetrieveFileContents(_tempFolder, programName + ".cs"), isLibrary: withUsings);
             var ctx = dbCtx.Item1;

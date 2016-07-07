@@ -9,6 +9,7 @@ namespace ReamQuery.Test
     using System.Collections.Generic;
     using System;
     using Newtonsoft.Json.Linq;
+    using System.Linq;
 
     public abstract class E2EBase
     {
@@ -73,6 +74,33 @@ namespace ReamQuery.Test
             }
         }
 
+        protected static IEnumerable<object> WorldDatabaseWithInvalidNamespaceIdentifiers()
+        {
+            var dbs = WorldDatabase();
+            var invalidNamespaces = new object[]
+            {
+                "", "foo bar", "?@#¤"
+            }.SelectMany(x => 
+                dbs.Select(db => ((IEnumerable<object>)db)
+                    .Concat(new object[] { x }).ToArray()).ToArray()).ToArray(); // mo arrays
+            return invalidNamespaces;
+        }
+
+        protected static IEnumerable<object> InvalidConnectionStrings()
+        {
+            var sqlServerConn1 = @"Data Source=noservershouldbenamedthis; User Id=sa; Password=p; Initial Catalog=db";
+            var npgsqlConn1 = @"Server=noservershouldbenamedthis; User Id=sa; Password=p; Database=db";
+            var randomStuff = "54¤#e54&¤/7wu peiur0*-ø92?´3=ur932trxy|3";
+            return new object[][]
+            {
+                new object[] { sqlServerConn1, DatabaseProviderType.SqlServer, Api.StatusCode.ServerUnreachable },
+                new object[] { sqlServerConn1, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
+                new object[] { npgsqlConn1, DatabaseProviderType.NpgSql, Api.StatusCode.ServerUnreachable },
+                new object[] { randomStuff, DatabaseProviderType.SqlServer, Api.StatusCode.ConnectionStringSyntax },
+                new object[] { randomStuff, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
+            };
+        }
+
         static bool IsTravisCi()
         {
             return Environment.GetEnvironmentVariable("TRAVIS") == "true";
@@ -82,5 +110,7 @@ namespace ReamQuery.Test
         {
             return Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         }
+
+        protected abstract string EndpointAddress { get; }
     }
 }

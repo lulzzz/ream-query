@@ -7,6 +7,7 @@ namespace ReamQuery.Services
     using System.Threading.Tasks;
     using ReamQuery.Api;
     using ReamQuery.Shared;
+    using ReamQuery.Helpers;
 
     public class QueryService
     {
@@ -31,6 +32,10 @@ namespace ReamQuery.Services
             sw.Start();
             var newInput = _fragmentService.Fix(input.Text);
             var contextResult = await _databaseContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
+            if (contextResult.Code != Api.StatusCode.Ok)
+            {
+                return new QueryResponse { Code = contextResult.Code, Message = contextResult.Message };
+            }
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var programSource = _template
                 .Replace("##SOURCE##", newInput.Text)
@@ -47,17 +52,27 @@ namespace ReamQuery.Services
             {
                 Id = Guid.NewGuid(),
                 Created = DateTime.Now,
-                Diagnostics = compileResult.Diagnostics
+                Diagnostics = compileResult.Diagnostics,
+                Code = compileResult.Code
             };
 
-            if (compileResult.Success)
+            if (compileResult.Code == Api.StatusCode.Ok)
             {
                 var method = compileResult.Type.GetMethod("Run");
                 var programInstance = Activator.CreateInstance(compileResult.Type);
                 var e2 = sw.Elapsed.TotalMilliseconds;
                 sw.Reset();
                 sw.Start();
-                var res = method.Invoke(programInstance, new object[] { }) as IEnumerable<DumpResult>;
+                IEnumerable<DumpResult> res = null;
+                try 
+                {
+                    res = method.Invoke(programInstance, new object[] { }) as IEnumerable<DumpResult>;
+                }
+                catch (System.Exception exn) 
+                {
+                    queryResponse.Code = exn.StatusCode();
+                    queryResponse.Message = exn.Message;
+                }
                 var e3 = sw.Elapsed.TotalMilliseconds;
                 queryResponse.Results = res;
                 //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
@@ -68,6 +83,10 @@ namespace ReamQuery.Services
 
         public async Task<TemplateResponse> GetTemplate(QueryRequest input) 
         {
+            if (!input.Namespace.IsValidIdentifier())
+            {
+                return new TemplateResponse { Code = Api.StatusCode.NamespaceIdentifier };
+            }
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);

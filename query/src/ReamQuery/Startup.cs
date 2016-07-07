@@ -20,10 +20,9 @@ namespace ReamQuery
             Enum.TryParse(Configuration.GetSection("Logging:LogLevel:Default").Value, out ll);
             loggerFactory.AddConsole(ll);
             app.UseMiddleware<CheckReadyStatusHandler>();
-            app.UseMiddleware<StopServerHandler>();
             app.UseMiddleware<ExecuteQueryHandler>();
             app.UseMiddleware<QueryTemplateHandler>();
-            app.UseMiddleware<DebugHandler>();
+            app.UseMiddleware<StopServerHandler>();
         }
 
         public void ConfigureServices(IServiceCollection services)

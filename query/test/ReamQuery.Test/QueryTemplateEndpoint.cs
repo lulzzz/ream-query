@@ -12,8 +12,10 @@ namespace ReamQuery.Test
 
     public class QueryTemplateEndpoint : E2EBase
     {
+        protected override string EndpointAddress { get { return  "/querytemplate"; } }
+
         [Theory, MemberData("WorldDatabase")]
-        public async void Querytemplate_Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
+        public async void Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
             var ns = "ns";
             var request = new QueryRequest 
@@ -25,7 +27,7 @@ namespace ReamQuery.Test
             };
             var json = JsonConvert.SerializeObject(request);
 
-            var res = await _client.PostAsync("/querytemplate", new StringContent(json));
+            var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
@@ -34,6 +36,25 @@ namespace ReamQuery.Test
             Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"city\""));
             Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"country\""));
             Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"countrylanguage\""));
+        }
+
+        [Theory, MemberData("WorldDatabaseWithInvalidNamespaceIdentifiers")]
+        public async void Returns_Expected_Error_For_Invalid_Namespace(string connectionString, DatabaseProviderType dbType, string nsName)
+        {
+            var request = new QueryRequest 
+            {
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Namespace = nsName,
+                Text = ""
+            };
+            var json = JsonConvert.SerializeObject(request);
+
+            var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
+
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
+            Assert.Equal(Api.StatusCode.NamespaceIdentifier, output.Code);
         }
     }
 }

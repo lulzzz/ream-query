@@ -8,8 +8,9 @@ namespace ReamQuery.Handlers
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
     using ReamQuery.Converters;
+    using ReamQuery.Api;
 
-    public abstract class BaseHandler<TResult, TInput>
+    public abstract class BaseHandler<TResult, TInput> where TResult : BaseResponse
     {
         private static readonly Encoding _encoding = new UTF8Encoding(false);
 
@@ -32,18 +33,9 @@ namespace ReamQuery.Handlers
                     input = ReadIn(context.Request);
                 }
                 var res = await Execute(input);
-
                 context.Response.Headers.Add("X-Duration-Milliseconds", Math.Ceiling(sw.Elapsed.TotalMilliseconds).ToString());
-                if (typeof(TResult) == typeof(string))
-                {
-                    context.Response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-                    await context.Response.WriteAsync(res as string);
-                }
-                else 
-                {
-                    context.Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                    WriteTo(context.Response, res);
-                }
+                context.Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                WriteTo(context.Response, res);
                 return;
             }
             await _next(context);

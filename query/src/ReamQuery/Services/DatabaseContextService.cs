@@ -31,6 +31,11 @@ namespace ReamQuery.Services
             {
                 var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
                 var schemaResult = await _schemaService.GetSchemaSource(connectionString, type, assmName);
+                if (schemaResult.Code != Api.StatusCode.Ok)
+                {
+                    var errRes = new CompileResult { Code = schemaResult.Code };
+                    return errRes;
+                }
                 var result = _compileService.LoadType(schemaResult.Schema, assmName);
                 _map.Add(connectionString, result);
             }

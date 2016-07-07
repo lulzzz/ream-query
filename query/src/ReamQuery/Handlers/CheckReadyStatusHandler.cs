@@ -1,9 +1,10 @@
 namespace ReamQuery.Handlers
 {
     using System.Threading.Tasks;
+    using ReamQuery.Api;
     using Microsoft.AspNetCore.Http;
 
-    public class CheckReadyStatusHandler : BaseHandler<bool, string>
+    public class CheckReadyStatusHandler : BaseHandler<StatusResponse, string>
     {
         public CheckReadyStatusHandler(RequestDelegate next) : base(next) { }
 
@@ -12,9 +13,9 @@ namespace ReamQuery.Handlers
             return path.Contains("/checkreadystatus");
         }
 
-        protected override async Task<bool> Execute(string input)
+        protected override async Task<StatusResponse> Execute(string input)
         {
-            return await Task.FromResult(true);
+            return await Task.FromResult(new StatusResponse());
         }
     }
 }

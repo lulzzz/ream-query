@@ -1,6 +1,6 @@
 namespace ReamQuery.Api
 {
-    public abstract class BaseResponse
+    public abstract class ResponseBase
     {
         public StatusCode Code { get; set; }
 

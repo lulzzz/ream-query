@@ -7,7 +7,6 @@ namespace ReamQuery
     using ReamQuery.Services;
     using ReamQuery.Handlers;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
     using Microsoft.AspNetCore.Hosting;
 
     public class Startup
@@ -23,10 +22,12 @@ namespace ReamQuery
             app.UseMiddleware<ExecuteQueryHandler>();
             app.UseMiddleware<QueryTemplateHandler>();
             app.UseMiddleware<StopServerHandler>();
+            app.UseMiddleware<WebSocketHandler>();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ClientService, ClientService>();
             services.AddSingleton<SqlServerSchemaService, SqlServerSchemaService>();
             services.AddSingleton<NpgsqlSchemaService, NpgsqlSchemaService>();
             services.AddSingleton<QueryService, QueryService>();

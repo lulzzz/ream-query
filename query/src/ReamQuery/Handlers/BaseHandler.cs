@@ -10,7 +10,7 @@ namespace ReamQuery.Handlers
     using ReamQuery.Converters;
     using ReamQuery.Api;
 
-    public abstract class BaseHandler<TResult, TInput> where TResult : BaseResponse
+    public abstract class BaseHandler<TResult, TInput> where TResult : ResponseBase
     {
         private static readonly Encoding _encoding = new UTF8Encoding(false);
 

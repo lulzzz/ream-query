@@ -5,6 +5,7 @@ namespace ReamQuery.Shared.Test
     using System.Collections.Generic;
     using System.Linq;
     using ReamQuery.Shared;
+    using Newtonsoft.Json;
 
     public class Dumper
     {
@@ -14,31 +15,34 @@ namespace ReamQuery.Shared.Test
             public string Foo { get; set; }
         }
 
+        List<Message> RecordedMessages = new List<Message>();
+
         [Fact]
         public void Dumps_Typed_Null_Value()
         {
             var queryId = Guid.NewGuid();
-            
+            var emitter = ReamQuery.Shared.Dumper.GetEmitter(queryId);
+            emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
             IEnumerable<string> o = null;
+
             o.Dump(queryId);
 
-            var drain = DrainContainer.CloseDrain(queryId);
-            var result = drain.GetData().Single();
-
-            Assert.Equal("string (null)", result.Name);
+            var emptyMsg = RecordedMessages.Single(m => m.Type == ItemType.Empty);
+            Assert.Equal("string[]", emptyMsg.Values.First());
         }
 
         [Theory, MemberData("Simple_Value_Expressions")]
-        public void Dumps_Simple_Value_Expressions(object dumpExpression, DumpResult expected)
+        public void Dumps_Simple_Value_Expressions(object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
             var queryId = Guid.NewGuid();
-            dumpExpression.Dump(queryId);
-            var drain = DrainContainer.CloseDrain(queryId);
-            var result = drain.GetData().Single();
+            var emitter = ReamQuery.Shared.Dumper.GetEmitter(queryId);
+            emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
 
-            Assert.Equal(expected.Name, result.Name);
-            Assert.Equal(expected.Columns, result.Columns);
-            Assert.Equal(expected.Values, result.Values);
+            dumpExpression.Dump(queryId);
+
+            Assert.All(expectedMsgs, (expect) => {
+                Assert.Single(RecordedMessages, (msg) => msg.CompareWith(expect));
+            });
         }
 
         public static IEnumerable<object[]> Simple_Value_Expressions
@@ -50,86 +54,50 @@ namespace ReamQuery.Shared.Test
                     new object[]
                     {
                         null,
-                        new DumpResult
+                        new List<Message>
                         {
-                            Name = "object (null)",
-                            Columns = new ResultColumn[] { },
-                            Values = new object[] { }
+                            new Message { Type = ItemType.Empty, Values = new object[] { "object" } }
                         }
                     },
                     new object[]
                     {
                         42,
-                        new DumpResult
+                        new List<Message>
                         {
-                            Name = "int (1)",
-                            Columns = new ResultColumn[]
-                            {
-                                new ResultColumn
-                                {
-                                    SetId = 0,
-                                    Name = ReamQuery.Shared.Dumper.RawValueColumnName,
-                                    Type = "int"
-                                }
-                            },
-                            Values = new object[] { 42 }
+                            new Message { Type = ItemType.SingleAtomic, Values = new object[] { "int", 42 } }
                         }
                     },
                     new object[]
                     {
                         "hello world",
-                        new DumpResult
+                        new List<Message>
                         {
-                            Name = "string (1)",
-                            Columns = new ResultColumn[]
-                            {
-                                new ResultColumn { Name = ReamQuery.Shared.Dumper.RawValueColumnName, Type = "string" }
-                            },
-                            Values = new object[] { "hello world" }
+                            new Message { Type = ItemType.SingleAtomic, Values = new object[] { "string", "hello world" } }
                         }
                     },
-                    new object[] 
+                    new object[]
                     {
                         new List<TestClassForDump>()
                         {
                             new TestClassForDump { Id = 1, Foo = "hello" },
                             new TestClassForDump { Id = 2, Foo = "world" },
                         },
-                        new DumpResult
+                        new List<Message>
                         {
-                            Name = "TestClassForDump (2)",
-                            Columns = new ResultColumn[]
+                            new Message { Id = 1, Type = ItemType.Table, Values = new object[] { "TestClassForDump[]" } },
+                            new Message
                             {
-                                new ResultColumn { Name = "Id", Type = "int" },
-                                new ResultColumn { Name = "Foo", Type = "string" }
-                            },
-                            Values = new object[] {
-                                new object[] { 1, "hello" },
-                                new object[] { 2, "world" },
+                                Id = 1,
+                                Parent = 1,
+                                Type = ItemType.Header,
+                                Values = new object[]
+                                {
+                                    new Column { Parent = 1, Name = "Id", Type = "System.Int32" },
+                                    new Column { Parent = 1, Name = "Foo", Type = "System.String" },
+                                } 
                             }
                         }
                     },
-                    new object[] 
-                    {
-                        new []
-                        {
-                            new { AnotherId = 1, Bar = "baz" },
-                            new { AnotherId = 2, Bar = "qux" },
-                        },
-                        new DumpResult
-                        {
-                            Name = "AnonymousType (2)",
-                            Columns = new ResultColumn[]
-                            {
-                                new ResultColumn { Name = "AnotherId", Type = "int" },
-                                new ResultColumn { Name = "Bar", Type = "string" }
-                            },
-                            Values = new object[] {
-                                new object[] { 1, "baz" },
-                                new object[] { 2, "qux" },
-                            }
-                        }
-                    }
                 };
             }
         }

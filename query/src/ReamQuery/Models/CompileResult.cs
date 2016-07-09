@@ -6,7 +6,7 @@ namespace ReamQuery.Models
     using ReamQuery.Api;
     using Microsoft.CodeAnalysis;
 
-    public class CompileResult : BaseResponse
+    public class CompileResult : ResponseBase
     {
         public Type Type { get; set; }
         public Assembly Assembly { get; set; }

@@ -90,13 +90,6 @@ namespace ReamQuery.Services
                 compileResult.Assembly = asm;
                 compileResult.Reference = MetadataReference.CreateFromStream(stream);
             }
-            else
-            {
-                foreach(var diag in compilationResult.Diagnostics)
-                {
-                    Console.WriteLine("CompileService: {0}:{1}", diag.Severity, diag.GetMessage());
-                }
-            }
             return compileResult;
         }
 

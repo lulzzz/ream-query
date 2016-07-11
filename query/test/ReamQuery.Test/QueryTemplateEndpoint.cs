@@ -14,7 +14,7 @@ namespace ReamQuery.Test
     {
         protected override string EndpointAddress { get { return  "/querytemplate"; } }
 
-        //[Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
             var ns = "ns";
@@ -33,12 +33,13 @@ namespace ReamQuery.Test
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
             var tbls = nodes.OfType<AttributeSyntax>().Where(x => x.Name.ToString() == "Table");
             
+            Assert.Equal(StatusCode.Ok, output.Code);
             Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"city\""));
             Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"country\""));
             Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"countrylanguage\""));
         }
 
-        //[Theory, MemberData("WorldDatabaseWithInvalidNamespaceIdentifiers")]
+        [Theory, MemberData("WorldDatabaseWithInvalidNamespaceIdentifiers")]
         public async void Returns_Expected_Error_For_Invalid_Namespace(string connectionString, DatabaseProviderType dbType, string nsName)
         {
             var request = new QueryRequest 

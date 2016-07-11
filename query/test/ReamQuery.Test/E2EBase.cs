@@ -14,10 +14,6 @@ namespace ReamQuery.Test
     using Newtonsoft.Json;
     using System.Linq;
     using System.Net.WebSockets;
-    using System.Threading;
-    using System.Text;
-    using System.Reactive.Subjects;
-    using System.Reactive.Linq;
     using System.Threading.Tasks;
 
     public abstract class E2EBase
@@ -56,25 +52,19 @@ namespace ReamQuery.Test
             SqlData = JArray.Parse(json);
         }
 
-
-        protected IObservable<bool> ReceivedAll;
-        protected IList<Message> ReceivedMessages = new List<Message>();
-
-        bool _closeFlag = false;
-        long _expectedCount = -1;
-        long _receivedCount = 0;
-
-        protected async void OpenEmitterSocket()
+        protected async Task<IEnumerable<Message>> GetMessagesAsync()
         {
-            var subject = new Subject<bool>();
-            ReceivedAll = subject.Publish();
+            bool _closeFlag = false;
+            long _expectedCount = -1;
+            long _receivedCount = 0;
+            var list = new List<Message>();
             var ws = await _wsClient.ConnectAsync(new System.Uri("ws://localhost/ws"), System.Threading.CancellationToken.None);
             byte[] buffer = new byte[1024 * 4];
             while(ws.State == WebSocketState.Open)
             {
                 var json = await ws.ReadString();
                 var msg = JsonConvert.DeserializeObject<Message>(json);
-                ReceivedMessages.Add(msg);
+                list.Add(msg);
                 _receivedCount++;
                 if(msg.Type == ItemType.Close && !_closeFlag)
                 {
@@ -83,11 +73,10 @@ namespace ReamQuery.Test
                 }
                 if (_expectedCount > -1 && _closeFlag && _expectedCount == _receivedCount)
                 {
-                    subject.OnNext(true);
-                    subject.OnCompleted();
                     break;
                 }
             }
+            return list;
         }
 
         protected static IEnumerable<object> WorldDatabase()

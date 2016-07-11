@@ -7,10 +7,8 @@ namespace ReamQuery.Test
     using System.Net.Http;
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis;
-    using System.Threading.Tasks;
-    using System.Net.WebSockets;
-    using System.Reactive.Linq;
-    using System;
+    using Shared;
+
     public class ExecuteQueryEndpoint : E2EBase
     {
         protected override string EndpointAddress { get { return  "/executequery"; } }
@@ -18,7 +16,7 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
-            OpenEmitterSocket();
+            var msgs = GetMessagesAsync();
             
             var request = new QueryRequest 
             {
@@ -34,13 +32,12 @@ namespace ReamQuery.Test
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            ReceivedAll.Subscribe(done => {
-                Console.WriteLine("test asserts here");
-            });
-            // Assert.Equal(10, output.Results.Single().Values.Count());
+            Assert.Equal(StatusCode.Ok, output.Code);
+            await msgs;
+            Assert.Equal(10, msgs.Result.Count(x => x.Type == ItemType.Row));
         }
 
-        //[Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData("WorldDatabase")]
         public async void Handles_Malformed_Source_Code_In_Request(string connectionString, DatabaseProviderType dbType)
         {
             var queryStr = @"
@@ -65,12 +62,13 @@ namespace ReamQuery.Test
             Assert.Equal(StatusCode.CompilationError, output.Code);
             Assert.Equal(2, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Line);
             Assert.Equal(4, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Column);
-            // Assert.Null(output.Results);
         }
 
-        //[Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData("WorldDatabase")]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
+            var msgs = GetMessagesAsync();
+
             var request = new QueryRequest 
             {
                 ServerType = dbType,
@@ -89,10 +87,13 @@ select c
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            // Assert.All(output.Results.Single().Values, (val) => val.ToString().StartsWith("Ca"));
+            Assert.Equal(StatusCode.Ok, output.Code);
+            await msgs;
+            var rows = msgs.Result.Where(msg => msg.Type == ItemType.Row);
+            Assert.All(rows, (val) => val.Values[1].ToString().StartsWith("Ca"));
         }
 
-        //[Theory, MemberData("InvalidConnectionStrings")]
+        [Theory, MemberData("InvalidConnectionStrings")]
         public async void Returns_Expected_StatusCode_For_Invalid_ConnectionString(string connectionString, DatabaseProviderType dbType, Api.StatusCode expectedCode)
         {
             var request = new QueryRequest 

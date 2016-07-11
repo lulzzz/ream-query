@@ -1,17 +1,19 @@
 namespace ReamQuery.Handlers
 {
     using System.Threading.Tasks;
-    using ReamQuery.Api;
     using ReamQuery.Services;
     using Microsoft.AspNetCore.Http;
+    using System;
 
     public class WebSocketHandler
     {
-        protected RequestDelegate _next;
+        RequestDelegate _next;
+        ClientService _clients;
 
         public WebSocketHandler(RequestDelegate next, ClientService clients)
         {
             _next = next;
+            _clients = clients;
         }
 
         public async Task Invoke(HttpContext context)
@@ -19,6 +21,8 @@ namespace ReamQuery.Handlers
             if (context.WebSockets.IsWebSocketRequest)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                await _clients.HandleClient(webSocket);
+                return;
             }
             await _next(context);
         }

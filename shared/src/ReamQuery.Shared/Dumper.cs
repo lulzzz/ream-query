@@ -11,17 +11,22 @@ namespace ReamQuery.Shared
 
     public static class Dumper
     {
-        static ConcurrentDictionary<Guid, DumpEmitter> emitters  = new ConcurrentDictionary<Guid, DumpEmitter>();
+        static ConcurrentDictionary<int, Emitter> emitters  = new ConcurrentDictionary<int, Emitter>();
         
         public const string RawValueColumnName = "<RawValue>";
 
         /// <summary>ReamQuery.Inlined.Dumper</summary>
-        public static T Dump<T>(this T o, Guid queryId)
+        public static T Dump<T>(this T o, int sessionId)
         {
-            var emitter = GetEmitter(queryId);
+            var emitter = GetEmitter(sessionId);
             if (o == null)
             {
-                emitter.Null(typeof(T).GetDisplayName());
+                var nullColumn = new Column
+                {
+                    Name = typeof(T).GetDisplayName(),
+                    Type = typeof(T).FullName
+                };
+                emitter.Null(nullColumn);
             }
             else
             {
@@ -98,34 +103,48 @@ namespace ReamQuery.Shared
                     }
                     else
                     {
-                        emitter.SingleAtomic(oType.GetDisplayName(), o);
+                        var singleColumn = new Column
+                        {
+                            Name = oType.GetDisplayName(),
+                            Type = oType.FullName
+                        };
+                        emitter.SingleAtomic(singleColumn, o);
                     }
                 }
+            }
+            var dispose = emitter.Complete();
+            if (dispose)
+            {
+                emitters.TryRemove(sessionId, out emitter);
+                emitter.Dispose();
             }
             return o;
         }
 
-        public static DumpEmitter GetEmitter(Guid id)
+        public static Emitter InitializeEmitter(int session, int dumpCount)
         {
-            DumpEmitter emitter;
-            if (!emitters.ContainsKey(id))
+            Emitter emitter;
+            if (!emitters.ContainsKey(session))
             {
-                emitter = new DumpEmitter();
-                emitters.TryAdd(id, emitter);
+                emitter = new Emitter(session, dumpCount);
+                emitters.TryAdd(session, emitter);
             }
-            emitters.TryGetValue(id, out emitter);
+            else
+            {
+                throw new ArgumentException("session already has emitter");
+            }
+            return emitter;
+        }
+
+        static Emitter GetEmitter(int session)
+        {
+            Emitter emitter;
+            emitters.TryGetValue(session, out emitter);
             if (emitter == null)
             {
                 throw new Exception("emitter was null");
             }
             return emitter;
-        }
-
-        public static void CloseDrain(Guid id)
-        {
-            DumpEmitter drain;
-            emitters.TryRemove(id, out drain);
-            drain.Dispose();
         }
     }
 }

@@ -9,7 +9,6 @@ namespace ReamQuery.Api
     {
         public Guid Id { get; set; }
         public DateTime Created { get; set; } 
-        public IEnumerable<DumpResult> Results { get; set; }
         public IEnumerable<CompileDiagnostics> Diagnostics { get; set; }
     }
 }

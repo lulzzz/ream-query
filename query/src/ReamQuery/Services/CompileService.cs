@@ -10,6 +10,7 @@ namespace ReamQuery.Services
     using Microsoft.CodeAnalysis.CSharp;
     using ReamQuery.Models;
     using Microsoft.CodeAnalysis.Text;
+    using System;
 
     public class CompileService
     {
@@ -89,7 +90,13 @@ namespace ReamQuery.Services
                 compileResult.Assembly = asm;
                 compileResult.Reference = MetadataReference.CreateFromStream(stream);
             }
-
+            else
+            {
+                foreach(var diag in compilationResult.Diagnostics)
+                {
+                    Console.WriteLine("CompileService: {0}:{1}", diag.Severity, diag.GetMessage());
+                }
+            }
             return compileResult;
         }
 

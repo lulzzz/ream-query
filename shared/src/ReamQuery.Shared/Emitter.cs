@@ -7,7 +7,7 @@ namespace ReamQuery.Shared
     using System.Reactive.Subjects;
     using System.Threading;
 
-    public class DumpEmitter : IDisposable
+    public class Emitter : IDisposable
     {
         public IObservable<Message> Messages = null;
         Subject<Message> _tables = new Subject<Message>();
@@ -18,9 +18,16 @@ namespace ReamQuery.Shared
         Subject<Message> _close = new Subject<Message>();
         int _tableCounter = 0;
         int _headerCounter = 0;
+        int _dumpCount;
+
+        int _session;
+
+        int _emittedCount = 0;
         
-        public DumpEmitter()
+        public Emitter(int session, int dumpCount)
         {
+            _dumpCount = dumpCount;
+            _session = session;
             Messages = _tables
                 .Merge(_headers)
                 .Merge(_rows)
@@ -29,12 +36,32 @@ namespace ReamQuery.Shared
                 .Merge(_close);
         }
 
+        public bool Complete()
+        {
+            var emittedCount = Interlocked.Increment(ref _emittedCount);
+            var remaining = Interlocked.Decrement(ref _dumpCount);
+            // Console.WriteLine("Emitter.Complete: {0}, {1}", remaining, emittedCount);
+            var done = remaining <= 0;
+            if (done)
+            {
+                _close.OnNext(new Message
+                {
+                    Session = _session,
+                    Type = ItemType.Close,
+                    Values = new object[] { emittedCount }
+                });
+            }
+            return done;
+        }
+
         public int Table(string title)
         {
+            Interlocked.Increment(ref _emittedCount);
             var id = Interlocked.Increment(ref _tableCounter);
             _tables.OnNext(new Message
             {
                 Id = id,
+                Session = _session,
                 Type = ItemType.Table,
                 Values = new object[] { title }
             });
@@ -43,9 +70,11 @@ namespace ReamQuery.Shared
 
         public int Header(IEnumerable<Column> columns, int tableId)
         {
+            Interlocked.Increment(ref _emittedCount);
             var id = Interlocked.Increment(ref _headerCounter);
             var msg = new Message
             {
+                Session = _session,
                 Id = id,
                 Parent = tableId,
                 Type = ItemType.Header,
@@ -57,18 +86,22 @@ namespace ReamQuery.Shared
 
         public void Row(IEnumerable<object> values, int headerId)
         {
+            Interlocked.Increment(ref _emittedCount);
             _rows.OnNext(new Message
             {
+                Session = _session,
                 Parent = headerId,
                 Type = ItemType.Row,
                 Values = values.ToArray()
             });
         }
 
-        public void SingleAtomic(string title, object value)
+        public void SingleAtomic(Column title, object value)
         {
+            Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
+                Session = _session,
                 Type = ItemType.SingleAtomic,
                 Values = new object[] { title, value }
             });
@@ -76,19 +109,23 @@ namespace ReamQuery.Shared
 
         public void SingleTabular(string title, IEnumerable<Column> columns, IEnumerable<object> values)
         {
+            Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
+                Session = _session,
                 Type = ItemType.SingleTabular,
                 Values = new object[] { title, columns, values }
             });
         }
 
-        public void Null(string name)
+        public void Null(Column title)
         {
+            Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
+                Session = _session,
                 Type = ItemType.Empty,
-                Values = new object[] { name }
+                Values = new object[] { title }
             });
         }
 
@@ -100,10 +137,6 @@ namespace ReamQuery.Shared
             {
                 if (disposing)
                 {
-                    _close.OnNext(new Message
-                    {
-                        Type = ItemType.Close
-                    });
                     _close.OnCompleted();
                     _nulls.OnCompleted();
                     _headers.OnCompleted();
@@ -129,6 +162,7 @@ namespace ReamQuery.Shared
 
         public void Dispose()
         {
+            // Console.WriteLine("Emitter.Dispose");
             Dispose(true);
         }
     }

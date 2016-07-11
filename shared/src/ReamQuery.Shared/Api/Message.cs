@@ -7,11 +7,13 @@ namespace ReamQuery.Shared
 
     public class Message
     {
+        public int Session { get; set; }
+        
         [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
-        public int? Id { get; set; }
+        public object Id { get; set; }
 
         [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
-        public int? Parent { get; set; }
+        public object Parent { get; set; }
         
         [JsonConverter(typeof(StringEnumConverter))]
         public ItemType Type { get; set; }

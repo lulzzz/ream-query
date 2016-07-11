@@ -2,6 +2,8 @@ namespace ReamQuery.Test
 {
     using System.IO;
     using ReamQuery.Models;
+    using ReamQuery.Shared;
+    using ReamQuery.Helpers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Configuration;
@@ -9,12 +11,20 @@ namespace ReamQuery.Test
     using System.Collections.Generic;
     using System;
     using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json;
     using System.Linq;
+    using System.Net.WebSockets;
+    using System.Threading;
+    using System.Text;
+    using System.Reactive.Subjects;
+    using System.Reactive.Linq;
+    using System.Threading.Tasks;
 
     public abstract class E2EBase
     {
         protected TestServer _server;
         protected HttpClient _client;
+        protected WebSocketClient _wsClient;
 
         protected dynamic SqlData;
         
@@ -39,10 +49,45 @@ namespace ReamQuery.Test
                     .UseStartup<ReamQuery.Startup>()
             );
             _client = _server.CreateClient();
+            _wsClient = _server.CreateWebSocketClient();
             
             var path = Path.Combine(AppContext.BaseDirectory, "db.sql.json");
             var json = File.ReadAllText(path);
             SqlData = JArray.Parse(json);
+        }
+
+
+        protected IObservable<bool> ReceivedAll;
+        protected IList<Message> ReceivedMessages = new List<Message>();
+
+        bool _closeFlag = false;
+        long _expectedCount = -1;
+        long _receivedCount = 0;
+
+        protected async void OpenEmitterSocket()
+        {
+            var subject = new Subject<bool>();
+            ReceivedAll = subject.Publish();
+            var ws = await _wsClient.ConnectAsync(new System.Uri("ws://localhost/ws"), System.Threading.CancellationToken.None);
+            byte[] buffer = new byte[1024 * 4];
+            while(ws.State == WebSocketState.Open)
+            {
+                var json = await ws.ReadString();
+                var msg = JsonConvert.DeserializeObject<Message>(json);
+                ReceivedMessages.Add(msg);
+                _receivedCount++;
+                if(msg.Type == ItemType.Close && !_closeFlag)
+                {
+                    _closeFlag = true;
+                    _expectedCount = (long)msg.Values[0]; 
+                }
+                if (_expectedCount > -1 && _closeFlag && _expectedCount == _receivedCount)
+                {
+                    subject.OnNext(true);
+                    subject.OnCompleted();
+                    break;
+                }
+            }
         }
 
         protected static IEnumerable<object> WorldDatabase()

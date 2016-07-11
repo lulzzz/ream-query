@@ -8,6 +8,7 @@ namespace ReamQuery.Services
     using ReamQuery.Api;
     using ReamQuery.Shared;
     using ReamQuery.Helpers;
+    using System.Threading;
 
     public class QueryService
     {
@@ -15,19 +16,22 @@ namespace ReamQuery.Services
         DatabaseContextService _databaseContextService;
         SchemaService _schemaService;
         FragmentService _fragmentService;
+        ClientService _clientService;
+        int _sessionId = 0;
 
-        int _templateQueryOffset;
-
-        public QueryService(CompileService compiler, DatabaseContextService databaseContextService, SchemaService schemaService, FragmentService fragmentService)
+        public QueryService(CompileService compiler, DatabaseContextService databaseContextService,
+            SchemaService schemaService, FragmentService fragmentService, ClientService clients)
         {
             _compiler = compiler;
             _databaseContextService = databaseContextService;
             _schemaService = schemaService;
             _fragmentService = fragmentService;
+            _clientService = clients;
         }
 
         public async Task<QueryResponse> ExecuteQuery(QueryRequest input)
         {
+            var queryId = Interlocked.Increment(ref _sessionId);
             var sw = new Stopwatch();
             sw.Start();
             var newInput = _fragmentService.Fix(input.Text);
@@ -37,12 +41,12 @@ namespace ReamQuery.Services
                 return new QueryResponse { Code = contextResult.Code, Message = contextResult.Message };
             }
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
+
             var programSource = _template
                 .Replace("##SOURCE##", newInput.Text)
                 .Replace("##NS##", assmName)
                 .Replace("##SCHEMA##", "") // schema is linked
-                .Replace("##DB##", contextResult.Type.ToString())
-                .Replace("##QUERYID##", Guid.NewGuid().ToString());
+                .Replace("##DB##", contextResult.Type.ToString());
 
             var e1 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
@@ -61,12 +65,15 @@ namespace ReamQuery.Services
                 var method = compileResult.Type.GetMethod("Run");
                 var programInstance = Activator.CreateInstance(compileResult.Type);
                 var e2 = sw.Elapsed.TotalMilliseconds;
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // TODO pass in real dump count !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                _clientService.AddEmitter(ReamQuery.Shared.Dumper.InitializeEmitter(queryId, 1));
                 sw.Reset();
                 sw.Start();
-                IEnumerable<DumpResult> res = null;
-                try 
+                try
                 {
-                    res = method.Invoke(programInstance, new object[] { }) as IEnumerable<DumpResult>;
+                    method.Invoke(programInstance, new object[] { queryId });
                 }
                 catch (System.Exception exn) 
                 {
@@ -74,7 +81,6 @@ namespace ReamQuery.Services
                     queryResponse.Message = exn.Message;
                 }
                 var e3 = sw.Elapsed.TotalMilliseconds;
-                queryResponse.Results = res;
                 //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
             }
 
@@ -136,22 +142,20 @@ namespace ##NS##
 {
     public static class DumpWrapper
     {
-        static Guid QueryId = Guid.Parse(""##QUERYID##"");
+        public static int SessionId;
 
         public static T Dump<T>(this T o)
         {
-            return o.Dump(QueryId);
+            return o.Dump(SessionId);
         }
     }
 
     public class Main : ##DB##
     {
-        public IEnumerable<DumpResult> Run()
+        public void Run(int session)
         {
+            DumpWrapper.SessionId = session;
             Query();
-            var drain = DrainContainer.CloseDrain(Guid.Parse(""##QUERYID##""));
-            var result = drain.GetData();
-            return result;
         }
 
         void Query()

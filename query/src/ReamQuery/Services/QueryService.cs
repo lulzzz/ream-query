@@ -9,6 +9,7 @@ namespace ReamQuery.Services
     using ReamQuery.Shared;
     using ReamQuery.Helpers;
     using System.Threading;
+    using System.Linq;
 
     public class QueryService
     {
@@ -65,10 +66,7 @@ namespace ReamQuery.Services
                 var method = compileResult.Type.GetMethod("Run");
                 var programInstance = Activator.CreateInstance(compileResult.Type);
                 var e2 = sw.Elapsed.TotalMilliseconds;
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // TODO pass in real dump count !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                _clientService.AddEmitter(ReamQuery.Shared.Dumper.InitializeEmitter(queryId, 1));
+                _clientService.AddEmitter(ReamQuery.Shared.Dumper.InitializeEmitter(queryId, newInput.ExpressionLocations.Count()));
                 sw.Reset();
                 sw.Start();
                 try

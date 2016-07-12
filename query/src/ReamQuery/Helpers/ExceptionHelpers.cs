@@ -6,6 +6,11 @@ namespace ReamQuery.Helpers
 
     public static class ExceptionHelpers
     {
+        public static bool ExpectedError(this Exception exn)
+        {
+            return exn.StatusCode() != Api.StatusCode.UnknownError;
+        }
+
         public static Api.StatusCode StatusCode(this Exception exn) 
         {
             if (IsServerUnreachable(exn))

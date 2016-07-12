@@ -43,7 +43,7 @@ namespace ReamQuery
             {
                 resFiles = await Generator.GenerateAsync(conf);
             }
-            catch (System.Exception exn)
+            catch (System.Exception exn) when (exn.ExpectedError())
             {
                 return new SchemaResult { Code = exn.StatusCode(), Message = exn.Message };
             }

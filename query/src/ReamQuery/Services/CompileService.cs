@@ -95,7 +95,7 @@ namespace ReamQuery.Services
 
         IEnumerable<CompileDiagnostics> GetDiagnostics(EmitResult result, int lineOffset)
         {
-            return result.Diagnostics.Select(x => {
+            return result.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).Select(x => {
                 var start = x.Location.GetMappedLineSpan().StartLinePosition;
                 return new CompileDiagnostics
                 {

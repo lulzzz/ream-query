@@ -1,11 +1,13 @@
 namespace ReamQuery.Test
 {
+    using System;
     using Xunit;
     using System.Linq;
     using ReamQuery.Models;
     using ReamQuery.Api;
     using System.Net.Http;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Microsoft.CodeAnalysis;
     using Shared;
 
@@ -35,6 +37,45 @@ namespace ReamQuery.Test
             Assert.Equal(StatusCode.Ok, output.Code);
             await msgs;
             Assert.Equal(10, msgs.Result.Count(x => x.Type == ItemType.Row));
+        }
+
+        [Theory, MemberData("WorldDatabase")]
+        public async void Handles_Multiple_Expressions(string connectionString, DatabaseProviderType dbType)
+        {
+            var msgs = GetMessagesAsync();
+            
+            var request = new QueryRequest 
+            {
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Namespace = "ns",
+                Text = @"
+                    City.Take(10)
+                    Countrylanguage.Take(10)"
+            };
+            var json = JsonConvert.SerializeObject(request);
+            var res = await _client
+                .PostAsync(EndpointAddress, new StringContent(json))
+                ;
+            
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
+            await msgs;
+            
+            Assert.Equal(StatusCode.Ok, output.Code);
+            Assert.Equal(2, msgs.Result.Count(x => x.Type == ItemType.Header));
+            Assert.Equal(20, msgs.Result.Count(x => x.Type == ItemType.Row));
+            var cols = msgs.Result.Where(x => x.Type == ItemType.Header).SelectMany(x => x.Values).Cast<JObject>();
+            var cityColumns = cols.Where(x => x["Parent"].ToString() == "1").Select(x => x["Name"].ToString());
+            var langColumns = cols.Where(x => x["Parent"].ToString() == "2").Select(x => x["Name"].ToString());
+            Assert.Equal(new []
+            {
+                "Id", "Name", "CountryCode", "District", "Population",
+            }, cityColumns);
+            Assert.Equal(new []
+            {
+                "CountryCode", "Language", "IsOfficial", "Percentage",
+            }, langColumns);
         }
 
         [Theory, MemberData("WorldDatabase")]
@@ -90,6 +131,7 @@ select c
             Assert.Equal(StatusCode.Ok, output.Code);
             await msgs;
             var rows = msgs.Result.Where(msg => msg.Type == ItemType.Row);
+            Assert.NotEmpty(rows);
             Assert.All(rows, (val) => val.Values[1].ToString().StartsWith("Ca"));
         }
 

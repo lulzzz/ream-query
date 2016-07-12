@@ -1,6 +1,7 @@
 namespace ReamQuery.Shared
 {
     using System;
+    using System.Diagnostics;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reactive.Linq;
@@ -26,6 +27,10 @@ namespace ReamQuery.Shared
         
         public Emitter(int session, int dumpCount)
         {
+            if (dumpCount < 0)
+            {
+                throw new ArgumentOutOfRangeException("dumpCount");
+            }
             _dumpCount = dumpCount;
             _session = session;
             Messages = _tables
@@ -38,9 +43,7 @@ namespace ReamQuery.Shared
 
         public bool Complete()
         {
-            var emittedCount = Interlocked.Increment(ref _emittedCount);
             var remaining = Interlocked.Decrement(ref _dumpCount);
-            // Console.WriteLine("Emitter.Complete: {0}, {1}", remaining, emittedCount);
             var done = remaining <= 0;
             if (done)
             {
@@ -48,7 +51,7 @@ namespace ReamQuery.Shared
                 {
                     Session = _session,
                     Type = ItemType.Close,
-                    Values = new object[] { emittedCount }
+                    Values = new object[] { _emittedCount + 1 } // include close msg
                 });
             }
             return done;
@@ -162,7 +165,6 @@ namespace ReamQuery.Shared
 
         public void Dispose()
         {
-            // Console.WriteLine("Emitter.Dispose");
             Dispose(true);
         }
     }

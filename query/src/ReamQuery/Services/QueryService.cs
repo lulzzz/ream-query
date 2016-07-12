@@ -69,15 +69,7 @@ namespace ReamQuery.Services
                 _clientService.AddEmitter(ReamQuery.Shared.Dumper.InitializeEmitter(queryId, newInput.ExpressionLocations.Count()));
                 sw.Reset();
                 sw.Start();
-                try
-                {
-                    method.Invoke(programInstance, new object[] { queryId });
-                }
-                catch (System.Exception exn) 
-                {
-                    queryResponse.Code = exn.StatusCode();
-                    queryResponse.Message = exn.Message;
-                }
+                method.Invoke(programInstance, new object[] { queryId });
                 var e3 = sw.Elapsed.TotalMilliseconds;
                 //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
             }

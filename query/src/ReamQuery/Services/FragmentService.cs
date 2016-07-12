@@ -59,13 +59,7 @@ namespace ReamQuery.Services
                     );
                     var invoc = SyntaxFactory.InvocationExpression(simplMA, dumpArgs);
                     replacementNode = SyntaxFactory.ExpressionStatement(invoc, SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-
-                    int line;
-                    if (!IsMultiline(node, out line))
-                    {
-                        // should offset by -1 to compensate for opening parens
-                        singleLineLocations.Add(line);
-                    }
+                    singleLineLocations.Add(GetLine(node));
                 }
 
                 if (replacementNode != null)
@@ -94,7 +88,7 @@ namespace ReamQuery.Services
             return exprNode is QueryExpressionSyntax || qExpr.Count() > 0;
         }
 
-        bool IsMultiline(SyntaxNode node, out int line)
+        int GetLine(SyntaxNode node)
         {
             var startLoc = node.GetLocation().GetLineSpan().StartLinePosition;
             if (node.HasLeadingTrivia)
@@ -106,8 +100,7 @@ namespace ReamQuery.Services
             {
                 endLoc = node.GetTrailingTrivia().Last().GetLocation().GetLineSpan().EndLinePosition;
             }
-            line = startLoc.Line;
-            return startLoc.Line != endLoc.Line;
+            return startLoc.Line;
         }
     }
 }

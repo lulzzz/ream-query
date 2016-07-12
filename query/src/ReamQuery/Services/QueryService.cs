@@ -98,7 +98,7 @@ namespace ReamQuery.Services
             var lines = src.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             for(var i = lines.Length - 1; i > 0; i--) {
                 if (lines[i].Contains(srcToken)) {
-                    lines[i] = string.Empty;
+                    lines[i] = lines[i].Replace(srcToken, string.Empty);
                     srcLineOffset = i + 1;
                     break;
                 }

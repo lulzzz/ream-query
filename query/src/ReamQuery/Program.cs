@@ -30,7 +30,6 @@
 
             Startup.Configuration = new ConfigurationBuilder()
                 .SetBasePath(System.AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables("REAMQUERY_")
                 .AddCommandLine(new[] { "--server.urls", "http://localhost:" + port })
                 .Build();

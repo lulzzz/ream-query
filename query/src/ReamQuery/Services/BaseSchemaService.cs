@@ -10,9 +10,12 @@ namespace ReamQuery
     using System.Text;
     using System.Text.RegularExpressions;
     using ReamQuery.Helpers;
+    using NLog;
 
     public abstract class BaseSchemaService
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+        
         private string _tempFolder;
 
         protected InMemoryFileService InMemoryFiles;

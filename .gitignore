@@ -4,3 +4,4 @@ project.lock.json
 query/test/ReamQuery.Test/appsettings.json
 query/test/ReamQuery.Test/appsettings.test.json
 nuget
+reamquery-log-*

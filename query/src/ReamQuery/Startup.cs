@@ -4,10 +4,12 @@ namespace ReamQuery
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using NLog.Extensions.Logging;
     using ReamQuery.Services;
     using ReamQuery.Handlers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Hosting;
+    using System.IO;
 
     public class Startup
     {
@@ -15,9 +17,8 @@ namespace ReamQuery
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IHostingEnvironment env)
         {
-            var ll = LogLevel.Debug;
-            Enum.TryParse(Configuration.GetSection("Logging:LogLevel:Default").Value, out ll);
-            loggerFactory.AddConsole(ll);
+            loggerFactory.AddNLog();
+            env.ConfigureNLog(Path.Combine(Configuration["REAMQUERY_BASEDIR"], "nlog.config"));
             app.UseMiddleware<CheckReadyStatusHandler>();
             app.UseMiddleware<ExecuteQueryHandler>();
             app.UseMiddleware<QueryTemplateHandler>();

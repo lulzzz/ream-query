@@ -34,6 +34,8 @@
         "Microsoft.Extensions.DependencyInjection": "1.1.0-*",
         "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-*",
         "Newtonsoft.Json": "9.0.1",
+        "NLog": "4.4.0-*",
+        "NLog.Extensions.Logging": "1.0.0-*",
         "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.0-*",
         "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.0.0-*"
     },

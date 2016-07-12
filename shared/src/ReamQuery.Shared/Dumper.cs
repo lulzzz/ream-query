@@ -8,9 +8,12 @@ namespace ReamQuery.Shared
     using System.Linq;
     using System.Reflection;
     using ReamQuery.Shared.Helpers;
+    using NLog;
 
     public static class Dumper
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+        
         static ConcurrentDictionary<int, Emitter> emitters  = new ConcurrentDictionary<int, Emitter>();
         
         public const string RawValueColumnName = "<RawValue>";
@@ -21,6 +24,7 @@ namespace ReamQuery.Shared
             var emitter = GetEmitter(sessionId);
             if (o == null)
             {
+                Logger.Info("Dumping null in session {0}", sessionId);
                 var nullColumn = new Column
                 {
                     Name = typeof(T).GetDisplayName(),
@@ -30,6 +34,7 @@ namespace ReamQuery.Shared
             }
             else
             {
+                Logger.Info("Dumping object in session {0}", sessionId);
                 var oType = o.GetType();
                 var seenTypes = new Dictionary<Type, Tuple<int, Column[]>>();
                 Type listType;

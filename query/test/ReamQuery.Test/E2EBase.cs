@@ -31,8 +31,6 @@ namespace ReamQuery.Test
             
             var config = new ConfigurationBuilder()
                 .SetBasePath(baseDir)
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.test.json")
                 .AddEnvironmentVariables()
                 .Build()
                 ;
@@ -102,8 +100,8 @@ namespace ReamQuery.Test
             {
                 return new object[][]
                 {
-                    new object[] { data.local.sqlserver2[0].ToString(), DatabaseProviderType.SqlServer },
-                    new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
+                    new object[] { data.local.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
+                    // new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
                 };
             }
         }

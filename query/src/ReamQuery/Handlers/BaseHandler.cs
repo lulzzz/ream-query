@@ -9,9 +9,12 @@ namespace ReamQuery.Handlers
     using Newtonsoft.Json;
     using ReamQuery.Converters;
     using ReamQuery.Api;
+    using NLog;
 
     public abstract class BaseHandler<TResult, TInput> where TResult : ResponseBase
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         private static readonly Encoding _encoding = new UTF8Encoding(false);
 
         protected RequestDelegate _next;
@@ -33,8 +36,10 @@ namespace ReamQuery.Handlers
                     input = ReadIn(context.Request);
                 }
                 var res = await Execute(input);
-                context.Response.Headers.Add("X-Duration-Milliseconds", Math.Ceiling(sw.Elapsed.TotalMilliseconds).ToString());
+                var duration = Math.Ceiling(sw.Elapsed.TotalMilliseconds);
+                context.Response.Headers.Add("X-Duration-Milliseconds", duration.ToString());
                 context.Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                Logger.Info("{0} took {1} ms", context.Request.Path.Value, duration);
                 WriteTo(context.Response, res);
                 return;
             }

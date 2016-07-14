@@ -30,7 +30,6 @@ namespace ReamQuery.Test
             Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
             
             var config = new ConfigurationBuilder()
-                .SetBasePath(baseDir)
                 .AddEnvironmentVariables()
                 .Build()
                 ;
@@ -100,8 +99,8 @@ namespace ReamQuery.Test
             {
                 return new object[][]
                 {
-                    new object[] { data.local.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
-                    // new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
+                    new object[] { data.local.sqlserver2[0].ToString(), DatabaseProviderType.SqlServer },
+                    new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
                 };
             }
         }

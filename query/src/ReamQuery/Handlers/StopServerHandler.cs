@@ -1,12 +1,19 @@
 namespace ReamQuery.Handlers
 {
+    using System;
     using System.Threading.Tasks;
     using ReamQuery.Api;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Hosting;
 
     public class StopServerHandler : BaseHandler<StatusResponse, string>
     {
-        public StopServerHandler(RequestDelegate next) : base(next) { }
+        IApplicationLifetime _lifetime;
+
+        public StopServerHandler(RequestDelegate next, IApplicationLifetime lifetime) : base(next)
+        {
+            _lifetime = lifetime;
+        }
 
         protected override bool Handle(string path)
         {
@@ -15,8 +22,8 @@ namespace ReamQuery.Handlers
 
         protected override async Task<StatusResponse> Execute(string input)
         {
-            ReamQuery.Program.AppLifeTime.StopApplication();
-            return await Task.FromResult(new StatusResponse());
+            _lifetime.StopApplication();
+            return await Task.FromResult(new StatusResponse { Code = StatusCode.Ok });
         }
     }
 }

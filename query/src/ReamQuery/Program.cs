@@ -7,8 +7,6 @@
 
     public class Program
     {
-        public static IApplicationLifetime AppLifeTime;
-
         public static void Main(string[] args)
         {
             // todo

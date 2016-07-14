@@ -23,24 +23,20 @@ namespace ReamQuery.Test
         protected WebSocketClient _wsClient;
 
         protected dynamic SqlData;
-        
+
         public E2EBase()
         {
             var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../query/src/ReamQuery"));
             Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
             
-            var config = new ConfigurationBuilder()
+            ReamQuery.Startup.Configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
-                .Build()
-                ;
-            
-            ReamQuery.Startup.Configuration = config;
+                .Build();
+            var builder = new WebHostBuilder()
+                .UseConfiguration(ReamQuery.Startup.Configuration)
+                .UseStartup<ReamQuery.Startup>();
 
-            _server = new TestServer(
-                new WebHostBuilder()
-                    .UseConfiguration(ReamQuery.Startup.Configuration)
-                    .UseStartup<ReamQuery.Startup>()
-            );
+            _server = new TestServer(builder);
             _client = _server.CreateClient();
             _wsClient = _server.CreateWebSocketClient();
             

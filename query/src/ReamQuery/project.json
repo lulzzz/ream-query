@@ -5,7 +5,7 @@
         "emitEntryPoint": true,
         "preserveCompilationContext": true,
         "copyToOutput": {
-            "include": ["appsettings.json", "appsettings.test.json"]
+            "include": ["appsettings.json", "appsettings.test.json", "nlog.config"]
         }
     },
     "dependencies": {

@@ -2,13 +2,19 @@
 {
     using System;
     using System.Globalization;
+    using System.Diagnostics;
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Hosting;
+    using NLog;
 
     public class Program
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         public static void Main(string[] args)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             // todo
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
             CultureInfo.CurrentUICulture = new CultureInfo("en-US");
@@ -31,7 +37,9 @@
                 .UseStartup(typeof(Startup))
                 .Build();
 
+            Logger.Info("Starting in {0}", Startup.Configuration["REAMQUERY_BASEDIR"]);
             host.Run();
+            Logger.Info("Exiting after {0} seconds", sw.Elapsed.TotalSeconds);
         }
     }
 }

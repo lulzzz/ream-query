@@ -7,9 +7,12 @@ namespace ReamQuery.Shared
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
     using System.Threading;
+    using NLog;
 
     public class Emitter : IDisposable
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         public IObservable<Message> Messages = null;
         Subject<Message> _tables = new Subject<Message>();
         Subject<Message> _headers = new Subject<Message>();
@@ -31,6 +34,7 @@ namespace ReamQuery.Shared
             {
                 throw new ArgumentOutOfRangeException("dumpCount");
             }
+            Logger.Debug("session {0}, dumpCount {1}", session, dumpCount);
             _dumpCount = dumpCount;
             _session = session;
             Messages = _tables
@@ -47,11 +51,12 @@ namespace ReamQuery.Shared
             var done = remaining <= 0;
             if (done)
             {
+                Logger.Debug("Completed, emitted {0}", _emittedCount + 1);
                 _close.OnNext(new Message
                 {
                     Session = _session,
                     Type = ItemType.Close,
-                    Values = new object[] { _emittedCount + 1 } // include close msg
+                    Values = new object[] { _emittedCount + 1 } 
                 });
             }
             return done;
@@ -59,6 +64,7 @@ namespace ReamQuery.Shared
 
         public int Table(string title)
         {
+            Logger.Debug("Table {0}", title);
             Interlocked.Increment(ref _emittedCount);
             var id = Interlocked.Increment(ref _tableCounter);
             _tables.OnNext(new Message
@@ -73,6 +79,7 @@ namespace ReamQuery.Shared
 
         public int Header(IEnumerable<Column> columns, int tableId)
         {
+            Logger.Debug("Header emitted, tableId {0}", tableId);
             Interlocked.Increment(ref _emittedCount);
             var id = Interlocked.Increment(ref _headerCounter);
             var msg = new Message
@@ -89,6 +96,7 @@ namespace ReamQuery.Shared
 
         public void Row(IEnumerable<object> values, int headerId)
         {
+            Logger.Debug("Row emitted, headerId {0}", headerId);
             Interlocked.Increment(ref _emittedCount);
             _rows.OnNext(new Message
             {
@@ -101,6 +109,7 @@ namespace ReamQuery.Shared
 
         public void SingleAtomic(Column title, object value)
         {
+            Logger.Debug("SingleAtomic emitted, title {0}", title.Name);
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
@@ -112,6 +121,7 @@ namespace ReamQuery.Shared
 
         public void SingleTabular(string title, IEnumerable<Column> columns, IEnumerable<object> values)
         {
+            Logger.Debug("SingleTabular emitted, title {0}", title);
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
@@ -123,6 +133,7 @@ namespace ReamQuery.Shared
 
         public void Null(Column title)
         {
+            Logger.Debug("Null emitted, title {0}", title);
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
@@ -160,11 +171,13 @@ namespace ReamQuery.Shared
                 _singulars = null;
                 _tables = null;
                 disposedValue = true;
+                Logger.Debug("Disposed ok");
             }
         }
 
         public void Dispose()
         {
+            Logger.Debug("Disposing emitter");
             Dispose(true);
         }
     }

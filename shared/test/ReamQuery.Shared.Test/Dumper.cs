@@ -23,11 +23,11 @@ namespace ReamQuery.Shared.Test
         public void Dumps_Typed_Null_Value()
         {
             var sessionId = Interlocked.Increment(ref SessionId);
-            var emitter = ReamQuery.Shared.Dumper.InitializeEmitter(sessionId, 1);
+            var emitter = new Emitter(sessionId, 1);
             emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
             IEnumerable<string> o = null;
 
-            o.Dump(sessionId);
+            o.Dump(emitter);
 
             var emptyMsg = RecordedMessages.Single(m => m.Type == ItemType.Empty);
             var col = (Column)emptyMsg.Values.First();
@@ -37,10 +37,10 @@ namespace ReamQuery.Shared.Test
         [Theory, MemberData("Simple_Value_Expressions")]
         public void Dumps_Simple_Value_Expressions(int sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
-            var emitter = ReamQuery.Shared.Dumper.InitializeEmitter(sessionId, 1);
+            var emitter = new Emitter(sessionId, 1);
             emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
 
-            dumpExpression.Dump(sessionId);
+            dumpExpression.Dump(emitter);
 
             Assert.All(expectedMsgs, (expect) => {
                 Assert.Single(RecordedMessages, (msg) => msg.CompareWith(expect));

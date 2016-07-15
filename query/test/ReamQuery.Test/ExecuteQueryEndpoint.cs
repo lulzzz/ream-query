@@ -1,15 +1,15 @@
 namespace ReamQuery.Test
 {
     using System;
-    using Xunit;
     using System.Linq;
-    using ReamQuery.Models;
-    using ReamQuery.Api;
     using System.Net.Http;
+    using ReamQuery.Api;
+    using ReamQuery.Models;
+    using ReamQuery.Shared;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Microsoft.CodeAnalysis;
-    using Shared;
+    using Xunit;
 
     public class ExecuteQueryEndpoint : E2EBase
     {
@@ -18,7 +18,6 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
-            var msgs = GetMessagesAsync();
             
             var request = new QueryRequest 
             {
@@ -31,18 +30,17 @@ namespace ReamQuery.Test
             var res = await _client
                 .PostAsync(EndpointAddress, new StringContent(json))
                 ;
-            
+                
+            var msgs = await GetMessagesAsync();
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
-            await msgs;
-            Assert.Equal(10, msgs.Result.Count(x => x.Type == ItemType.Row));
+            Assert.Equal(10, msgs.Count(x => x.Type == ItemType.Row));
         }
 
         [Theory, MemberData("WorldDatabase")]
         public async void Handles_Multiple_Expressions(string connectionString, DatabaseProviderType dbType)
         {
-            var msgs = GetMessagesAsync();
             
             var request = new QueryRequest 
             {
@@ -60,12 +58,12 @@ namespace ReamQuery.Test
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            await msgs;
+            var msgs = await GetMessagesAsync();
             
             Assert.Equal(StatusCode.Ok, output.Code);
-            Assert.Equal(2, msgs.Result.Count(x => x.Type == ItemType.Header));
-            Assert.Equal(20, msgs.Result.Count(x => x.Type == ItemType.Row));
-            var cols = msgs.Result.Where(x => x.Type == ItemType.Header).SelectMany(x => x.Values).Cast<JObject>();
+            Assert.Equal(2, msgs.Count(x => x.Type == ItemType.Header));
+            Assert.Equal(20, msgs.Count(x => x.Type == ItemType.Row));
+            var cols = msgs.Where(x => x.Type == ItemType.Header).SelectMany(x => x.Values).Cast<JObject>();
             var cityColumns = cols.Where(x => x["Parent"].ToString() == "1").Select(x => x["Name"].ToString());
             var langColumns = cols.Where(x => x["Parent"].ToString() == "2").Select(x => x["Name"].ToString());
             foreach (var col in new []{ "Id", "Name", "CountryCode", "District", "Population" })
@@ -109,8 +107,6 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
-            var msgs = GetMessagesAsync();
-
             var request = new QueryRequest 
             {
                 ServerType = dbType,
@@ -124,14 +120,12 @@ select c
             };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client
-                .PostAsync(EndpointAddress, new StringContent(json))
-                ;
-            
+                .PostAsync(EndpointAddress, new StringContent(json));
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
-            await msgs;
-            var rows = msgs.Result.Where(msg => msg.Type == ItemType.Row);
+            var msgs = await GetMessagesAsync();
+            var rows = msgs.Where(msg => msg.Type == ItemType.Row);
             Assert.NotEmpty(rows);
             Assert.All(rows, (val) => val.Values[1].ToString().StartsWith("Ca"));
         }

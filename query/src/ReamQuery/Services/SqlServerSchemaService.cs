@@ -6,6 +6,7 @@ namespace ReamQuery
     using ReamQuery.Services;
     using Microsoft.EntityFrameworkCore.Scaffolding;
     using Microsoft.Extensions.Logging;
+    using NLog.Extensions.Logging;
 
     public class SqlServerSchemaService : BaseSchemaService
     {
@@ -20,7 +21,7 @@ namespace ReamQuery
                             return InMemoryFiles = new InMemoryFileService();
                         }))
                 .BuildServiceProvider();
-            serviceProvider.GetService<ILoggerFactory>().AddConsole();
+            serviceProvider.GetService<ILoggerFactory>().AddNLog();
             Generator = serviceProvider.GetRequiredService<ReverseEngineeringGenerator>();
             ScaffoldingModelFactory = serviceProvider.GetRequiredService<IScaffoldingModelFactory>();
         }

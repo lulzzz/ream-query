@@ -10,7 +10,6 @@ namespace ReamQuery.Test
     using System.Net.Http;
     using System.Collections.Generic;
     using System;
-    using Newtonsoft.Json.Linq;
     using Newtonsoft.Json;
     using System.Linq;
     using System.Net.WebSockets;
@@ -18,11 +17,10 @@ namespace ReamQuery.Test
 
     public abstract class E2EBase
     {
+        protected abstract string EndpointAddress { get; }
         protected TestServer _server;
         protected HttpClient _client;
         protected WebSocketClient _wsClient;
-
-        protected dynamic SqlData;
 
         public E2EBase()
         {
@@ -39,13 +37,23 @@ namespace ReamQuery.Test
             _server = new TestServer(builder);
             _client = _server.CreateClient();
             _wsClient = _server.CreateWebSocketClient();
-            
-            var path = Path.Combine(AppContext.BaseDirectory, "db.sql.json");
-            var json = File.ReadAllText(path);
-            SqlData = JArray.Parse(json);
+            _wsTask = StartSocketTask();
         }
 
         protected async Task<IEnumerable<Message>> GetMessagesAsync()
+        {
+            var timeout = Task.Delay(5000);
+            var done = Task.WaitAny(_wsTask, timeout);
+            if (done == 0)
+            {
+                return _wsTask.Result;
+            }
+            return new Message[] {};
+        }
+
+        Task<IEnumerable<Message>> _wsTask;
+
+        async Task<IEnumerable<Message>> StartSocketTask()
         {
             bool _closeFlag = false;
             long _expectedCount = -1;
@@ -74,31 +82,29 @@ namespace ReamQuery.Test
 
         protected static IEnumerable<object> WorldDatabase()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "connections.json");
-            var json = File.ReadAllText(path);
-            dynamic data = JObject.Parse(json);
-            if (IsTravisCi())
+            var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_SQLSERVER");
+            var npgsql = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_NPGSQL");
+            var conns = new object[][] { };
+            if (!string.IsNullOrWhiteSpace(sqlServer))
             {
-                return new object[][]
-                {
-                    new object[] { data.travis.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
-                };
+                conns = conns.Concat(new object[][] { new object[] { sqlServer, DatabaseProviderType.SqlServer }}).ToArray();
             }
-            else if (IsAppveyorCi())
+            if (!string.IsNullOrWhiteSpace(npgsql))
             {
-                return new object[][]
-                {
-                    new object[] { data.appveyor.sqlserver[0].ToString(), DatabaseProviderType.SqlServer },
-                };
+                conns = conns.Concat(new object[][] { new object[] { npgsql, DatabaseProviderType.NpgSql }}).ToArray();
             }
-            else
+            return conns;
+        }
+
+        protected static IEnumerable<object> SqlServer_TypeTestDatabase()
+        {
+            var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_TYPETEST_SQLSERVER");
+            if (string.IsNullOrWhiteSpace(sqlServer))
             {
-                return new object[][]
-                {
-                    new object[] { data.local.sqlserver2[0].ToString(), DatabaseProviderType.SqlServer },
-                    new object[] { data.local.npgsql[0].ToString(), DatabaseProviderType.NpgSql },
-                };
+                throw new InvalidOperationException("REAMQUERY_TYPETEST_SQLSERVER was not found");
             }
+            var conns = new object[][] { new object[] { sqlServer }};
+            return conns;
         }
 
         protected static IEnumerable<object> WorldDatabaseWithInvalidNamespaceIdentifiers()
@@ -127,17 +133,5 @@ namespace ReamQuery.Test
                 new object[] { randomStuff, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
             };
         }
-
-        static bool IsTravisCi()
-        {
-            return Environment.GetEnvironmentVariable("TRAVIS") == "true";
-        }
-
-        static bool IsAppveyorCi()
-        {
-            return Environment.GetEnvironmentVariable("APPVEYOR") == "True";
-        }
-
-        protected abstract string EndpointAddress { get; }
     }
 }

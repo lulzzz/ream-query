@@ -66,12 +66,12 @@ namespace ReamQuery.Services
                 var method = compileResult.Type.GetMethod("Run");
                 var programInstance = Activator.CreateInstance(compileResult.Type);
                 var e2 = sw.Elapsed.TotalMilliseconds;
-                _clientService.AddEmitter(ReamQuery.Shared.Dumper.InitializeEmitter(queryId, newInput.ExpressionLocations.Count()));
+                var emitter = new Emitter(queryId, newInput.ExpressionLocations.Count());
+                _clientService.AddEmitter(emitter);
                 sw.Reset();
                 sw.Start();
-                method.Invoke(programInstance, new object[] { queryId });
+                method.Invoke(programInstance, new object[] { emitter });
                 var e3 = sw.Elapsed.TotalMilliseconds;
-                //res.Add("Performance", new { DbContext = e1, Loading = e2, Execution = e3 });
             }
 
             return queryResponse;
@@ -127,24 +127,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using ReamQuery.Shared;
+using NLog;
 ##SCHEMA##
 namespace ##NS## 
 {
     public static class DumpWrapper
     {
-        public static int SessionId;
+        public static Emitter Emitter;
 
         public static T Dump<T>(this T o)
         {
-            return o.Dump(SessionId);
+            return o.Dump(Emitter);
         }
     }
 
     public class Main : ##DB##
     {
-        public void Run(int session)
+        public void Run(Emitter emitter)
         {
-            DumpWrapper.SessionId = session;
+            DumpWrapper.Emitter = emitter;
             Query();
         }
 

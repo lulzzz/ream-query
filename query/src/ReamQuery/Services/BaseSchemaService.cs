@@ -65,6 +65,7 @@ namespace ReamQuery
             // remove the entity generated warning about injected connection strings
             ctx = Regex.Replace(ctx, @"#warning.*", "");
             output.Append(ctx);
+            Logger.Info("ContextFile.Count {0}", resFiles.ContextFile.Count());
             foreach(var fpath in resFiles.EntityTypeFiles)
             {
                 output.Append(StripHeaderLines(4, InMemoryFiles.RetrieveFileContents(_tempFolder, System.IO.Path.GetFileName(fpath))));

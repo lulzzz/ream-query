@@ -10,12 +10,16 @@ namespace ReamQuery.Services
     using System.Text;
     using Microsoft.CodeAnalysis.Text;
     using ReamQuery.Models;
+    using NLog;
 
     public class FragmentService 
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         const string _wrapperTemplate = @"class Foo { public void wrapper() {##INPUT##}}";
         public FragmentText Fix(string input) 
         {
+            Logger.Info("Input fragment {0}", input);
             var wrappedInp = _wrapperTemplate.Replace("##INPUT##", input);
             var replacements = new Dictionary<SyntaxNode, SyntaxNode>();
             var singleLineLocations = new List<int>();
@@ -75,6 +79,7 @@ namespace ReamQuery.Services
             // for now just strip out leading/trailing trivia+brace from full src
             var newFragment = Regex.Replace(newRoot.ToFullString(), @"^\w*\{", "");
             newFragment = Regex.Replace(newFragment, @"\}\w*$", "");
+            Logger.Info("Transformed fragment {0}", newFragment);
             return new FragmentText 
             {
                 Text = newFragment,

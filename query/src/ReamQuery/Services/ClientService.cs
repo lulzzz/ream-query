@@ -7,9 +7,12 @@ namespace ReamQuery.Services
     using ReamQuery.Helpers;
     using Newtonsoft.Json;
     using System.Threading.Tasks;
+    using NLog;
 
     public class ClientService
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         WebSocket _client;
 
         public async Task HandleClient(WebSocket client)
@@ -29,10 +32,12 @@ namespace ReamQuery.Services
 
         public void AddEmitter(Emitter emitter)
         {
+            var msgNr = 0;
             emitter.Messages.Subscribe(async (msg) =>
             {
                 // System.Threading.Thread.Sleep(1000);
                 var json = JsonConvert.SerializeObject(msg);
+                Logger.Debug("JSON emitted msg nr {1}, {0}", json, msgNr++);
                 await _client.SendString(json);
             });
         }

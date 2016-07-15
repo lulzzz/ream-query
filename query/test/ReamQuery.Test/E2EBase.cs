@@ -40,7 +40,7 @@ namespace ReamQuery.Test
             _wsTask = StartSocketTask();
         }
 
-        protected async Task<IEnumerable<Message>> GetMessagesAsync()
+        protected IEnumerable<Message> GetMessages()
         {
             var timeout = Task.Delay(5000);
             var done = Task.WaitAny(_wsTask, timeout);

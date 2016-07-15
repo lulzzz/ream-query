@@ -8,6 +8,7 @@ namespace ReamQuery.Test
     using ReamQuery.Shared;
     using System.Net.Http;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class ExecuteQueryEndpointForSqlServer : E2EBase
     {
@@ -30,12 +31,24 @@ namespace ReamQuery.Test
             var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            var msgs = await GetMessagesAsync();
+            var msgs = GetMessages();
 
-            var header = msgs.Single(x => x.Type == ItemType.Header);
+            var columns = msgs.Single(x => x.Type == ItemType.Header).Values.Cast<JObject>();
             var row = msgs.Single(x => x.Type == ItemType.Row);
-             
-            Console.WriteLine(JsonConvert.SerializeObject(header));
+
+            var expectedTypeMap = new Tuple<string, Type>[]
+            {
+                Tuple.Create("Bigintcol", typeof(System.Int64?))
+            };
+
+            foreach(var expected in expectedTypeMap)
+            {
+                Assert.Single(columns, (v) => {
+                    var name = v["Name"].ToString(); 
+                    var type = Type.GetType(v["Type"].ToString());
+                    return name == expected.Item1 && expected.Item2 == typeof(System.Int64?);
+                });
+            }
         }
     }
 }

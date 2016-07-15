@@ -32,7 +32,7 @@ namespace ReamQuery.Shared
                 }
                 else
                 {
-                    Logger.Debug("Dumping object #{1}", o.GetHashCode());
+                    Logger.Debug("Dumping object #{0}", o.GetHashCode());
                     var oType = o.GetType();
                     var seenTypes = new Dictionary<Type, Tuple<int, Column[]>>();
                     Type listType;
@@ -126,7 +126,7 @@ namespace ReamQuery.Shared
             }
             catch (Exception exn)
             {
-                Logger.Error("Exception {1} while dumping, message {0}", exn.Message, exn.HResult);
+                Logger.Error("Exception {0} while dumping, message {1}", exn.HResult, exn.Message);
             }
             return o;
         }

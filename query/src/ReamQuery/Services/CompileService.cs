@@ -11,9 +11,12 @@ namespace ReamQuery.Services
     using ReamQuery.Models;
     using Microsoft.CodeAnalysis.Text;
     using System;
+    using NLog;
 
     public class CompileService
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         SchemaService _schemaService;
         string _projectjsonPath;
         IEnumerable<MetadataReference> _references;
@@ -89,6 +92,10 @@ namespace ReamQuery.Services
                 compileResult.Type = programType;
                 compileResult.Assembly = asm;
                 compileResult.Reference = MetadataReference.CreateFromStream(stream);
+            }
+            foreach(var diag in compilationResult.Diagnostics)
+            {
+                Logger.Info("Diagnostic: {0}", diag.ToString());
             }
             return compileResult;
         }

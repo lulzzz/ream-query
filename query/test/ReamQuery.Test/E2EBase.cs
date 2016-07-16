@@ -101,7 +101,7 @@ namespace ReamQuery.Test
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_TYPETEST_SQLSERVER");
             if (string.IsNullOrWhiteSpace(sqlServer))
             {
-                throw new InvalidOperationException("REAMQUERY_TYPETEST_SQLSERVER was not found");
+                return new object[][] { }; // skips if not available
             }
             var conns = new object[][] { new object[] { sqlServer }};
             return conns;

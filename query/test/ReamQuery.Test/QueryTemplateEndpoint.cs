@@ -31,12 +31,11 @@ namespace ReamQuery.Test
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
-            var tbls = nodes.OfType<AttributeSyntax>().Where(x => x.Name.ToString() == "Table");
-            
+            var tbls = nodes.OfType<ClassDeclarationSyntax>();
             Assert.Equal(StatusCode.Ok, output.Code);
-            Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"city\""));
-            Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"country\""));
-            Assert.Single(tbls.Where(tbl => tbl.DescendantNodes().OfType<AttributeArgumentSyntax>().Single().ToString() == "\"countrylanguage\""));
+            Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "city"));
+            Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "country"));
+            Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "countrylanguage"));
         }
 
         [Theory, MemberData("WorldDatabaseWithInvalidNamespaceIdentifiers")]

@@ -38,7 +38,7 @@ namespace ReamQuery.Test
 
             var expectedTypeMap = new Tuple<string, Type>[]
             {
-                Tuple.Create("Bigintcol", typeof(System.Int64?))
+                Tuple.Create("bigintcol", typeof(System.Int64?))
             };
 
             foreach(var expected in expectedTypeMap)

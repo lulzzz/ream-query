@@ -18,13 +18,12 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
-            
             var request = new QueryRequest 
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Namespace = "ns",
-                Text = "City.Take(10)"
+                Text = "city.Take(10)"
             };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client
@@ -48,8 +47,8 @@ namespace ReamQuery.Test
                 ConnectionString = connectionString,
                 Namespace = "ns",
                 Text = @"
-                    City.Take(10)
-                    Countrylanguage.Take(10)"
+                    city.Take(10)
+                    countrylanguage.Take(10)"
             };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client
@@ -113,7 +112,7 @@ namespace ReamQuery.Test
                 ConnectionString = connectionString,
                 Namespace = "ns",
                 Text = @"
-from c in City 
+from c in city 
 where c.Name.StartsWith(""Ca"") 
 select c
 "

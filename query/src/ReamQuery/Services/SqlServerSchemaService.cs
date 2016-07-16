@@ -16,7 +16,14 @@ namespace ReamQuery
                 .ConfigureDesignTimeServices(
                     new ServiceCollection()
                         .AddLogging()
-                        .AddScaffolding()
+                        .AddSingleton<ReverseEngineeringGenerator>()
+                        .AddSingleton<ScaffoldingUtilities>()
+                        .AddSingleton<CSharpUtilities>()
+                        .AddSingleton<ConfigurationFactory>()
+                        .AddSingleton<DbContextWriter>()
+                        .AddSingleton<EntityTypeWriter>()
+                        .AddSingleton<CodeWriter, StringBuilderCodeWriter>()
+                        .AddSingleton<CandidateNamingService, EntityNamingService>()
                         .AddSingleton(typeof(IFileService), sp => {
                             return InMemoryFiles = new InMemoryFileService();
                         }))

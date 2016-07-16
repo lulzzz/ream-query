@@ -21,7 +21,7 @@ env:
     - CLI_ARCH=x64
     - DOTNETCLI_URL=https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0-preview2/scripts/obtain/dotnet-install.sh
     - DOTNET_INSTALL_DIR=$TRAVIS_BUILD_DIR/.dotnetcli
-    - REAMQUERY_WORLDDB_NPGSQL=Server=localhost; User Id=postgres; Password=; Database=world
+    - REAMQUERY_WORLDDB_NPGSQL='Server=localhost; User Id=postgres; Password=; Database=world'
 
 before_install:
  - ulimit -n 1024

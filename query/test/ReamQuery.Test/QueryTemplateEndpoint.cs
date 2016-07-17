@@ -17,8 +17,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
+            var id = Guid.NewGuid();
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Text = ""

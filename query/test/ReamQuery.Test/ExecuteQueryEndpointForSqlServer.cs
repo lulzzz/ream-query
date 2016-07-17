@@ -17,8 +17,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("SqlServer_TypeTestDatabase")]
         public async void Handles_All_Types(string connectionString)
         {
+            var id = Guid.NewGuid();
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = DatabaseProviderType.SqlServer,
                 ConnectionString = connectionString,
                 Text = "TypeTestTable.Take(10)"
@@ -33,6 +35,7 @@ namespace ReamQuery.Test
             var columns = msgs.Single(x => x.Type == ItemType.Header).Values.Cast<JObject>();
             var row = msgs.Single(x => x.Type == ItemType.Row);
 
+            // todo check for all types
             var expectedTypeMap = new Tuple<string, Type>[]
             {
                 Tuple.Create("bigintcol", typeof(System.Int64?))

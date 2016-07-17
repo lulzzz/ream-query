@@ -4,6 +4,7 @@ namespace ReamQuery.Handlers
     using ReamQuery.Services;
     using ReamQuery.Api;
     using System.Threading.Tasks;
+    using System;
 
     public class QueryTemplateHandler : BaseHandler<TemplateResponse, QueryRequest>
     {
@@ -21,6 +22,10 @@ namespace ReamQuery.Handlers
 
         protected override async Task<TemplateResponse> Execute(QueryRequest input)
         {
+            if (input.Id == Guid.Empty)
+            {
+                throw new ArgumentException("Id");
+            }
             return await _queryService.GetTemplate(input);
         }
     }

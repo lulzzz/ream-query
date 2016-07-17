@@ -80,6 +80,29 @@ namespace ReamQuery.Test
             return list;
         }
 
+          protected static IEnumerable<object> Execute_Code_Samples()
+          {
+              return new object[][]
+              {
+                  new object[]
+                  {
+                      @"
+                      var x = 10;
+                      x + 1
+                      ",
+                      new Message[]
+                      {
+                          new Message
+                          {
+                              Parent = 1, 
+                          }
+                      }    
+                  }
+              };
+          }
+  
+
+
         protected static IEnumerable<object> WorldDatabase()
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_SQLSERVER");

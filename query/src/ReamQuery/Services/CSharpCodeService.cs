@@ -10,48 +10,41 @@ namespace ReamQuery.Services
     using ReamQuery.Helpers;
     using System.Threading;
     using System.Linq;
+    using NLog;
+    using Newtonsoft.Json;
 
-    public class QueryService
+    public class CSharpCodeService
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         CompileService _compiler;
-        DatabaseContextService _databaseContextService;
-        SchemaService _schemaService;
         FragmentService _fragmentService;
         ClientService _clientService;
 
-        public QueryService(CompileService compiler, DatabaseContextService databaseContextService,
-            SchemaService schemaService, FragmentService fragmentService, ClientService clients)
+        public CSharpCodeService(CompileService compiler, FragmentService fragmentService, ClientService clients)
         {
             _compiler = compiler;
-            _databaseContextService = databaseContextService;
-            _schemaService = schemaService;
             _fragmentService = fragmentService;
             _clientService = clients;
         }
 
-        public async Task<QueryResponse> ExecuteQuery(QueryRequest input)
+        public async Task<CodeResponse> ExecuteCode(CodeRequest input)
         {
             var sw = new Stopwatch();
             sw.Start();
             var newInput = _fragmentService.Fix(input.Text);
-            var contextResult = await _databaseContextService.GetDatabaseContext(input.ConnectionString, input.ServerType);
-            if (contextResult.Code != Api.StatusCode.Ok)
-            {
-                return new QueryResponse { Code = contextResult.Code, Message = contextResult.Message };
-            }
+            
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
 
             var programSource = _template
                 .Replace("##SOURCE##", newInput.Text)
-                .Replace("##NS##", assmName)
-                .Replace("##SCHEMA##", "") // schema is linked
-                .Replace("##DB##", contextResult.Type.ToString());
+                .Replace("##NS##", assmName);
 
             var e1 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
             sw.Start();
-            var compileResult = _compiler.LoadType(programSource, assmName, contextResult.Reference);
-            var queryResponse = new QueryResponse
+            var compileResult = _compiler.LoadType(programSource, assmName);
+            var response = new CodeResponse
             {
                 Id = Guid.NewGuid(),
                 Created = DateTime.Now,
@@ -72,21 +65,15 @@ namespace ReamQuery.Services
                 var e3 = sw.Elapsed.TotalMilliseconds;
             }
 
-            return queryResponse;
+            return response;
         }
 
-        public async Task<TemplateResponse> GetTemplate(QueryRequest input) 
+        public async Task<TemplateResponse> GetTemplate(CodeRequest input) 
         {
+            Logger.Debug("{0}", JsonConvert.SerializeObject(input));
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
-            var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);
-            var schemaSrc = schemaResult.Schema;
-            
-            var src = _template
-                .Replace("##NS##", assmName)
-                .Replace("##DB##", "Proxy")
-                .Replace("##SCHEMA##", schemaSrc);
-                
+            var src = _template.Replace("##NS##", assmName);
             var srcLineOffset = -1;
             var lines = src.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             for(var i = lines.Length - 1; i > 0; i--) {
@@ -103,8 +90,7 @@ namespace ReamQuery.Services
                 Template = fullSrc,
                 Namespace = assmName,
                 ColumnOffset = 0,
-                LineOffset = srcLineOffset,
-                DefaultQuery = string.Format("{0}.Take(100).Dump();\n\n", schemaResult.DefaultTable)
+                LineOffset = srcLineOffset
             };
         }
 
@@ -115,12 +101,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using ReamQuery.Shared;
-##SCHEMA##
 namespace ##NS## 
 {
     public static class DumpWrapper
@@ -133,15 +114,15 @@ namespace ##NS##
         }
     }
 
-    public class Main : ##DB##
+    public class Main
     {
         public void Run(Emitter emitter)
         {
             DumpWrapper.Emitter = emitter;
-            Query();
+            ExecuteUserCode();
         }
 
-        void Query()
+        void ExecuteUserCode()
 {##SOURCE##}
     }
 }

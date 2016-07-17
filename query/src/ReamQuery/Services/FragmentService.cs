@@ -48,8 +48,7 @@ namespace ReamQuery.Services
                 else if (exprNode != null && exprNode.SemicolonToken.IsMissing)
                 {
                     var dumpIdent = SyntaxFactory.IdentifierName("Dump");
-                    var oldExpr = !IsQueryStatement(exprNode.Expression) ? exprNode.Expression :
-                        SyntaxFactory.ParenthesizedExpression(
+                    var oldExpr = SyntaxFactory.ParenthesizedExpression(
                             SyntaxFactory.Token(SyntaxKind.OpenParenToken),
                             exprNode.Expression,
                             SyntaxFactory.Token(SyntaxKind.CloseParenToken)
@@ -85,12 +84,6 @@ namespace ReamQuery.Services
                 Text = newFragment,
                 ExpressionLocations = singleLineLocations
             };
-        }
-
-        bool IsQueryStatement(ExpressionSyntax exprNode)
-        {
-            var qExpr = exprNode.ChildNodes().OfType<QueryExpressionSyntax>();
-            return exprNode is QueryExpressionSyntax || qExpr.Count() > 0;
         }
 
         int GetLine(SyntaxNode node)

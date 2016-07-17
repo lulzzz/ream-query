@@ -30,6 +30,7 @@ namespace ReamQuery.Handlers
             sw.Start();
             if (context.Request.Path.HasValue && Handle(context.Request.Path.Value))
             {
+                Logger.Debug("{0}", context.Request.Path.Value);
                 TInput input = default(TInput);
                 if (context.Request.Method == "POST") 
                 {

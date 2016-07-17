@@ -18,8 +18,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
+            var id = Guid.NewGuid();
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Text = "city.Take(10)"
@@ -39,8 +41,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Handles_Multiple_Expressions(string connectionString, DatabaseProviderType dbType)
         {
+            var id = Guid.NewGuid();
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Text = @"
@@ -76,11 +80,13 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Handles_Malformed_Source_Code_In_Request(string connectionString, DatabaseProviderType dbType)
         {
+            var id = Guid.NewGuid();
             var queryStr = @"
 
     NOT_DEFINED";
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Text = queryStr
@@ -102,8 +108,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
+            var id = Guid.NewGuid();
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Text = @"
@@ -127,8 +135,10 @@ select c
         [Theory, MemberData("InvalidConnectionStrings")]
         public async void Returns_Expected_StatusCode_For_Invalid_ConnectionString(string connectionString, DatabaseProviderType dbType, Api.StatusCode expectedCode)
         {
+            var id = Guid.NewGuid();
             var request = new QueryRequest 
             {
+                Id = id,
                 ServerType = dbType,
                 ConnectionString = connectionString,
                 Text = ""

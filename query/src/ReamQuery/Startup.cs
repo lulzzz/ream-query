@@ -21,21 +21,24 @@ namespace ReamQuery
             env.ConfigureNLog(Path.Combine(Configuration["REAMQUERY_BASEDIR"], "nlog.config"));
             app.UseMiddleware<CheckReadyStatusHandler>();
             app.UseMiddleware<ExecuteQueryHandler>();
+            app.UseMiddleware<ExecuteCodeHandler>();
             app.UseMiddleware<QueryTemplateHandler>();
+            app.UseMiddleware<CodeTemplateHandler>();
             app.UseMiddleware<StopServerHandler>();
             app.UseMiddleware<WebSocketHandler>();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ClientService, ClientService>();
-            services.AddSingleton<SqlServerSchemaService, SqlServerSchemaService>();
-            services.AddSingleton<NpgsqlSchemaService, NpgsqlSchemaService>();
-            services.AddSingleton<QueryService, QueryService>();
-            services.AddSingleton<SchemaService, SchemaService>();
-            services.AddSingleton<CompileService, CompileService>();
-            services.AddSingleton<DatabaseContextService, DatabaseContextService>();
-            services.AddSingleton<FragmentService, FragmentService>();
+            services.AddSingleton<ClientService>();
+            services.AddSingleton<SqlServerSchemaService>();
+            services.AddSingleton<NpgsqlSchemaService>();
+            services.AddSingleton<QueryService>();
+            services.AddSingleton<SchemaService>();
+            services.AddSingleton<CompileService>();
+            services.AddSingleton<DatabaseContextService>();
+            services.AddSingleton<FragmentService>();
+            services.AddSingleton<CSharpCodeService>();
         }
     }
 }

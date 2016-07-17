@@ -6,27 +6,27 @@ namespace ReamQuery.Handlers
     using System.Threading.Tasks;
     using System;
 
-    public class ExecuteQueryHandler : BaseHandler<QueryResponse, QueryRequest>
+    public class ExecuteCodeHandler : BaseHandler<CodeResponse, CodeRequest>
     {
-        QueryService _service;
+        CSharpCodeService _service;
 
-        public ExecuteQueryHandler(RequestDelegate next, QueryService service) : base(next) 
+        public ExecuteCodeHandler(RequestDelegate next, CSharpCodeService service) : base(next) 
         {
             _service = service; 
         }
 
         protected override bool Handle(string path)
         {
-            return path.Contains("/executequery");
+            return path.Contains("/executecode");
         }
 
-        protected override async Task<QueryResponse> Execute(QueryRequest input)
+        protected override async Task<CodeResponse> Execute(CodeRequest input)
         {
             if (input.Id == Guid.Empty)
             {
                 throw new ArgumentException("Id");
             }
-            return await _service.ExecuteQuery(input);
+            return await _service.ExecuteCode(input);
         }
     }
 }

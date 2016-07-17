@@ -2,7 +2,7 @@ namespace ReamQuery.Api
 {
     using ReamQuery.Models;
     
-    public class QueryRequest
+    public class QueryRequest : BaseRequest
     {
         public DatabaseProviderType ServerType { get; set; }
         public string ConnectionString { get; set; }

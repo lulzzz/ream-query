@@ -24,11 +24,11 @@ namespace ReamQuery.Shared
         int _headerCounter = 0;
         int _dumpCount;
 
-        int _session;
+        Guid _session;
 
         int _emittedCount = 0;
         
-        public Emitter(int session, int dumpCount)
+        public Emitter(Guid session, int dumpCount)
         {
             if (dumpCount < 0)
             {

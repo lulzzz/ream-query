@@ -15,14 +15,12 @@ namespace ReamQuery.Shared.Test
             public string Foo { get; set; }
         }
 
-        static int SessionId;
-
         List<Message> RecordedMessages = new List<Message>();
 
         [Fact]
         public void Dumps_Typed_Null_Value()
         {
-            var sessionId = Interlocked.Increment(ref SessionId);
+            var sessionId = Guid.NewGuid();
             var emitter = new Emitter(sessionId, 1);
             emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
             IEnumerable<string> o = null;
@@ -35,7 +33,7 @@ namespace ReamQuery.Shared.Test
         }
 
         [Theory, MemberData("Simple_Value_Expressions")]
-        public void Dumps_Simple_Value_Expressions(int sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
+        public void Dumps_Simple_Value_Expressions(Guid sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
             var emitter = new Emitter(sessionId, 1);
             emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
@@ -51,11 +49,11 @@ namespace ReamQuery.Shared.Test
         {
             get
             {
-                var id1 = Interlocked.Increment(ref SessionId);
-                var id2 = Interlocked.Increment(ref SessionId);
-                var id3 = Interlocked.Increment(ref SessionId);
-                var id4 = Interlocked.Increment(ref SessionId);
-                var id5 = Interlocked.Increment(ref SessionId);
+                var id1 = Guid.NewGuid();
+                var id2 = Guid.NewGuid();
+                var id3 = Guid.NewGuid();
+                var id4 = Guid.NewGuid();
+                var id5 = Guid.NewGuid();
                 return new object[][]
                 {
                     new object[]

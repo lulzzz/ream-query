@@ -7,7 +7,7 @@ namespace ReamQuery.Shared
 
     public class Message
     {
-        public int Session { get; set; }
+        public Guid Session { get; set; }
         
         [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
         public object Id { get; set; }

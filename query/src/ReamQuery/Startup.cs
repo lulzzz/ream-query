@@ -32,6 +32,7 @@ namespace ReamQuery
         {
             services.AddSingleton<ClientService>();
             services.AddSingleton<SqlServerSchemaService>();
+            services.AddSingleton<SqliteSchemaService>();
             services.AddSingleton<NpgsqlSchemaService>();
             services.AddSingleton<QueryService>();
             services.AddSingleton<SchemaService>();

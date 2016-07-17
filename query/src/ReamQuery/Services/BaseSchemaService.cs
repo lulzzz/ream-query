@@ -48,6 +48,7 @@ namespace ReamQuery
             }
             catch (System.Exception exn) when (exn.ExpectedError())
             {
+                Logger.Debug("Known error {0}", exn.Message);
                 return new SchemaResult { Code = exn.StatusCode(), Message = exn.Message };
             }
             var output = new StringBuilder();

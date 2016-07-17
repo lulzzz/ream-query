@@ -10,10 +10,13 @@ namespace ReamQuery.Services
 
         NpgsqlSchemaService _npgsql;
 
-        public SchemaService(SqlServerSchemaService sqlServer, NpgsqlSchemaService npgsql) 
+        SqliteSchemaService _sqlite;
+
+        public SchemaService(SqlServerSchemaService sqlServer, NpgsqlSchemaService npgsql, SqliteSchemaService sqlite) 
         {
             _npgsql = npgsql;
             _sqlServer = sqlServer;
+            _sqlite = sqlite;
         }
 
         public async Task<SchemaResult> GetSchemaSource(string connectionString, DatabaseProviderType type, string assemblyNamespace, bool withUsings = true) 
@@ -25,6 +28,10 @@ namespace ReamQuery.Services
             else if (type == DatabaseProviderType.NpgSql)
             {
                 return await _npgsql.GetSchemaSource(connectionString, assemblyNamespace, withUsings);
+            }
+            else if (type == DatabaseProviderType.Sqlite)
+            {
+                return await _sqlite.GetSchemaSource(connectionString, assemblyNamespace, withUsings);
             }
             else
             {

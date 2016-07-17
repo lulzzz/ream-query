@@ -84,7 +84,11 @@ namespace ReamQuery.Test
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_SQLSERVER");
             var npgsql = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_NPGSQL");
-            var conns = new object[][] { };
+            var sqlite = SqliteConnectionString();
+            var conns = new object[][]
+            {
+                new object[] { sqlite, DatabaseProviderType.Sqlite }
+            };
             if (!string.IsNullOrWhiteSpace(sqlServer))
             {
                 conns = conns.Concat(new object[][] { new object[] { sqlServer, DatabaseProviderType.SqlServer }}).ToArray();
@@ -94,6 +98,13 @@ namespace ReamQuery.Test
                 conns = conns.Concat(new object[][] { new object[] { npgsql, DatabaseProviderType.NpgSql }}).ToArray();
             }
             return conns;
+        }
+
+        static string SqliteConnectionString()
+        {
+            var baseDir = Path.Combine(System.AppContext.BaseDirectory, "../../../../../..");
+            var dir = Path.Combine(Path.Combine(baseDir, "sql"), "world.sqlite");
+            return string.Format("Data Source={0}", Path.GetFullPath(dir));
         }
 
         protected static IEnumerable<object> SqlServer_TypeTestDatabase()

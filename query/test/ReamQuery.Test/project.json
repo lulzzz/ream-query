@@ -2,6 +2,9 @@
     "version": "1.0.0-*",
     "name": "ReamQuery.Test",
     "testRunner": "xunit",
+    "packOptions": {
+        "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"
+    },
     "buildOptions": {
         "emitEntryPoint": false,
         "copyToOutput": {

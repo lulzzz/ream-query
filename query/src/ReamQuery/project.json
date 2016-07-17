@@ -8,6 +8,9 @@
             "include": ["appsettings.json", "appsettings.test.json", "nlog.config"]
         }
     },
+    "packOptions": {
+        "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"
+    },
     "dependencies": {
         "ReamQuery.Core": "1.0.0-*",
         "System.Runtime.Serialization.Primitives": "4.1.1-*",

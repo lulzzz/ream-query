@@ -4,6 +4,9 @@
     "buildOptions": {
         "emitEntryPoint": false
     },
+    "packOptions": {
+        "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"
+    },
     "dependencies": {
         "System.Reactive": "3.0.0-*",
         "System.Runtime.Serialization.Primitives": "4.1.1-*",

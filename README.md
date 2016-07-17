@@ -1,6 +1,6 @@
 # .NET Core backend for the [Ream editor](https://github.com/stofte/ream-editor) [![Windows build status](https://ci.appveyor.com/api/projects/status/7p2pha3iiaomihr4?svg=true)](https://ci.appveyor.com/project/stofte/ream-query) [![Linux build Status](https://travis-ci.org/stofte/ream-query.svg?branch=master)](https://travis-ci.org/stofte/ream-query)
 
-A Kestrel hosted HTTP server that performs C# query evaluation and returns output values via websockets.
+A [Kestrel](https://github.com/aspnet/KestrelHttpServer) hosted HTTP server that performs C# query evaluation and returns output values via websockets.
 
 Code can be standalone programs, or use [EntityFramework](https://github.com/aspnet/EntityFramework) to connect to one of
 

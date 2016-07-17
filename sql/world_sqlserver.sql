@@ -3,16 +3,16 @@ set nocount on;
 
 BEGIN TRANSACTION
 
-CREATE TABLE city (
+CREATE TABLE city(
   Id int NOT NULL,
   Name char(35) NOT NULL DEFAULT '',
   CountryCode char(3) NOT NULL DEFAULT '',
   District char(20) NOT NULL DEFAULT '',
   Population int NOT NULL DEFAULT '0',
   PRIMARY KEY (Id)
-)
+);
 
-CREATE TABLE country (
+CREATE TABLE country(
   Code char(3) NOT NULL DEFAULT '',
   Name char(52) NOT NULL DEFAULT '',
   Continent varchar(20) CHECK(Continent in ('Asia','Europe','North America','Africa','Oceania','Antarctica','South America')) NOT NULL DEFAULT 'Asia',
@@ -29,15 +29,15 @@ CREATE TABLE country (
   Capital int DEFAULT NULL,
   Code2 char(2) NOT NULL DEFAULT '',
   PRIMARY KEY (Code)
-)
+);
 
-CREATE TABLE countrylanguage (
+CREATE TABLE countrylanguage(
   CountryCode char(3) NOT NULL DEFAULT '',
   Language char(30) NOT NULL DEFAULT '',
   IsOfficial char(1) CHECK(IsOfficial IN ('T','F')) NOT NULL DEFAULT 'F',
   Percentage decimal(4,1) NOT NULL DEFAULT '0.0',
   PRIMARY KEY (CountryCode,Language)
-)
+);
 
 COMMIT TRANSACTION
 

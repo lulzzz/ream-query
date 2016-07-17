@@ -35,8 +35,8 @@ install:
  - psql -d world -U postgres -f $TRAVIS_BUILD_DIR/sql/world_postgresql.sql
 
 script:
- - dotnet restore shared
- - dotnet test shared/test/ReamQuery.Shared.Test
- - dotnet pack -o nuget shared/src/ReamQuery.Shared
+ - dotnet restore core
+ - dotnet test core/test/ReamQuery.Core.Test
+ - dotnet pack -o nuget core/src/ReamQuery.Core
  - dotnet restore query
  - dotnet test query/test/ReamQuery.Test

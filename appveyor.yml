@@ -30,10 +30,10 @@ before_build:
   - dotnet --info
           
 build_script:
-  - dotnet restore shared
-  - dotnet pack -o nuget shared\src\ReamQuery.Shared
+  - dotnet restore core
+  - dotnet pack -o nuget core\src\ReamQuery.Core
   - dotnet restore query
 
 test_script:
-  - dotnet test shared\test\ReamQuery.Shared.Test
+  - dotnet test core\test\ReamQuery.Core.Test
   - dotnet test query\test\ReamQuery.Test

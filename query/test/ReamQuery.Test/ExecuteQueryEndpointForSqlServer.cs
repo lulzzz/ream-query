@@ -30,7 +30,7 @@ namespace ReamQuery.Test
             var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            var msgs = GetMessages();
+            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
 
             var columns = msgs.Single(x => x.Type == ItemType.Header).Values.Cast<JObject>();
             var row = msgs.Single(x => x.Type == ItemType.Row);

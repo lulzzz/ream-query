@@ -31,7 +31,7 @@ namespace ReamQuery.Test
                 .PostAsync(EndpointAddress, new StringContent(json))
                 ;
                 
-            var msgs = GetMessages();
+            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
@@ -58,7 +58,7 @@ namespace ReamQuery.Test
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            var msgs = GetMessages();
+            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
             
             Assert.Equal(StatusCode.Ok, output.Code);
             Assert.Equal(2, msgs.Count(x => x.Type == ItemType.Header));
@@ -126,7 +126,7 @@ select c
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
-            var msgs = GetMessages();
+            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
             var rows = msgs.Where(msg => msg.Type == ItemType.Row);
             Assert.NotEmpty(rows);
             Assert.All(rows, (val) => val.Values[1].ToString().StartsWith("Ca"));

@@ -40,7 +40,7 @@ namespace ReamQuery.Test
             _wsTask = StartSocketTask();
         }
 
-        protected IEnumerable<Message> GetMessages()
+        protected IEnumerable<string> GetMessages()
         {
             var timeout = Task.Delay(5000);
             var done = Task.WaitAny(_wsTask, timeout);
@@ -48,24 +48,24 @@ namespace ReamQuery.Test
             {
                 return _wsTask.Result;
             }
-            return new Message[] {};
+            return new string[] {};
         }
 
-        Task<IEnumerable<Message>> _wsTask;
+        Task<IEnumerable<string>> _wsTask;
 
-        async Task<IEnumerable<Message>> StartSocketTask()
+        async Task<IEnumerable<string>> StartSocketTask()
         {
             bool _closeFlag = false;
             long _expectedCount = -1;
             long _receivedCount = 0;
-            var list = new List<Message>();
+            var list = new List<string>();
             var ws = await _wsClient.ConnectAsync(new System.Uri("ws://localhost/ws"), System.Threading.CancellationToken.None);
             byte[] buffer = new byte[1024 * 4];
             while(ws.State == WebSocketState.Open)
             {
                 var json = await ws.ReadString();
                 var msg = JsonConvert.DeserializeObject<Message>(json);
-                list.Add(msg);
+                list.Add(json);
                 _receivedCount++;
                 if(msg.Type == ItemType.Close && !_closeFlag)
                 {
@@ -79,29 +79,6 @@ namespace ReamQuery.Test
             }
             return list;
         }
-
-          protected static IEnumerable<object> Execute_Code_Samples()
-          {
-              return new object[][]
-              {
-                  new object[]
-                  {
-                      @"
-                      var x = 10;
-                      x + 1
-                      ",
-                      new Message[]
-                      {
-                          new Message
-                          {
-                              Parent = 1, 
-                          }
-                      }    
-                  }
-              };
-          }
-  
-
 
         protected static IEnumerable<object> WorldDatabase()
         {

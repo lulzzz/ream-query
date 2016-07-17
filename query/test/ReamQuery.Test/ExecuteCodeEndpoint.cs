@@ -25,7 +25,6 @@ namespace ReamQuery.Test
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
-            // todo assert msgs
             foreach(var expected in expectedMsgs)
             {
                 Assert.Single(msgs, expected);

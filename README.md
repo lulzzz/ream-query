@@ -19,7 +19,3 @@ Connection strings must be .NET syntax and are passed by the following environme
  - `REAMQUERY_WORLDDB_NPGSQL`
 
 Unset values will cause dependent tests to not run.
-
- ### Todo
- - Code only queries
- - SQLite

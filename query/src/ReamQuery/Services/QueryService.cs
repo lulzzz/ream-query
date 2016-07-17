@@ -87,8 +87,7 @@ namespace ReamQuery.Services
             var src = _template
                 .Replace("##NS##", assmName)
                 .Replace("##DB##", "Proxy")
-                .Replace("##SCHEMA##", schemaSrc)
-                .Replace("##QUERYID##", Guid.NewGuid().ToString());
+                .Replace("##SCHEMA##", schemaSrc);
                 
             var srcLineOffset = -1;
             var lines = src.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);

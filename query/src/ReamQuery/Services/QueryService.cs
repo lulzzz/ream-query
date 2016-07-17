@@ -79,10 +79,6 @@ namespace ReamQuery.Services
 
         public async Task<TemplateResponse> GetTemplate(QueryRequest input) 
         {
-            if (!input.Namespace.IsValidIdentifier())
-            {
-                return new TemplateResponse { Code = Api.StatusCode.NamespaceIdentifier };
-            }
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);

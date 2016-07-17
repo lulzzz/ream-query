@@ -22,7 +22,6 @@ namespace ReamQuery.Test
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
-                Namespace = "ns",
                 Text = "city.Take(10)"
             };
             var json = JsonConvert.SerializeObject(request);
@@ -40,12 +39,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Handles_Multiple_Expressions(string connectionString, DatabaseProviderType dbType)
         {
-            
             var request = new QueryRequest 
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
-                Namespace = "ns",
                 Text = @"
                     city.Take(10)
                     countrylanguage.Take(10)"
@@ -86,7 +83,6 @@ namespace ReamQuery.Test
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
-                Namespace = "ns",
                 Text = queryStr
             };
             var json = JsonConvert.SerializeObject(request);
@@ -110,7 +106,6 @@ namespace ReamQuery.Test
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
-                Namespace = "ns",
                 Text = @"
 from c in city 
 where c.Name.StartsWith(""Ca"") 
@@ -136,7 +131,6 @@ select c
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
-                Namespace = "ns",
                 Text = ""
             };
             var json = JsonConvert.SerializeObject(request);

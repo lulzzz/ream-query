@@ -107,18 +107,6 @@ namespace ReamQuery.Test
             return conns;
         }
 
-        protected static IEnumerable<object> WorldDatabaseWithInvalidNamespaceIdentifiers()
-        {
-            var dbs = WorldDatabase();
-            var invalidNamespaces = new object[]
-            {
-                "", "foo bar", "?@#¤"
-            }.SelectMany(x => 
-                dbs.Select(db => ((IEnumerable<object>)db)
-                    .Concat(new object[] { x }).ToArray()).ToArray()).ToArray(); // mo arrays
-            return invalidNamespaces;
-        }
-
         protected static IEnumerable<object> InvalidConnectionStrings()
         {
             var sqlServerConn1 = @"Data Source=noservershouldbenamedthis; User Id=sa; Password=p; Initial Catalog=db";

@@ -17,13 +17,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("SqlServer_TypeTestDatabase")]
         public async void Handles_All_Types(string connectionString)
         {
-
-            var ns = "ns";
             var request = new QueryRequest 
             {
                 ServerType = DatabaseProviderType.SqlServer,
                 ConnectionString = connectionString,
-                Namespace = ns,
                 Text = "TypeTestTable.Take(10)"
             };
             var json = JsonConvert.SerializeObject(request);

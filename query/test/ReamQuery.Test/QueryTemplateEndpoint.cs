@@ -17,12 +17,10 @@ namespace ReamQuery.Test
         [Theory, MemberData("WorldDatabase")]
         public async void Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
-            var ns = "ns";
             var request = new QueryRequest 
             {
                 ServerType = dbType,
                 ConnectionString = connectionString,
-                Namespace = ns,
                 Text = ""
             };
             var json = JsonConvert.SerializeObject(request);
@@ -36,25 +34,6 @@ namespace ReamQuery.Test
             Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "city"));
             Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "country"));
             Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "countrylanguage"));
-        }
-
-        [Theory, MemberData("WorldDatabaseWithInvalidNamespaceIdentifiers")]
-        public async void Returns_Expected_Error_For_Invalid_Namespace(string connectionString, DatabaseProviderType dbType, string nsName)
-        {
-            var request = new QueryRequest 
-            {
-                ServerType = dbType,
-                ConnectionString = connectionString,
-                Namespace = nsName,
-                Text = ""
-            };
-            var json = JsonConvert.SerializeObject(request);
-
-            var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
-
-            var jsonRes = await res.Content.ReadAsStringAsync();
-            var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
-            Assert.Equal(Api.StatusCode.NamespaceIdentifier, output.Code);
         }
     }
 }

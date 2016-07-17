@@ -3,12 +3,9 @@ namespace ReamQuery.Services
     using System;
     using System.Diagnostics;
     using System.Reflection;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using ReamQuery.Api;
-    using ReamQuery.Shared;
-    using ReamQuery.Helpers;
-    using System.Threading;
+    using ReamQuery.Core;
     using System.Linq;
     using NLog;
     using Newtonsoft.Json;
@@ -101,7 +98,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using ReamQuery.Shared;
+using ReamQuery.Core;
 namespace ##NS## 
 {
     public static class DumpWrapper

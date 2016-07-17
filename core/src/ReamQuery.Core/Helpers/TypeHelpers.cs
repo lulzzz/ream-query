@@ -1,9 +1,10 @@
-namespace ReamQuery.Shared.Helpers
+namespace ReamQuery.Core.Helpers
 {
     using System;
     using System.Linq;
     using System.Collections.Generic;
     using System.Reflection;
+    using ReamQuery.Core.Api;
 
     public static class TypeHelpers
     {

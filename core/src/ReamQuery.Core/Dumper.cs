@@ -1,4 +1,4 @@
-namespace ReamQuery.Shared
+namespace ReamQuery.Core
 {
     using System;
     using System.Collections;
@@ -7,7 +7,8 @@ namespace ReamQuery.Shared
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
-    using ReamQuery.Shared.Helpers;
+    using ReamQuery.Core.Helpers;
+    using ReamQuery.Core.Api;
     using NLog;
 
     public static class Dumper

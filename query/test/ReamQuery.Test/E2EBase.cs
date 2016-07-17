@@ -2,7 +2,7 @@ namespace ReamQuery.Test
 {
     using System.IO;
     using ReamQuery.Models;
-    using ReamQuery.Shared;
+    using ReamQuery.Core.Api;
     using ReamQuery.Helpers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;

@@ -1,12 +1,12 @@
 {
     "version": "1.0.0-*",
-    "name": "ReamQuery.Shared.Test",
+    "name": "ReamQuery.Core.Test",
     "testRunner": "xunit",
     "buildOptions": {
         "emitEntryPoint": false
     },
     "dependencies": {
-        "ReamQuery.Shared": "1.0.0-*",
+        "ReamQuery.Core": "1.0.0-*",
         "Microsoft.AspNetCore.Hosting": "1.0.0-*",
         "Microsoft.AspNetCore.TestHost": "1.0.0-*",
         "Microsoft.Extensions.Configuration": "1.1.0-*",

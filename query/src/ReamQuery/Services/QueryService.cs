@@ -3,12 +3,9 @@ namespace ReamQuery.Services
     using System;
     using System.Diagnostics;
     using System.Reflection;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using ReamQuery.Api;
-    using ReamQuery.Shared;
-    using ReamQuery.Helpers;
-    using System.Threading;
+    using ReamQuery.Core;
     using System.Linq;
 
     public class QueryService
@@ -119,7 +116,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using ReamQuery.Shared;
+using ReamQuery.Core;
 ##SCHEMA##
 namespace ##NS## 
 {

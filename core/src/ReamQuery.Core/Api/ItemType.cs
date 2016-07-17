@@ -1,4 +1,4 @@
-namespace ReamQuery.Shared
+namespace ReamQuery.Core.Api
 {
     public enum ItemType
     {

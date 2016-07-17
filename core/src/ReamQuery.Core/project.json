@@ -1,6 +1,6 @@
 {
     "version": "1.0.0-*",
-    "name": "ReamQuery.Shared",
+    "name": "ReamQuery.Core",
     "buildOptions": {
         "emitEntryPoint": false
     },

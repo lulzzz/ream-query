@@ -3,7 +3,7 @@ namespace ReamQuery.Services
 {
     using System;
     using System.Net.WebSockets;
-    using ReamQuery.Shared;
+    using ReamQuery.Core;
     using ReamQuery.Helpers;
     using Newtonsoft.Json;
     using System.Threading.Tasks;

@@ -3,7 +3,6 @@ namespace ReamQuery.Api
     using System;
     using System.Collections.Generic;
     using ReamQuery.Models;
-    using ReamQuery.Shared;
 
     public class QueryResponse : ResponseBase
     {

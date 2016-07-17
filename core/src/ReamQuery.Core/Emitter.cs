@@ -1,4 +1,4 @@
-namespace ReamQuery.Shared
+namespace ReamQuery.Core
 {
     using System;
     using System.Diagnostics;
@@ -7,6 +7,7 @@ namespace ReamQuery.Shared
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
     using System.Threading;
+    using ReamQuery.Core.Api;
     using NLog;
 
     public class Emitter : IDisposable

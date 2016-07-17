@@ -1,11 +1,12 @@
-namespace ReamQuery.Shared.Test
+namespace ReamQuery.Core.Test
 {
     using System;
     using Xunit;
     using System.Collections.Generic;
     using System.Linq;
-    using ReamQuery.Shared;
+    using ReamQuery.Core;
     using System.Threading;
+    using ReamQuery.Core.Api;
 
     public class Dumper
     {

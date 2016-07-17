@@ -5,7 +5,7 @@ namespace ReamQuery.Test
     using System.Linq;
     using ReamQuery.Api;
     using ReamQuery.Models;
-    using ReamQuery.Shared;
+    using ReamQuery.Core.Api;
     using System.Net.Http;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;

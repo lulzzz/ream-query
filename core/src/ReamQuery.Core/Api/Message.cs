@@ -1,5 +1,4 @@
-
-namespace ReamQuery.Shared
+namespace ReamQuery.Core.Api
 {
     using System;
     using Newtonsoft.Json;

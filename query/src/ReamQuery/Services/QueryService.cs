@@ -8,9 +8,12 @@ namespace ReamQuery.Services
     using ReamQuery.Core;
     using ReamQuery.Helpers;
     using System.Linq;
+    using NLog;
 
     public class QueryService
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         CompileService _compiler;
         DatabaseContextService _databaseContextService;
         SchemaService _schemaService;
@@ -60,14 +63,15 @@ namespace ReamQuery.Services
             if (compileResult.Code == Api.StatusCode.Ok)
             {
                 var method = compileResult.Type.GetMethod("Run");
-                var programInstance = Activator.CreateInstance(compileResult.Type);
+                var programInstance = (IGenerated) Activator.CreateInstance(compileResult.Type);
                 var e2 = sw.Elapsed.TotalMilliseconds;
                 var emitter = new Emitter(input.Id, newInput.ExpressionLocations.Count());
                 _clientService.AddEmitter(emitter);
                 sw.Reset();
                 sw.Start();
-                method.Invoke(programInstance, new object[] { emitter });
+                await programInstance.Run(emitter);
                 var e3 = sw.Elapsed.TotalMilliseconds;
+                Logger.Debug("IGenerated.Run TotalMilliseconds {0}", sw.Elapsed.TotalMilliseconds);
             }
 
             return queryResponse;
@@ -131,15 +135,15 @@ namespace ##NS##
         }
     }
 
-    public class Main : ##DB##
+    public class Main : ##DB##, IGenerated
     {
-        public void Run(Emitter emitter)
+        public async Task Run(Emitter emitter)
         {
             DumpWrapper.Emitter = emitter;
-            Query();
+            await Query();
         }
 
-        void Query()
+        async Task Query()
 {##SOURCE##}
     }
 }

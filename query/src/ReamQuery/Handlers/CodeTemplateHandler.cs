@@ -20,13 +20,13 @@ namespace ReamQuery.Handlers
             return path.Contains("/codetemplate");
         }
 
-        protected override async Task<TemplateResponse> Execute(CodeRequest input)
+        protected override Task<TemplateResponse> Execute(CodeRequest input)
         {
             if (input.Id == Guid.Empty)
             {
                 throw new ArgumentException("Id");
             }
-            return await _codeService.GetTemplate(input);
+            return Task.FromResult(_codeService.GetTemplate(input));
         }
     }
 }

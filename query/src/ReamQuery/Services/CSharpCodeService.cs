@@ -53,20 +53,20 @@ namespace ReamQuery.Services
             if (compileResult.Code == Api.StatusCode.Ok)
             {
                 var method = compileResult.Type.GetMethod("Run");
-                var programInstance = Activator.CreateInstance(compileResult.Type);
+                var programInstance = (IGenerated) Activator.CreateInstance(compileResult.Type);
                 var e2 = sw.Elapsed.TotalMilliseconds;
                 var emitter = new Emitter(input.Id, newInput.ExpressionLocations.Count());
                 _clientService.AddEmitter(emitter);
                 sw.Reset();
                 sw.Start();
-                method.Invoke(programInstance, new object[] { emitter });
+                await programInstance.Run(emitter);
                 var e3 = sw.Elapsed.TotalMilliseconds;
             }
 
             return response;
         }
 
-        public async Task<TemplateResponse> GetTemplate(CodeRequest input) 
+        public TemplateResponse GetTemplate(CodeRequest input) 
         {
             Logger.Debug("{0}", JsonConvert.SerializeObject(input));
             var srcToken = "##SOURCE##";
@@ -112,15 +112,15 @@ namespace ##NS##
         }
     }
 
-    public class Main
+    public class Main : IGenerated
     {
-        public void Run(Emitter emitter)
+        public async Task Run(Emitter emitter)
         {
             DumpWrapper.Emitter = emitter;
-            ExecuteUserCode();
+            await ExecuteUserCode();
         }
 
-        void ExecuteUserCode()
+        async Task ExecuteUserCode()
 {##SOURCE##}
     }
 }

@@ -6,6 +6,7 @@ namespace ReamQuery.Services
     using System.Threading.Tasks;
     using ReamQuery.Api;
     using ReamQuery.Core;
+    using ReamQuery.Helpers;
     using System.Linq;
     using NLog;
     using Newtonsoft.Json;

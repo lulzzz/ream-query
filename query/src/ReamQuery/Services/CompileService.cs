@@ -64,7 +64,7 @@ namespace ReamQuery.Services
                     .Last(x => x.Identifier.ToString() == "Main")
                     .DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
-                    .Single(x => x.Identifier.ToString() == "Query")
+                    .Single(x => x.Identifier.ToString().StartsWith("UserCodeImpl"))
                     .Body
                     .OpenBraceToken
                     .GetLocation()

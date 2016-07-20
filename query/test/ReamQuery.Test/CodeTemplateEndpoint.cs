@@ -27,19 +27,21 @@ namespace ReamQuery.Test
             var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
-            
-            // try to emit
-            var assmName = Guid.NewGuid().ToIdentifierWithPrefix("test");
-            var syntaxTree = CSharpSyntaxTree.ParseText(output.Template);
+
+            // insert some legal code at the offsets returned
+            var userCode = "var x = 10;";
+            var modifiedTemplate = output.Template.InsertTextAt(userCode, output.LineOffset, output.ColumnOffset);
+
+            // setup emitting the source text to check for syntax and other errors
+            var syntaxTree = CSharpSyntaxTree.ParseText(modifiedTemplate);
             var projectjsonPath = ReamQuery.Startup.Configuration["REAMQUERY_BASEDIR"];
             var references = new ProjectJsonWorkspace(projectjsonPath)
                     .CurrentSolution
                     .Projects
                     .SelectMany(x => x.MetadataReferences);
 
-            var compilerOptions = new CSharpCompilationOptions(outputKind: OutputKind.DynamicallyLinkedLibrary);
-            var compilation = CSharpCompilation.Create(assmName)
-                .WithOptions(compilerOptions)
+            var compilation = CSharpCompilation.Create(Guid.NewGuid().ToIdentifierWithPrefix("test"))
+                .WithOptions(new CSharpCompilationOptions(outputKind: OutputKind.DynamicallyLinkedLibrary))
                 .WithReferences(references)
                 .AddSyntaxTrees(new SyntaxTree[] { syntaxTree });
             
@@ -48,14 +50,20 @@ namespace ReamQuery.Test
             var compilationResult = compilation.Emit(stream, options: new EmitOptions());
             var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
             
+            // check we had zero errors from all this
             Assert.Equal(0, errors.Count());
 
+            // check the template looks like expected
             Assert.Equal(StatusCode.Ok, output.Code);
             Assert.NotNull(output.Namespace);
-            var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
+            var nodes = syntaxTree.GetRoot().DescendantNodes();
             Assert.NotEmpty(nodes.OfType<NamespaceDeclarationSyntax>().Where(x => x.Name.ToString() == output.Namespace));
 
+            // check that the contents of the usercode method contains the snippet inserted at the returned offsets
+            var mb = nodes.OfType<MethodDeclarationSyntax>()
+                .Single(x => x.Identifier.ToString().StartsWith("UserCodeImpl"));
 
+            Assert.Contains(userCode, mb.Body.ToString());
         }
     }
 }

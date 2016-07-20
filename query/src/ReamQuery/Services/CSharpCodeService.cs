@@ -34,10 +34,12 @@ namespace ReamQuery.Services
             var newInput = _fragmentService.Fix(input.Text);
             
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
+            var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
 
             var programSource = CodeTemplate
                 .Replace("##SOURCE##", newInput.Text)
-                .Replace("##NS##", assmName);
+                .Replace("##NS##", assmName)
+                .Replace("##IMPLNAME##", implName);
 
             var e1 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
@@ -72,9 +74,12 @@ namespace ReamQuery.Services
             Logger.Debug("{0}", JsonConvert.SerializeObject(input));
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
+            var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
+
             LinePosition position;
             var src = CodeTemplate
                 .Replace("##NS##", assmName)
+                .Replace("##IMPLNAME##", implName)
                 .ReplaceToken(srcToken, string.Empty, out position);
 
             return new TemplateResponse 
@@ -110,9 +115,9 @@ namespace ReamQuery.Services
 "        public async Task Run(Emitter emitter)" + Environment.NewLine + 
 "        {" + Environment.NewLine + 
 "            DumpWrapper.Emitter = emitter;" + Environment.NewLine + 
-"            await ExecuteUserCode();" + Environment.NewLine + 
+"            await ##IMPLNAME##();" + Environment.NewLine + 
 "        }" + Environment.NewLine + 
-"        async Task ExecuteUserCode()" + Environment.NewLine + 
+"        async Task ##IMPLNAME##()" + Environment.NewLine + 
 "{##SOURCE##}" + Environment.NewLine + 
 "    }" + Environment.NewLine + 
 "}";

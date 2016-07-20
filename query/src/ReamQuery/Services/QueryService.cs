@@ -42,12 +42,13 @@ namespace ReamQuery.Services
                 return new QueryResponse { Code = contextResult.Code, Message = contextResult.Message };
             }
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
-
+            var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
             var programSource = CodeTemplate
                 .Replace("##SOURCE##", newInput.Text)
                 .Replace("##NS##", assmName)
                 .Replace("##SCHEMA##", "") // schema is linked
-                .Replace("##DB##", contextResult.Type.ToString());
+                .Replace("##DB##", contextResult.Type.ToString())
+                .Replace("##IMPLNAME##", implName);
 
             var e1 = sw.Elapsed.TotalMilliseconds;
             sw.Reset();
@@ -82,6 +83,7 @@ namespace ReamQuery.Services
         {
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
+            var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
             var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);
             var schemaSrc = schemaResult.Schema;
             
@@ -90,6 +92,7 @@ namespace ReamQuery.Services
                 .Replace("##NS##", assmName)
                 .Replace("##DB##", "Proxy")
                 .Replace("##SCHEMA##", schemaSrc)
+                .Replace("##IMPLNAME##", implName)
                 .ReplaceToken(srcToken, string.Empty, out tokenPos);
 
             return new TemplateResponse 
@@ -130,9 +133,9 @@ namespace ReamQuery.Services
 "        public async Task Run(Emitter emitter)" + Environment.NewLine +
 "        {" + Environment.NewLine +
 "            DumpWrapper.Emitter = emitter;" + Environment.NewLine +
-"            await Query();" + Environment.NewLine +
+"            await ##IMPLNAME##();" + Environment.NewLine +
 "        }" + Environment.NewLine +
-"        async Task Query()" + Environment.NewLine +
+"        async Task ##IMPLNAME##()" + Environment.NewLine +
 "{##SOURCE##}" + Environment.NewLine +
 "    }" + Environment.NewLine +
 "}"

@@ -16,15 +16,16 @@ namespace ReamQuery.Services
     {
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
-        CompileService _compiler;
         FragmentService _fragmentService;
-        ClientService _clientService;
+        HostService _hostService;
 
-        public CSharpCodeService(CompileService compiler, FragmentService fragmentService, ClientService clients)
+        public CSharpCodeService(
+            FragmentService fragmentService,
+            HostService host
+        )
         {
-            _compiler = compiler;
             _fragmentService = fragmentService;
-            _clientService = clients;
+            _hostService = host;
         }
 
         public async Task<CodeResponse> ExecuteCode(CodeRequest input)
@@ -41,32 +42,14 @@ namespace ReamQuery.Services
                 .Replace("##NS##", assmName)
                 .Replace("##IMPLNAME##", implName);
 
-            var e1 = sw.Elapsed.TotalMilliseconds;
-            sw.Reset();
-            sw.Start();
-            var compileResult = _compiler.LoadType(programSource, assmName);
-            var response = new CodeResponse
+            var compileResult = await _hostService.StartGenerated(input.Id, newInput.ExpressionLocations.Count(), programSource, assmName);
+            return new CodeResponse
             {
                 Id = Guid.NewGuid(),
                 Created = DateTime.Now,
                 Diagnostics = compileResult.Diagnostics,
                 Code = compileResult.Code
             };
-
-            if (compileResult.Code == Api.StatusCode.Ok)
-            {
-                var method = compileResult.Type.GetMethod("Run");
-                var programInstance = (IGenerated) Activator.CreateInstance(compileResult.Type);
-                var e2 = sw.Elapsed.TotalMilliseconds;
-                var emitter = new Emitter(input.Id, newInput.ExpressionLocations.Count());
-                _clientService.AddEmitter(emitter);
-                sw.Reset();
-                sw.Start();
-                await programInstance.Run(emitter);
-                var e3 = sw.Elapsed.TotalMilliseconds;
-            }
-
-            return response;
         }
 
         public TemplateResponse GetTemplate(CodeRequest input) 

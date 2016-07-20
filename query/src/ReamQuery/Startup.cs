@@ -40,6 +40,7 @@ namespace ReamQuery
             services.AddSingleton<DatabaseContextService>();
             services.AddSingleton<FragmentService>();
             services.AddSingleton<CSharpCodeService>();
+            services.AddSingleton<HostService>();
         }
     }
 }

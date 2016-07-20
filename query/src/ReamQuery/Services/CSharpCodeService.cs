@@ -28,7 +28,7 @@ namespace ReamQuery.Services
             _hostService = host;
         }
 
-        public async Task<CodeResponse> ExecuteCode(CodeRequest input)
+        public CodeResponse ExecuteCode(CodeRequest input)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -42,7 +42,7 @@ namespace ReamQuery.Services
                 .Replace("##NS##", assmName)
                 .Replace("##IMPLNAME##", implName);
 
-            var compileResult = await _hostService.StartGenerated(input.Id, programSource, assmName);
+            var compileResult = _hostService.StartGenerated(input.Id, programSource, assmName);
             return new CodeResponse
             {
                 Id = Guid.NewGuid(),

@@ -20,13 +20,13 @@ namespace ReamQuery.Handlers
             return path.Contains("/executecode");
         }
 
-        protected override async Task<CodeResponse> Execute(CodeRequest input)
+        protected override Task<CodeResponse> Execute(CodeRequest input)
         {
             if (input.Id == Guid.Empty)
             {
                 throw new ArgumentException("Id");
             }
-            return await _service.ExecuteCode(input);
+            return Task.FromResult(_service.ExecuteCode(input));
         }
     }
 }

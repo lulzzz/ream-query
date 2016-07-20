@@ -6,35 +6,50 @@ namespace ReamQuery.Test
     using ReamQuery.Core.Api;
     using Newtonsoft.Json;
     using Xunit;
+    using System.Linq;
     using System.Collections.Generic;
 
     public class ExecuteCodeEndpoint : E2EBase
     {
         protected override string EndpointAddress { get { return  "/executecode"; } }
         
-        //[Fact]
-        public async void Solves_Turing_Problem()
+        [Fact]
+        public async void Handles_Endless_Queries()
         {
             var id = Guid.NewGuid();
             var code = @"
-while (true) {
-    var x = 1;
-    x.Dump();
-}
+
+    var x = 42;
+    while (true) {
+        System.Threading.Thread.Sleep(1000);
+        x.Dump();
+    }
 ";
             var request = new CodeRequest { Text = code, Id = id };
             var json = JsonConvert.SerializeObject(request);
             var res = await _client
                 .PostAsync(EndpointAddress, new StringContent(json))
                 ;
-                
-            var msgs = GetMessages();
+
+            var msgs = GetMessages(timeoutSeconds: 5);
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
-            var str = JsonConvert.SerializeObject(msgs);
-            Console.WriteLine("GetMessages:");
-            Console.WriteLine(str);
+
+            var expected = JsonConvert.SerializeObject(new Message
+            {
+                Session = id,
+                Type = ItemType.SingleAtomic,
+                Values = new object[]
+                {
+                    new Column { Name = "int", Type = "System.Int32" },
+                    42
+                }
+            });
+
+            Assert.True(1 < msgs.Count(), "More then 1 msg expected");
+            Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
+            Assert.Contains(expected, msgs);
         }
 
         [Theory, MemberData("Execute_Code_Samples")]

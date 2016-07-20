@@ -40,32 +40,30 @@ namespace ReamQuery.Test
             _wsTask = StartSocketTask();
         }
 
-        protected IEnumerable<string> GetMessages()
+        protected IEnumerable<string> GetMessages(int timeoutSeconds = 5)
         {
-            var timeout = Task.Delay(5000);
+            var timeout = Task.Delay(timeoutSeconds * 1000);
             var done = Task.WaitAny(_wsTask, timeout);
-            if (done == 0)
-            {
-                return _wsTask.Result;
-            }
-            return new string[] {};
+            return _msgs;
         }
 
-        Task<IEnumerable<string>> _wsTask;
 
-        async Task<IEnumerable<string>> StartSocketTask()
+        List<string> _msgs = new List<string>();
+
+        Task _wsTask;
+
+        async Task StartSocketTask()
         {
             bool _closeFlag = false;
             long _expectedCount = -1;
             long _receivedCount = 0;
-            var list = new List<string>();
             var ws = await _wsClient.ConnectAsync(new System.Uri("ws://localhost/ws"), System.Threading.CancellationToken.None);
             byte[] buffer = new byte[1024 * 4];
             while(ws.State == WebSocketState.Open)
             {
                 var json = await ws.ReadString();
                 var msg = JsonConvert.DeserializeObject<Message>(json);
-                list.Add(json);
+                _msgs.Add(json);
                 _receivedCount++;
                 if(msg.Type == ItemType.Close && !_closeFlag)
                 {
@@ -77,7 +75,7 @@ namespace ReamQuery.Test
                     break;
                 }
             }
-            return list;
+            return;
         }
 
         protected static IEnumerable<object> WorldDatabase()

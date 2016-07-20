@@ -21,28 +21,36 @@ namespace ReamQuery.Services
 
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public async Task<CompileResult> StartGenerated(Guid id, string source, string assmName, MetadataReference context = null) 
+        public CompileResult StartGenerated(Guid id, string source, string assmName, MetadataReference context = null) 
         {
             var sw = new Stopwatch();
             sw.Start();
             var compileResult = _compiler.LoadType(source, assmName, context);
             if (compileResult.Code == Api.StatusCode.Ok)
             {
-                using (var emitter = new Emitter(id))
+                var t = new Task(async () =>
                 {
                     var programInstance = (IGenerated) Activator.CreateInstance(compileResult.Type);
-                    var e2 = sw.Elapsed.TotalMilliseconds;
-                    _clientService.AddEmitter(emitter); // should unsub when disposing
+                    var e1 = sw.Elapsed.TotalMilliseconds;
                     sw.Reset();
                     sw.Start();
-                    await programInstance.Run(emitter);
-                    emitter.Complete();
-                    var e3 = sw.Elapsed.TotalMilliseconds;
-                    Logger.Debug("IGenerated.Run TotalMilliseconds {0}", sw.Elapsed.TotalMilliseconds);
-                }
+                    await StartInternal(id, programInstance);
+                    var e2 = sw.Elapsed.TotalMilliseconds;
+                    Logger.Debug("IGenerated.Run TotalMilliseconds {0} (startup: {1} ms)", e2, e1);
+                });
+                t.Start();
             }
-
             return compileResult;
+        }
+
+        async Task StartInternal(Guid id, IGenerated instance)
+        {
+            using (var emitter = new Emitter(id))
+            {
+                _clientService.AddEmitter(emitter); // should unsub when disposing
+                await instance.Run(emitter);
+                emitter.Complete();
+            }
         }
     }
 }

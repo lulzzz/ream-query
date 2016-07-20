@@ -56,8 +56,7 @@ namespace ReamQuery
             var ctx = dbCtx.Item1;
             if (!withUsings)
             {
-                var x = 
-                ctx = StripHeaderLines(3, ctx);
+                ctx = ctx.SkipLines(3);
             }
             else
             {
@@ -69,7 +68,7 @@ namespace ReamQuery
             Logger.Info("ContextFile.Count {0}", resFiles.ContextFile.Count());
             foreach(var fpath in resFiles.EntityTypeFiles)
             {
-                output.Append(StripHeaderLines(4, InMemoryFiles.RetrieveFileContents(_tempFolder, System.IO.Path.GetFileName(fpath))));
+                output.Append(InMemoryFiles.RetrieveFileContents(_tempFolder, System.IO.Path.GetFileName(fpath)).SkipLines(4));
             }
             
             return new SchemaResult 
@@ -77,11 +76,6 @@ namespace ReamQuery
                 Schema = output.ToString(),
                 DefaultTable = dbCtx.Item2
             };
-        }
-
-        string StripHeaderLines(int lines, string contents) 
-        {
-            return string.Join("\n", contents.Split('\n').Skip(lines));
         }
 
         Tuple<string, string> CreateContext(string ctx, bool isLibrary = true) 
@@ -107,25 +101,22 @@ namespace ReamQuery
             return Tuple.Create(newCtx + proxyCtx + _proxyPost, firstTable);
         }
 
-        string _refs = @"
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-";
+        string _refs =  Environment.NewLine +
+"using System;" + Environment.NewLine + 
+"using System.Collections.Generic;" + Environment.NewLine + 
+"using System.ComponentModel.DataAnnotations;" + Environment.NewLine + 
+"using System.ComponentModel.DataAnnotations.Schema;" + Environment.NewLine;
 
-        string _instance = @"
-        public static Lazy<Ctx> Instance = new Lazy<Ctx>(() => new Ctx());
-";
+        string _instance =  Environment.NewLine + Environment.NewLine +
+"        public static Lazy<Ctx> Instance = new Lazy<Ctx>(() => new Ctx());" +  Environment.NewLine;
 
-        string _proxyPre = @"
-    public class ##PROXY##
-    {
-";
+        string _proxyPre = Environment.NewLine +
+"    public class ##PROXY##" + Environment.NewLine +
+"    {" + Environment.NewLine;
 
-        string _proxyPost = @"
-    }
-}
-";
+        string _proxyPost = Environment.NewLine +
+"    }" + Environment.NewLine +
+"}" + Environment.NewLine;
+
     }
 }

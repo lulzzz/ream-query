@@ -9,6 +9,7 @@ namespace ReamQuery.Services
     using ReamQuery.Helpers;
     using System.Linq;
     using NLog;
+    using Microsoft.CodeAnalysis.Text;
 
     public class QueryService
     {
@@ -84,69 +85,57 @@ namespace ReamQuery.Services
             var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);
             var schemaSrc = schemaResult.Schema;
             
+            LinePosition tokenPos;
             var src = _template
                 .Replace("##NS##", assmName)
                 .Replace("##DB##", "Proxy")
-                .Replace("##SCHEMA##", schemaSrc);
-                
-            var srcLineOffset = -1;
-            var lines = src.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-            for(var i = lines.Length - 1; i > 0; i--) {
-                if (lines[i].Contains(srcToken)) {
-                    lines[i] = lines[i].Replace(srcToken, string.Empty);
-                    srcLineOffset = i + 1;
-                    break;
-                }
-            }
-            var fullSrc = string.Join("\n", lines); // todo: newline constant?
-            // the usage of the template should not require mapping the column value
+                .Replace("##SCHEMA##", schemaSrc)
+                .ReplaceToken(srcToken, string.Empty, out tokenPos);
+
             return new TemplateResponse 
             {
-                Template = fullSrc,
+                Template = src,
                 Namespace = assmName,
-                ColumnOffset = 0,
-                LineOffset = srcLineOffset,
-                DefaultQuery = string.Format("{0}.Take(100).Dump();\n\n", schemaResult.DefaultTable)
+                LineOffset = tokenPos.Line,
+                ColumnOffset = tokenPos.Character,
+                DefaultQuery = string.Format("{0}.Take(100).Dump();{1}{1}", schemaResult.DefaultTable, Environment.NewLine)
             };
         }
 
-        string _template = @"using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using ReamQuery.Core;
-##SCHEMA##
-namespace ##NS## 
-{
-    public static class DumpWrapper
-    {
-        public static Emitter Emitter;
-
-        public static T Dump<T>(this T o)
-        {
-            return o.Dump(Emitter);
-        }
-    }
-
-    public class Main : ##DB##, IGenerated
-    {
-        public async Task Run(Emitter emitter)
-        {
-            DumpWrapper.Emitter = emitter;
-            await Query();
-        }
-
-        async Task Query()
-{##SOURCE##}
-    }
-}
-";
+        string _template = "using System;" + Environment.NewLine +
+"using System.Collections;" + Environment.NewLine +
+"using System.Collections.Generic;" + Environment.NewLine +
+"using System.Linq;" + Environment.NewLine +
+"using System.Reflection;" + Environment.NewLine +
+"using System.Threading;" + Environment.NewLine +
+"using System.Threading.Tasks;" + Environment.NewLine +
+"using System.ComponentModel.DataAnnotations;" + Environment.NewLine +
+"using System.ComponentModel.DataAnnotations.Schema;" + Environment.NewLine +
+"using Microsoft.EntityFrameworkCore;" + Environment.NewLine +
+"using Microsoft.EntityFrameworkCore.Metadata;" + Environment.NewLine +
+"using ReamQuery.Core;" + Environment.NewLine +
+"##SCHEMA##" + Environment.NewLine +
+"namespace ##NS##" + Environment.NewLine +
+"{" + Environment.NewLine +
+"    public static class DumpWrapper" + Environment.NewLine +
+"    {" + Environment.NewLine +
+"        public static Emitter Emitter;" + Environment.NewLine +
+"        public static T Dump<T>(this T o)" + Environment.NewLine +
+"        {" + Environment.NewLine +
+"            return o.Dump(Emitter);" + Environment.NewLine +
+"        }" + Environment.NewLine +
+"    }" + Environment.NewLine +
+"    public class Main : ##DB##, IGenerated" + Environment.NewLine +
+"    {" + Environment.NewLine +
+"        public async Task Run(Emitter emitter)" + Environment.NewLine +
+"        {" + Environment.NewLine +
+"            DumpWrapper.Emitter = emitter;" + Environment.NewLine +
+"            await Query();" + Environment.NewLine +
+"        }" + Environment.NewLine +
+"        async Task Query()" + Environment.NewLine +
+"{##SOURCE##}" + Environment.NewLine +
+"    }" + Environment.NewLine +
+"}"
+;
     }
 }

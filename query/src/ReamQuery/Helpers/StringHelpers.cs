@@ -1,8 +1,8 @@
 namespace ReamQuery.Helpers
 {
     using System;
+    using System.Linq;
     using System.Text.RegularExpressions;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Text;
 
     public static class StringHelpers
@@ -12,6 +12,12 @@ namespace ReamQuery.Helpers
             var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             lines[line] = lines[line].Substring(0, column) + newText + lines[line].Substring(column);
             return string.Join(Environment.NewLine, lines);
+        }
+
+        public static string SkipLines(this string text, int linesToSkip)
+        {
+            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            return string.Join(Environment.NewLine, lines.Skip(linesToSkip));
         }
 
         static Regex nlRegex = new Regex(@"(\n|\r\n)", RegexOptions.Multiline);

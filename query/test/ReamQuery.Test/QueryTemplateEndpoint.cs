@@ -36,8 +36,19 @@ namespace ReamQuery.Test
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
 
-            
-            // try to emit
+            // Console.WriteLine("ColumnOffset: {0}, LineOffset: {1}", output.ColumnOffset, output.LineOffset);
+            // Console.WriteLine(">>");
+
+            // var xsrc = string.Join("\n", output.Template.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Select((x, idx) => idx + ":" + x));
+            // Console.WriteLine(xsrc);
+            // Console.WriteLine(">>");
+            // Console.WriteLine(">>");
+            // Console.WriteLine(">>");
+
+            // insert some legal code at the offsets returned
+            // var userCode = "city.Take(10);";
+            // var modifiedTemplate = output.Template.Substring(0, output.Template)
+            // setup emitting the source text to check for syntax and other errors
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("test");
             var syntaxTree = CSharpSyntaxTree.ParseText(output.Template);
             var projectjsonPath = ReamQuery.Startup.Configuration["REAMQUERY_BASEDIR"];
@@ -56,12 +67,14 @@ namespace ReamQuery.Test
             var stream = new MemoryStream();
             var compilationResult = compilation.Emit(stream, options: new EmitOptions());
             var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
+
+            // check we had zero errors
             Assert.Equal(0, errors.Count());
 
+            // check the stuff looks like expected
             var ns = output.Namespace;
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
             var tbls = nodes.OfType<ClassDeclarationSyntax>();
-
             Assert.Equal(StatusCode.Ok, output.Code);
             Assert.NotEmpty(nodes.OfType<NamespaceDeclarationSyntax>().Where(x => x.Name.ToString() == output.Namespace));
             Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "city"));

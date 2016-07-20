@@ -43,7 +43,7 @@ namespace ReamQuery.Services
             }
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
 
-            var programSource = _template
+            var programSource = CodeTemplate
                 .Replace("##SOURCE##", newInput.Text)
                 .Replace("##NS##", assmName)
                 .Replace("##SCHEMA##", "") // schema is linked
@@ -86,7 +86,7 @@ namespace ReamQuery.Services
             var schemaSrc = schemaResult.Schema;
             
             LinePosition tokenPos;
-            var src = _template
+            var src = CodeTemplate
                 .Replace("##NS##", assmName)
                 .Replace("##DB##", "Proxy")
                 .Replace("##SCHEMA##", schemaSrc)
@@ -102,7 +102,7 @@ namespace ReamQuery.Services
             };
         }
 
-        string _template = "using System;" + Environment.NewLine +
+        static readonly string CodeTemplate = "using System;" + Environment.NewLine +
 "using System.Collections;" + Environment.NewLine +
 "using System.Collections.Generic;" + Environment.NewLine +
 "using System.Linq;" + Environment.NewLine +

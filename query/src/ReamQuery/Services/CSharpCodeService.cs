@@ -10,6 +10,7 @@ namespace ReamQuery.Services
     using System.Linq;
     using NLog;
     using Newtonsoft.Json;
+    using Microsoft.CodeAnalysis.Text;
 
     public class CSharpCodeService
     {
@@ -34,7 +35,7 @@ namespace ReamQuery.Services
             
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
 
-            var programSource = _template
+            var programSource = CodeTemplate
                 .Replace("##SOURCE##", newInput.Text)
                 .Replace("##NS##", assmName);
 
@@ -71,59 +72,49 @@ namespace ReamQuery.Services
             Logger.Debug("{0}", JsonConvert.SerializeObject(input));
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
-            var src = _template.Replace("##NS##", assmName);
-            var srcLineOffset = -1;
-            var lines = src.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-            for(var i = lines.Length - 1; i > 0; i--) {
-                if (lines[i].Contains(srcToken)) {
-                    lines[i] = lines[i].Replace(srcToken, string.Empty);
-                    srcLineOffset = i + 1;
-                    break;
-                }
-            }
-            var fullSrc = string.Join("\n", lines); // todo: newline constant?
-            // the usage of the template should not require mapping the column value
+            LinePosition position;
+            var src = CodeTemplate
+                .Replace("##NS##", assmName)
+                .ReplaceToken(srcToken, string.Empty, out position);
+
             return new TemplateResponse 
             {
-                Template = fullSrc,
+                Template = src,
                 Namespace = assmName,
-                ColumnOffset = 0,
-                LineOffset = srcLineOffset
+                LineOffset = position.Line,
+                ColumnOffset = position.Character,
             };
         }
 
-        string _template = @"using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using ReamQuery.Core;
-namespace ##NS## 
-{
-    public static class DumpWrapper
-    {
-        public static Emitter Emitter;
-
-        public static T Dump<T>(this T o)
-        {
-            return o.Dump(Emitter);
-        }
-    }
-
-    public class Main : IGenerated
-    {
-        public async Task Run(Emitter emitter)
-        {
-            DumpWrapper.Emitter = emitter;
-            await ExecuteUserCode();
-        }
-
-        async Task ExecuteUserCode()
-{##SOURCE##}
-    }
-}
-";
+        static readonly string CodeTemplate = 
+"using System;" + Environment.NewLine + 
+"using System.Collections;" + Environment.NewLine + 
+"using System.Collections.Generic;" + Environment.NewLine + 
+"using System.Linq;" + Environment.NewLine + 
+"using System.Reflection;" + Environment.NewLine + 
+"using System.Threading;" + Environment.NewLine + 
+"using System.Threading.Tasks;" + Environment.NewLine + 
+"using ReamQuery.Core;" + Environment.NewLine + 
+"namespace ##NS##" + Environment.NewLine + 
+"{" + Environment.NewLine + 
+"    public static class DumpWrapper" + Environment.NewLine + 
+"    {" + Environment.NewLine + 
+"        public static Emitter Emitter;" + Environment.NewLine + 
+"        public static T Dump<T>(this T o)" + Environment.NewLine + 
+"        {" + Environment.NewLine + 
+"            return o.Dump(Emitter);" + Environment.NewLine + 
+"        }" + Environment.NewLine + 
+"    }" + Environment.NewLine + 
+"    public class Main : IGenerated" + Environment.NewLine + 
+"    {" + Environment.NewLine + 
+"        public async Task Run(Emitter emitter)" + Environment.NewLine + 
+"        {" + Environment.NewLine + 
+"            DumpWrapper.Emitter = emitter;" + Environment.NewLine + 
+"            await ExecuteUserCode();" + Environment.NewLine + 
+"        }" + Environment.NewLine + 
+"        async Task ExecuteUserCode()" + Environment.NewLine + 
+"{##SOURCE##}" + Environment.NewLine + 
+"    }" + Environment.NewLine + 
+"}";
     }
 }

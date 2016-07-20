@@ -8,6 +8,11 @@ namespace ReamQuery.Test
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.DotNet.ProjectModel.Workspaces;
+    using Microsoft.CodeAnalysis;
+    using ReamQuery.Helpers;
+    using System.IO;
+    using Microsoft.CodeAnalysis.Emit;
 
     public class CodeTemplateEndpoint : E2EBase
     {
@@ -23,10 +28,35 @@ namespace ReamQuery.Test
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
             
+            // try to emit
+            var assmName = Guid.NewGuid().ToIdentifierWithPrefix("test");
+            var syntaxTree = CSharpSyntaxTree.ParseText(output.Template);
+            var projectjsonPath = ReamQuery.Startup.Configuration["REAMQUERY_BASEDIR"];
+            var references = new ProjectJsonWorkspace(projectjsonPath)
+                    .CurrentSolution
+                    .Projects
+                    .SelectMany(x => x.MetadataReferences);
+
+            var compilerOptions = new CSharpCompilationOptions(outputKind: OutputKind.DynamicallyLinkedLibrary);
+            var compilation = CSharpCompilation.Create(assmName)
+                .WithOptions(compilerOptions)
+                .WithReferences(references)
+                .AddSyntaxTrees(new SyntaxTree[] { syntaxTree });
+            
+            // emit
+            var stream = new MemoryStream();
+            var compilationResult = compilation.Emit(stream, options: new EmitOptions());
+            var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
+            Console.WriteLine(output.Template);
+            
+            Assert.Equal(0, errors.Count());
+
             Assert.Equal(StatusCode.Ok, output.Code);
             Assert.NotNull(output.Namespace);
             var nodes = CSharpSyntaxTree.ParseText(output.Template).GetRoot().DescendantNodes();
             Assert.NotEmpty(nodes.OfType<NamespaceDeclarationSyntax>().Where(x => x.Name.ToString() == output.Namespace));
+
+
         }
     }
 }

@@ -47,7 +47,6 @@ namespace ReamQuery.Test
             var stream = new MemoryStream();
             var compilationResult = compilation.Emit(stream, options: new EmitOptions());
             var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
-            Console.WriteLine(output.Template);
             
             Assert.Equal(0, errors.Count());
 

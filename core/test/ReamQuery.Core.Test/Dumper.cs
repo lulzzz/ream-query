@@ -22,11 +22,12 @@ namespace ReamQuery.Core.Test
         public void Dumps_Typed_Null_Value()
         {
             var sessionId = Guid.NewGuid();
-            var emitter = new Emitter(sessionId, 1);
+            var emitter = new Emitter(sessionId);
             emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
             IEnumerable<string> o = null;
 
             o.Dump(emitter);
+            emitter.Complete();
 
             var emptyMsg = RecordedMessages.Single(m => m.Type == ItemType.Empty);
             var col = (Column)emptyMsg.Values.First();
@@ -36,10 +37,11 @@ namespace ReamQuery.Core.Test
         [Theory, MemberData("Simple_Value_Expressions")]
         public void Dumps_Simple_Value_Expressions(Guid sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
-            var emitter = new Emitter(sessionId, 1);
+            var emitter = new Emitter(sessionId);
             emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
 
             dumpExpression.Dump(emitter);
+            emitter.Complete();
 
             Assert.All(expectedMsgs, (expect) => {
                 Assert.Single(RecordedMessages, (msg) => msg.CompareWith(expect));

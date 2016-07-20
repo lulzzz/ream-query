@@ -23,20 +23,15 @@ namespace ReamQuery.Core
         Subject<Message> _close = new Subject<Message>();
         int _tableCounter = 0;
         int _headerCounter = 0;
-        int _dumpCount;
 
         Guid _session;
 
         int _emittedCount = 0;
+        bool _completed = false;
         
-        public Emitter(Guid session, int dumpCount)
+        public Emitter(Guid session)
         {
-            if (dumpCount < 0)
-            {
-                throw new ArgumentOutOfRangeException("dumpCount");
-            }
-            Logger.Debug("session {0}, dumpCount {1}", session, dumpCount);
-            _dumpCount = dumpCount;
+            Logger.Debug("session {0}", session);
             _session = session;
             Messages = _tables
                 .Merge(_headers)
@@ -46,21 +41,19 @@ namespace ReamQuery.Core
                 .Merge(_close);
         }
 
-        public bool Complete()
+        public void Complete()
         {
-            var remaining = Interlocked.Decrement(ref _dumpCount);
-            var done = remaining <= 0;
-            if (done)
+            if (_completed)
             {
-                Logger.Debug("Completed, emitted {0}", _emittedCount + 1);
-                _close.OnNext(new Message
-                {
-                    Session = _session,
-                    Type = ItemType.Close,
-                    Values = new object[] { _emittedCount + 1 } 
-                });
+                throw new InvalidOperationException("completed");
             }
-            return done;
+            Logger.Debug("Completed, emitted {0}", _emittedCount + 1);
+            _close.OnNext(new Message
+            {
+                Session = _session,
+                Type = ItemType.Close,
+                Values = new object[] { _emittedCount + 1 } 
+            });
         }
 
         public int Table(string title)

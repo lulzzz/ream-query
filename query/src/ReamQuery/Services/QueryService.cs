@@ -43,7 +43,7 @@ namespace ReamQuery.Services
                 .Replace("##DB##", contextResult.Type.ToString())
                 .Replace("##IMPLNAME##", implName);
 
-            var compileResult = await _hostService.StartGenerated(input.Id, newInput.ExpressionLocations.Count(), programSource, assmName, contextResult.Reference);
+            var compileResult = await _hostService.StartGenerated(input.Id, programSource, assmName, contextResult.Reference);
             return new QueryResponse
             {
                 Id = Guid.NewGuid(),

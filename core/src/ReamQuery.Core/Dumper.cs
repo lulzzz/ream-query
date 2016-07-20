@@ -118,12 +118,6 @@ namespace ReamQuery.Core
                         }
                     }
                 }
-                var dispose = emitter.Complete();
-                if (dispose)
-                {
-                    Logger.Debug("Disposing emitter");
-                    emitter.Dispose();
-                }
             }
             catch (Exception exn)
             {

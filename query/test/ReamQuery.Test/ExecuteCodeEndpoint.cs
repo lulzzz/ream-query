@@ -11,6 +11,31 @@ namespace ReamQuery.Test
     public class ExecuteCodeEndpoint : E2EBase
     {
         protected override string EndpointAddress { get { return  "/executecode"; } }
+        
+        //[Fact]
+        public async void Solves_Turing_Problem()
+        {
+            var id = Guid.NewGuid();
+            var code = @"
+while (true) {
+    var x = 1;
+    x.Dump();
+}
+";
+            var request = new CodeRequest { Text = code, Id = id };
+            var json = JsonConvert.SerializeObject(request);
+            var res = await _client
+                .PostAsync(EndpointAddress, new StringContent(json))
+                ;
+                
+            var msgs = GetMessages();
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
+            Assert.Equal(StatusCode.Ok, output.Code);
+            var str = JsonConvert.SerializeObject(msgs);
+            Console.WriteLine("GetMessages:");
+            Console.WriteLine(str);
+        }
 
         [Theory, MemberData("Execute_Code_Samples")]
         public async void Returns_Expected_Data_For_Code_Sample(Guid id, string code, string[] expectedMsgs)

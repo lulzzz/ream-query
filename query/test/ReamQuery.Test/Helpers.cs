@@ -10,8 +10,8 @@ namespace ReamQuery.Test
         [Fact]
         public void String_InsertTextAt()
         {
-            var inp = "\r\n  text\r\n";
-            var exp = "\r\n new text\r\n";
+            var inp = Environment.NewLine + "  text" + Environment.NewLine;
+            var exp = Environment.NewLine + " new text" + Environment.NewLine;
             var output = inp.InsertTextAt("new", 1, 1);
 
             Assert.Equal(exp, output);
@@ -21,7 +21,7 @@ namespace ReamQuery.Test
         public void String_NormalizeNewlines_And_InsertTextAt()
         {
             var inp = "\r\n  text\n";
-            var exp = "\r\n new text\r\n";
+            var exp = Environment.NewLine + " new text" + Environment.NewLine;
             var output = inp.NormalizeNewlines().InsertTextAt("new", 1, 1);
 
             Assert.Equal(exp, output);
@@ -30,8 +30,8 @@ namespace ReamQuery.Test
         [Fact]
         public void String_NormalizeNewlines()
         {
-            var inp = "\r\n text\n";
-            var exp = Environment.NewLine + " text" + Environment.NewLine;
+            var inp = "\r\n  text\n";
+            var exp = Environment.NewLine + "  text" + Environment.NewLine;
             var output = inp.NormalizeNewlines();
 
             Assert.Equal(exp, output);

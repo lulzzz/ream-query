@@ -48,8 +48,7 @@ namespace ReamQuery.Test
             });
             Console.WriteLine("Handles_Endless_Queries msgs.Count: {0}", msgs.Count());
             Assert.True(1 < msgs.Count(), "More then 1 msg expected");
-            // is sensitive on CI?
-            // Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
+            Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
             Assert.Contains(expected, msgs);
         }
 

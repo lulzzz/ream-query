@@ -44,7 +44,7 @@ namespace ReamQuery.Test
         {
             if (timeoutSeconds <= 0)
             {
-                timeoutSeconds = IsContinousIntegration() ? 5 : 10;
+                timeoutSeconds = IsContinousIntegration() ? 10 : 5;
             }
             var timeout = Task.Delay(timeoutSeconds * 1000);
             var done = Task.WaitAny(_wsTask, timeout);
@@ -89,15 +89,15 @@ namespace ReamQuery.Test
             var sqlite = SqliteConnectionString();
             var conns = new object[][]
             {
-                //new object[] { sqlite, DatabaseProviderType.Sqlite }
+                new object[] { sqlite, DatabaseProviderType.Sqlite }
             };
             if (!string.IsNullOrWhiteSpace(sqlServer))
             {
-                //conns = conns.Concat(new object[][] { new object[] { sqlServer, DatabaseProviderType.SqlServer }}).ToArray();
+                conns = conns.Concat(new object[][] { new object[] { sqlServer, DatabaseProviderType.SqlServer }}).ToArray();
             }
             if (!string.IsNullOrWhiteSpace(npgsql))
             {
-                //conns = conns.Concat(new object[][] { new object[] { npgsql, DatabaseProviderType.NpgSql }}).ToArray();
+                conns = conns.Concat(new object[][] { new object[] { npgsql, DatabaseProviderType.NpgSql }}).ToArray();
             }
             return conns;
         }
@@ -112,7 +112,7 @@ namespace ReamQuery.Test
         protected static IEnumerable<object> SqlServer_TypeTestDatabase()
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_TYPETEST_SQLSERVER");
-            if (true || string.IsNullOrWhiteSpace(sqlServer))
+            if (string.IsNullOrWhiteSpace(sqlServer))
             {
                 return new object[][] { }; // skips if not available
             }
@@ -132,11 +132,11 @@ namespace ReamQuery.Test
             var randomStuff = "54¤#e54&¤/7wu peiur0*-ø92?´3=ur932trxy|3";
             return new object[][]
             {
-                // new object[] { sqlServerConn1, DatabaseProviderType.SqlServer, Api.StatusCode.ServerUnreachable },
-                // new object[] { sqlServerConn1, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
-                // new object[] { npgsqlConn1, DatabaseProviderType.NpgSql, Api.StatusCode.ServerUnreachable },
-                // new object[] { randomStuff, DatabaseProviderType.SqlServer, Api.StatusCode.ConnectionStringSyntax },
-                // new object[] { randomStuff, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
+                new object[] { sqlServerConn1, DatabaseProviderType.SqlServer, Api.StatusCode.ServerUnreachable },
+                new object[] { sqlServerConn1, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
+                new object[] { npgsqlConn1, DatabaseProviderType.NpgSql, Api.StatusCode.ServerUnreachable },
+                new object[] { randomStuff, DatabaseProviderType.SqlServer, Api.StatusCode.ConnectionStringSyntax },
+                new object[] { randomStuff, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
             };
         }
     }

@@ -40,8 +40,12 @@ namespace ReamQuery.Test
             _wsTask = StartSocketTask();
         }
 
-        protected IEnumerable<string> GetMessages(int timeoutSeconds = 5)
+        protected IEnumerable<string> GetMessages(int timeoutSeconds = 0)
         {
+            if (timeoutSeconds <= 0)
+            {
+                timeoutSeconds = IsContinousIntegration() ? 5 : 10;
+            }
             var timeout = Task.Delay(timeoutSeconds * 1000);
             var done = Task.WaitAny(_wsTask, timeout);
             return _msgs;
@@ -114,6 +118,11 @@ namespace ReamQuery.Test
             }
             var conns = new object[][] { new object[] { sqlServer }};
             return conns;
+        }
+
+        protected bool IsContinousIntegration()
+        {
+            return !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("CI"));
         }
 
         protected static IEnumerable<object> InvalidConnectionStrings()

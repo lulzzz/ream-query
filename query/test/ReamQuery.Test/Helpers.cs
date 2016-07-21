@@ -5,7 +5,7 @@ namespace ReamQuery.Test
     using ReamQuery.Helpers;
     using Microsoft.CodeAnalysis.Text;
 
-    public class Helpers
+    public abstract class Helpers
     {
         [Fact]
         public void String_InsertTextAt()

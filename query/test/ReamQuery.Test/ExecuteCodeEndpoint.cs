@@ -52,7 +52,7 @@ namespace ReamQuery.Test
             Assert.Contains(expected, msgs);
         }
 
-        [Theory, MemberData("Execute_Code_Samples")]
+        //[Theory, MemberData("Execute_Code_Samples")]
         public async void Returns_Expected_Data_For_Code_Sample(Guid id, string code, string[] expectedMsgs)
         {
             var request = new CodeRequest { Text = code, Id = id };

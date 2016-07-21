@@ -37,7 +37,7 @@ namespace ReamQuery.Services
             {
                 // System.Threading.Thread.Sleep(1000);
                 var json = JsonConvert.SerializeObject(msg);
-                Logger.Debug("JSON emitted msg nr {1}, {0}", json, msgNr++);
+                Logger.Debug("{2}: JSON emitted msg nr {1}, {0}", json, msgNr++, emitter.Session);
                 await _client.SendString(json);
             });
         }

@@ -54,7 +54,7 @@ namespace ReamQuery.Services
 
         public TemplateResponse GetTemplate(CodeRequest input) 
         {
-            Logger.Debug("{0}", JsonConvert.SerializeObject(input));
+            Logger.Debug("{1}: {0}", JsonConvert.SerializeObject(input), input.Id);
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");

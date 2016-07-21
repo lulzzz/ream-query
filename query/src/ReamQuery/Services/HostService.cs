@@ -36,7 +36,7 @@ namespace ReamQuery.Services
                     sw.Start();
                     await StartInternal(id, programInstance);
                     var e2 = sw.Elapsed.TotalMilliseconds;
-                    Logger.Debug("IGenerated.Run TotalMilliseconds {0} (startup: {1} ms)", e2, e1);
+                    Logger.Debug("{2}: IGenerated.Run TotalMilliseconds {0} (startup: {1} ms)", e2, e1, id);
                 });
                 t.Start();
             }

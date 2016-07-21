@@ -24,7 +24,7 @@ namespace ReamQuery.Core
         int _tableCounter = 0;
         int _headerCounter = 0;
 
-        Guid _session;
+        public readonly Guid Session;
 
         int _emittedCount = 0;
         bool _completed = false;
@@ -32,7 +32,7 @@ namespace ReamQuery.Core
         public Emitter(Guid session)
         {
             Logger.Debug("session {0}", session);
-            _session = session;
+            Session = session;
             Messages = _tables
                 .Merge(_headers)
                 .Merge(_rows)
@@ -50,7 +50,7 @@ namespace ReamQuery.Core
             Logger.Debug("Completed, emitted {0}", _emittedCount + 1);
             _close.OnNext(new Message
             {
-                Session = _session,
+                Session = Session,
                 Type = ItemType.Close,
                 Values = new object[] { _emittedCount + 1 } 
             });
@@ -64,7 +64,7 @@ namespace ReamQuery.Core
             _tables.OnNext(new Message
             {
                 Id = id,
-                Session = _session,
+                Session = Session,
                 Type = ItemType.Table,
                 Values = new object[] { title }
             });
@@ -78,7 +78,7 @@ namespace ReamQuery.Core
             var id = Interlocked.Increment(ref _headerCounter);
             var msg = new Message
             {
-                Session = _session,
+                Session = Session,
                 Id = id,
                 Parent = tableId,
                 Type = ItemType.Header,
@@ -94,7 +94,7 @@ namespace ReamQuery.Core
             Interlocked.Increment(ref _emittedCount);
             _rows.OnNext(new Message
             {
-                Session = _session,
+                Session = Session,
                 Parent = headerId,
                 Type = ItemType.Row,
                 Values = values.ToArray()
@@ -107,7 +107,7 @@ namespace ReamQuery.Core
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
-                Session = _session,
+                Session = Session,
                 Type = ItemType.SingleAtomic,
                 Values = new object[] { title, value }
             });
@@ -119,7 +119,7 @@ namespace ReamQuery.Core
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
-                Session = _session,
+                Session = Session,
                 Type = ItemType.SingleTabular,
                 Values = new object[] { title, columns, values }
             });
@@ -131,7 +131,7 @@ namespace ReamQuery.Core
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
-                Session = _session,
+                Session = Session,
                 Type = ItemType.Empty,
                 Values = new object[] { title }
             });

@@ -5,9 +5,12 @@ namespace ReamQuery.Handlers
     using ReamQuery.Api;
     using System.Threading.Tasks;
     using System;
+    using NLog;
 
     public class QueryTemplateHandler : BaseHandler<TemplateResponse, QueryRequest>
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         QueryService _queryService;
 
         public QueryTemplateHandler(RequestDelegate next, QueryService queryService) : base(next) 
@@ -26,6 +29,7 @@ namespace ReamQuery.Handlers
             {
                 throw new ArgumentException("Id");
             }
+            Logger.Info("{0}:{1}", input.Id, "/querytemplate");
             return await _queryService.GetTemplate(input);
         }
     }

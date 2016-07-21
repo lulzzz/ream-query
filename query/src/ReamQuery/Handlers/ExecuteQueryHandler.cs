@@ -5,9 +5,12 @@ namespace ReamQuery.Handlers
     using ReamQuery.Api;
     using System.Threading.Tasks;
     using System;
+    using NLog;
 
     public class ExecuteQueryHandler : BaseHandler<QueryResponse, QueryRequest>
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
+
         QueryService _service;
 
         public ExecuteQueryHandler(RequestDelegate next, QueryService service) : base(next) 
@@ -26,6 +29,7 @@ namespace ReamQuery.Handlers
             {
                 throw new ArgumentException("Id");
             }
+            Logger.Info("{0}:{1}", input.Id, "/executequery");
             return await _service.ExecuteQuery(input);
         }
     }

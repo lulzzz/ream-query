@@ -31,9 +31,8 @@ namespace ReamQuery.Test
                 .PostAsync(EndpointAddress, new StringContent(json))
                 ;
 
-            // very sensitive?
-            var timeout = IsContinousIntegration() ? 30 : 5;
-            var msgs = GetMessages(timeout);
+            // default timeout is 5 secs
+            var msgs = GetMessages();
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
@@ -50,7 +49,7 @@ namespace ReamQuery.Test
             });
             Console.WriteLine("Handles_Endless_Queries msgs.Count: {0}", msgs.Count());
             Assert.True(1 < msgs.Count(), "More then 1 msg expected");
-            Assert.True(msgs.Count() < 20, "Less than 20 msgs expected");
+            Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
             Assert.Contains(expected, msgs);
         }
 

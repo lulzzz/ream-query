@@ -33,7 +33,7 @@ namespace ReamQuery.Test
 
             // very sensitive?
             var timeout = IsContinousIntegration() ? 30 : 5;
-            var msgs = GetMessages();
+            var msgs = GetMessages(timeout);
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);

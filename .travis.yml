@@ -40,3 +40,5 @@ script:
  - dotnet pack -o nuget core/src/ReamQuery.Core
  - dotnet restore query
  - dotnet test query/test/ReamQuery.Test
+ - cat reamquery.log
+ 

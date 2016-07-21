@@ -37,4 +37,3 @@ build_script:
 test_script:
   - dotnet test core\test\ReamQuery.Core.Test
   - dotnet test query\test\ReamQuery.Test -parallel none
-  - type reamquery.log

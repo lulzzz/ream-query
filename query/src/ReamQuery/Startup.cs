@@ -19,6 +19,7 @@ namespace ReamQuery
         {
             loggerFactory.AddNLog();
             env.ConfigureNLog(Path.Combine(Configuration["REAMQUERY_BASEDIR"], "nlog.config"));
+            app.UseWebSockets();
             app.UseMiddleware<CheckReadyStatusHandler>();
             app.UseMiddleware<ExecuteQueryHandler>();
             app.UseMiddleware<ExecuteCodeHandler>();

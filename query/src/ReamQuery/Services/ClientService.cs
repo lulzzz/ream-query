@@ -18,10 +18,12 @@ namespace ReamQuery.Services
         public ClientService(IApplicationLifetime appLifeTime)
         {
             _appLifeTime = appLifeTime;
-            _appLifeTime.ApplicationStopping.Register(async () => {
+            _appLifeTime.ApplicationStopping.Register(() => {
                 if (_client != null) {
                     Logger.Info("Closing client websocket");
-                    await _client.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "ApplicationStopping", CancellationToken.None);
+                    try {
+                        _client.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "ApplicationStopping", CancellationToken.None);
+                    } catch { }
                 } else {
                     Logger.Info("No client websocket");
                 }

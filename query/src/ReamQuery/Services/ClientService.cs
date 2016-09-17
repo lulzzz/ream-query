@@ -8,9 +8,26 @@ namespace ReamQuery.Services
     using Newtonsoft.Json;
     using System.Threading.Tasks;
     using NLog;
+    using Microsoft.AspNetCore.Hosting;
+    using System.Threading;
 
     public class ClientService
     {
+        IApplicationLifetime _appLifeTime;
+
+        public ClientService(IApplicationLifetime appLifeTime)
+        {
+            _appLifeTime = appLifeTime;
+            _appLifeTime.ApplicationStopping.Register(async () => {
+                if (_client != null) {
+                    Logger.Info("Closing client websocket");
+                    await _client.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "ApplicationStopping", CancellationToken.None);
+                } else {
+                    Logger.Info("No client websocket");
+                }
+            });
+        }
+
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         WebSocket _client;

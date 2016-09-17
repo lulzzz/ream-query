@@ -5,8 +5,8 @@ A [Kestrel](https://github.com/aspnet/KestrelHttpServer) hosted HTTP server that
 Code can be standalone programs, or use [EntityFramework](https://github.com/aspnet/EntityFramework) to connect to one of
 
  - SQLServer
- - PostgreSQL
  - SQLite
+ - [PostgreSQL](https://github.com/npgsql/Npgsql.EntityFrameworkCore.PostgreSQL/)
 
 ## Development
 
@@ -15,17 +15,17 @@ If updating it, be sure to clear the nuget cache (%USERPROFILE%\\.nuget)
 
 ```
 dotnet restore core
-dotnet test core\test\ReamQuery.Core.Test
-dotnet pack -o nuget core\src\ReamQuery.Core
+dotnet test core/test/ReamQuery.Core.Test
+dotnet pack -o nuget core/src/ReamQuery.Core
 dotnet restore query
-dotnet test query\test\ReamQuery.Test
+dotnet test query/test/ReamQuery.Test
 ```
 
 SQL scripts for supported DB providers can be found in `sql` and must be run prior to running the tests.
 Connection strings must be .NET syntax and are passed by the following environment variables:
 
  - `REAMQUERY_WORLDDB_SQLSERVER`
- - `REAMQUERY_TYPETEST_SQLSERVER`
  - `REAMQUERY_WORLDDB_NPGSQL`
+ - `REAMQUERY_TYPETEST_SQLSERVER`
 
-Unset values will cause dependent tests to not run.
+Unset values will cause dependent tests to not run. SQLite tests depend on the included SQLite3 database `sql\world.sqlite`, so are always run.

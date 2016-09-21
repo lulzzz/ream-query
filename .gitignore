@@ -4,3 +4,5 @@ project.lock.json
 nuget
 reamquery.log
 testenv.bat
+query/test/ReamQuery.Test/ReamQuery.Test.nuget.props
+core/test/ReamQuery.Core.Test/ReamQuery.Core.Test.nuget.props

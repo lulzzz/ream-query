@@ -33,13 +33,15 @@ namespace ReamQuery
         public async Task<SchemaResult> GetSchemaSource(string connectionString, string assemblyNamespace, bool withUsings = true) 
         {
             var programName = "Ctx";
+            // append guid to create unique output location
+            var outputPath = System.IO.Path.Combine(_tempFolder, Guid.NewGuid().ToIdentifierWithPrefix("folder"));
             var conf = new ReverseEngineeringConfiguration 
             {
                 ConnectionString = connectionString,
                 ContextClassName = programName,
                 ProjectPath = "na",
                 ProjectRootNamespace = assemblyNamespace,
-                OutputPath = _tempFolder
+                OutputPath = outputPath
             };
             ReverseEngineerFiles resFiles = null; 
             try 
@@ -52,7 +54,7 @@ namespace ReamQuery
                 return new SchemaResult { Code = exn.StatusCode(), Message = exn.Message };
             }
             var output = new StringBuilder();
-            var dbCtx = CreateContext(InMemoryFiles.RetrieveFileContents(_tempFolder, programName + ".cs"), isLibrary: withUsings);
+            var dbCtx = CreateContext(InMemoryFiles.RetrieveFileContents(outputPath, programName + ".cs"), isLibrary: withUsings);
             var ctx = dbCtx.Item1;
             if (!withUsings)
             {
@@ -68,7 +70,7 @@ namespace ReamQuery
             Logger.Info("ContextFile.Count {0}", resFiles.ContextFile.Count());
             foreach(var fpath in resFiles.EntityTypeFiles)
             {
-                output.Append(InMemoryFiles.RetrieveFileContents(_tempFolder, System.IO.Path.GetFileName(fpath)).SkipLines(4));
+                output.Append(InMemoryFiles.RetrieveFileContents(outputPath, System.IO.Path.GetFileName(fpath)).SkipLines(4));
             }
             
             return new SchemaResult 

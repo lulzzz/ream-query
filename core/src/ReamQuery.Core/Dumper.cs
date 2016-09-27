@@ -91,6 +91,7 @@ namespace ReamQuery.Core
                             }
                             emitter.Row(rowVals, headerId);
                         }
+                        emitter.TableClose(tblId);
                     }
                     else
                     {

@@ -16,6 +16,7 @@ namespace ReamQuery.Core
 
         public IObservable<Message> Messages = null;
         Subject<Message> _tables = new Subject<Message>();
+        Subject<Message> _tableClosings = new Subject<Message>();
         Subject<Message> _headers = new Subject<Message>();
         Subject<Message> _rows = new Subject<Message>();
         Subject<Message> _singulars = new Subject<Message>();
@@ -34,6 +35,7 @@ namespace ReamQuery.Core
             Logger.Debug("session {0}", session);
             Session = session;
             Messages = _tables
+                .Merge(_tableClosings)
                 .Merge(_headers)
                 .Merge(_rows)
                 .Merge(_singulars)
@@ -69,6 +71,19 @@ namespace ReamQuery.Core
                 Values = new object[] { title }
             });
             return id;
+        }
+
+        public void TableClose(int tableId)
+        {
+            Logger.Debug("TableClose, tableId {0}", tableId);
+            Interlocked.Increment(ref _emittedCount);
+            _tableClosings.OnNext(new Message
+            {
+                Parent = tableId,
+                Session = Session,
+                Type = ItemType.TableClose,
+                Values = new object[] { }
+            });
         }
 
         public int Header(IEnumerable<Column> columns, int tableId)

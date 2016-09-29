@@ -1,7 +1,9 @@
 namespace ReamQuery.Helpers
 {
     using System;
+    using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis.Text;
 
@@ -31,18 +33,23 @@ namespace ReamQuery.Helpers
         {
             var colOffset = -1;
             var lineOffset = -1;
-            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            for(var i = lines.Length - 1; i > 0; i--) {
-                // Console.WriteLine("{0}:{1}", i, lines[i]);
-                if (lines[i].Contains(token)) {
-                    lineOffset = i;
-                    colOffset = lines[i].IndexOf(token);
-                    lines[i] = lines[i].Replace(token, replacement);
-                    break;
+            var reader = new StringReader(text);
+            var builder = new StringBuilder();
+            var lineCount = 0;
+            while (true) {
+                var line = reader.ReadLine();
+                if (line == null) break;
+                if (line.Contains(token)) {
+                    lineOffset = lineCount;
+                    colOffset = line.IndexOf(token);
+                    builder.AppendLine(line.Replace(token, replacement));
+                } else {
+                    builder.AppendLine(line);
                 }
+                lineCount++;
             }
             position = new LinePosition(lineOffset, colOffset);
-            return string.Join(Environment.NewLine, lines);
+            return builder.ToString();
         }
     }
 }

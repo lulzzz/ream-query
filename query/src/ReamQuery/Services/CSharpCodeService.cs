@@ -58,12 +58,13 @@ namespace ReamQuery.Services
             var srcToken = "##SOURCE##";
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
+            var userText = input.Text ?? string.Empty;
 
             LinePosition position;
             var src = CodeTemplate
                 .Replace("##NS##", assmName)
                 .Replace("##IMPLNAME##", implName)
-                .ReplaceToken(srcToken, string.Empty, out position);
+                .ReplaceToken(srcToken, userText, out position);
 
             return new TemplateResponse 
             {

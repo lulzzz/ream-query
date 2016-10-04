@@ -65,5 +65,17 @@ namespace ReamQuery.Test
 
             Assert.Contains(userCode, mb.Body.ToString());
         }
+        [Fact]
+        public async void Template_Contains_User_Text()
+        {
+            var request = new CodeRequest { Id = Guid.NewGuid(), Text = "hej mor" };
+            var json = JsonConvert.SerializeObject(request);
+
+            var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
+
+            Assert.Contains(request.Text, output.Template);
+        }
     }
 }

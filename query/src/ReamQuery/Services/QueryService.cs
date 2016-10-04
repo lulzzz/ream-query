@@ -60,6 +60,7 @@ namespace ReamQuery.Services
             var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
             var schemaResult = await _schemaService.GetSchemaSource(input.ConnectionString, input.ServerType, assmName, withUsings: false);
             var schemaSrc = schemaResult.Schema;
+            var userText = input.Text ?? string.Empty;
             
             LinePosition tokenPos;
             var src = CodeTemplate
@@ -67,7 +68,7 @@ namespace ReamQuery.Services
                 .Replace("##DB##", "Proxy")
                 .Replace("##SCHEMA##", schemaSrc)
                 .Replace("##IMPLNAME##", implName)
-                .ReplaceToken(srcToken, string.Empty, out tokenPos);
+                .ReplaceToken(srcToken, userText, out tokenPos);
 
             return new TemplateResponse 
             {

@@ -76,5 +76,25 @@ namespace ReamQuery.Test
 
             Assert.Contains(userCode, mb.Body.ToString());
         }
+
+        [Theory, MemberData("WorldDatabase")]
+        public async void Template_Contains_User_Text(string connectionString, DatabaseProviderType dbType)
+        {
+            var id = Guid.NewGuid();
+            var request = new QueryRequest 
+            {
+                Id = id,
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Text = "hej mor"
+            };
+            var json = JsonConvert.SerializeObject(request);
+
+            var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
+            var jsonRes = await res.Content.ReadAsStringAsync();
+            var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
+
+            Assert.Contains(request.Text, output.Template);
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace ReamQuery
     public abstract class BaseSchemaService
     {
         private static Logger Logger = LogManager.GetCurrentClassLogger();
+        private object _lock = new object();
         
         private string _tempFolder;
 
@@ -46,7 +47,13 @@ namespace ReamQuery
             ReverseEngineerFiles resFiles = null; 
             try 
             {
-                resFiles = await Generator.GenerateAsync(conf);
+                // todo there's a race condition in here when fx both template and execute are called at once, 
+                // which seems to trigger something in EF, instead of this lock, do some sync in SchemaSource. 
+                lock(_lock) {
+                    var resFilesTask = Generator.GenerateAsync(conf);
+                    resFilesTask.Wait();
+                    resFiles = resFilesTask.Result;
+                }
             }
             catch (System.Exception exn) when (exn.ExpectedError())
             {

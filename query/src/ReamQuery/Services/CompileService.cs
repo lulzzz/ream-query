@@ -45,6 +45,9 @@ namespace ReamQuery.Services
             {
                 references = references.Concat(new MetadataReference[] { context });
             }
+            foreach(var dllRef in references) {
+                Logger.Debug("MetadataReference {0}/{1}", dllRef.Display, dllRef.Properties.Kind);
+            }
 
             var compilerOptions = new CSharpCompilationOptions(outputKind: OutputKind.DynamicallyLinkedLibrary);
             var trees = new SyntaxTree[] {

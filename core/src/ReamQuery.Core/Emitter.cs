@@ -29,6 +29,7 @@ namespace ReamQuery.Core
 
         int _emittedCount = 0;
         bool _completed = false;
+        DateTime _started = DateTime.Now;
         
         public Emitter(Guid session)
         {
@@ -54,7 +55,7 @@ namespace ReamQuery.Core
             {
                 Session = Session,
                 Type = ItemType.Close,
-                Values = new object[] { _emittedCount + 1 } 
+                Values = new object[] { _emittedCount + 1, (DateTime.Now - _started).TotalMilliseconds  } 
             });
         }
 

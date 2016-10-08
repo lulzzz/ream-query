@@ -60,58 +60,57 @@ namespace ReamQuery.Core.Test
                 var id5 = Guid.NewGuid();
                 return new object[][]
                 {
-                    // new object[]
-                    // {
-                    //     id1,
-                    //     null,
-                    //     new List<Message>
-                    //     {
-                    //         new Message
-                    //         {
-                    //             Session = id1,
-                    //             Type = ItemType.Empty,
-                    //             Values = new object[]
-                    //             {
-                    //                 new Column { Name = "object", Type = "System.Object" },
-                    //             }
-                    //         },
-                    //         new Message { Session = id1, Type = ItemType.Close, Values = new object[] { 2 } }
-                    //     }
-                    // },
-                    // new object[]
-                    // {
-                    //     id2,
-                    //     42,
-                    //     new List<Message>
-                    //     {
-                    //         new Message {
-                    //             Session = id2,
-                    //             Type = ItemType.SingleAtomic,
-                    //             Values = new object[]
-                    //             {
-                    //                 new Column { Name = "int", Type = "System.Int32" },
-                    //                 42
-                    //             } 
-                    //         },
-                    //     }
-                    // },
-                    // new object[]
-                    // {
-                    //     id3,
-                    //     "hello world",
-                    //     new List<Message>
-                    //     {
-                    //         new Message {
-                    //             Session = id3,
-                    //             Type = ItemType.SingleAtomic,
-                    //             Values = new object[]
-                    //             {
-                    //                 new Column { Name = "string", Type = "System.String" },
-                    //                 "hello world" 
-                    //             } 
-                    //         }
-                    //     }
-                    // },
+                    new object[]
+                    {
+                        id1,
+                        null,
+                        new List<Message>
+                        {
+                            new Message
+                            {
+                                Session = id1,
+                                Type = ItemType.Empty,
+                                Values = new object[]
+                                {
+                                    new Column { Name = "object", Type = "System.Object" },
+                                }
+                            }
+                        }
+                    },
+                    new object[]
+                    {
+                        id2,
+                        42,
+                        new List<Message>
+                        {
+                            new Message {
+                                Session = id2,
+                                Type = ItemType.SingleAtomic,
+                                Values = new object[]
+                                {
+                                    new Column { Name = "int", Type = "System.Int32" },
+                                    42
+                                } 
+                            },
+                        }
+                    },
+                    new object[]
+                    {
+                        id3,
+                        "hello world",
+                        new List<Message>
+                        {
+                            new Message {
+                                Session = id3,
+                                Type = ItemType.SingleAtomic,
+                                Values = new object[]
+                                {
+                                    new Column { Name = "string", Type = "System.String" },
+                                    "hello world" 
+                                } 
+                            }
+                        }
+                    },
                     new object[]
                     {
                         id4,
@@ -149,8 +148,7 @@ namespace ReamQuery.Core.Test
                                 Type = ItemType.Row,
                                 Values = new object[] { 2, "world" } 
                             },
-                            new Message { Session = id4, Type = ItemType.TableClose, Parent = 1, Values = new object[] { } },
-                            new Message { Session = id4, Type = ItemType.Close, Values = new object[] { 6 } }
+                            new Message { Session = id4, Type = ItemType.TableClose, Parent = 1, Values = new object[] { } }
                         }
                     },
                 };

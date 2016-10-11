@@ -3,7 +3,7 @@
     "name": "ReamQuery.Core.Test",
     "testRunner": "xunit",
     "buildOptions": {
-        "emitEntryPoint": false
+        "emitEntryPoint": true
     },
     "packOptions": {
         "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"

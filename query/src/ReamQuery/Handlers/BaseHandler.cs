@@ -30,19 +30,24 @@ namespace ReamQuery.Handlers
             sw.Start();
             if (context.Request.Path.HasValue && Handle(context.Request.Path.Value))
             {
-                Logger.Debug("{0}", context.Request.Path.Value);
-                TInput input = default(TInput);
-                if (context.Request.Method == "POST") 
-                {
-                    input = ReadIn(context.Request);
+                try { 
+                    Logger.Debug("{0}", context.Request.Path.Value);
+                    TInput input = default(TInput);
+                    if (context.Request.Method == "POST") 
+                    {
+                        input = ReadIn(context.Request);
+                    }
+                    var res = await Execute(input);
+                    var duration = Math.Ceiling(sw.Elapsed.TotalMilliseconds);
+                    context.Response.Headers.Add("X-Duration-Milliseconds", duration.ToString());
+                    context.Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                    Logger.Info("{0} took {1} ms", context.Request.Path.Value, duration);
+                    WriteTo(context.Response, res);
+                    return;
+                } catch (Exception exn) {
+                    Logger.Debug("Handler failed {1} => {0}", exn.Message, exn.InnerException);
+                    return;
                 }
-                var res = await Execute(input);
-                var duration = Math.Ceiling(sw.Elapsed.TotalMilliseconds);
-                context.Response.Headers.Add("X-Duration-Milliseconds", duration.ToString());
-                context.Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                Logger.Info("{0} took {1} ms", context.Request.Path.Value, duration);
-                WriteTo(context.Response, res);
-                return;
             }
             await _next(context);
         }

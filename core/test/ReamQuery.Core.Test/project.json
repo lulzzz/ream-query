@@ -3,13 +3,14 @@
     "name": "ReamQuery.Core.Test",
     "testRunner": "xunit",
     "buildOptions": {
-        "emitEntryPoint": true
+        "emitEntryPoint": false
     },
     "packOptions": {
         "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"
     },
     "dependencies": {
         "ReamQuery.Core": "1.0.0-*",
+        "System.Runtime": "4.1.0-*",
         "Microsoft.NETCore.App": "1.0.0-*",
         "Microsoft.AspNetCore.Hosting": "1.0.0-*",
         "Microsoft.AspNetCore.TestHost": "1.0.0-*",

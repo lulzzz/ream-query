@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "ReamQuery.Core": "1.0.0-*",
+        "System.Runtime": "4.1.0-*",
         "System.Runtime.Serialization.Primitives": "4.1.1-*",
         "System.Runtime.Serialization.Json": "4.0.2-*",
         "Microsoft.AspNetCore.Diagnostics": "1.0.0-*",

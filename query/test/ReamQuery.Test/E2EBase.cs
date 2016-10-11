@@ -24,7 +24,7 @@ namespace ReamQuery.Test
 
         public E2EBase()
         {
-            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../query/src/ReamQuery"));
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/ReamQuery"));
             Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
             
             ReamQuery.Startup.Configuration = new ConfigurationBuilder()
@@ -100,7 +100,7 @@ namespace ReamQuery.Test
 
         static string SqliteConnectionString()
         {
-            var baseDir = Path.Combine(System.AppContext.BaseDirectory, "../../../../../..");
+            var baseDir = Path.Combine(System.AppContext.BaseDirectory, "../../../../../../..");
             var dir = Path.Combine(Path.Combine(baseDir, "sql"), "world.sqlite");
             return string.Format("Data Source={0}", Path.GetFullPath(dir));
         }

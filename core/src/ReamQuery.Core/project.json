@@ -34,16 +34,13 @@
         "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-*",
         "Newtonsoft.Json": "9.0.1",
         "NLog": "4.4.0-*",
+        "NETStandard.Library": "1.6.0-*",
         "NLog.Extensions.Logging": "1.0.0-*",
         "Npgsql.EntityFrameworkCore.PostgreSQL": "1.0.0-*",
-        "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.0.0-*",
-        "Microsoft.NETCore.App": {
-            "type": "platform",
-            "version": "1.0.0-*"
-        }
+        "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.0.0-*"
     },
     "frameworks": {
-        "netcoreapp1.0": {
+        "netstandard1.6": {
             "imports": ["dotnet5.6", "dnxcore50", "portable-net45"]
         }
     },

@@ -1,0 +1,1 @@
+curl -v -H "Content-Type: application/json" -d '{"text":"city","id":"17fcfde8-31c9-4c9f-a904-e067e4a99028","serverType":"sqlite","connectionString":"Data Source=C:\\src\\ream-editor\\query\\sql\\world.sqlite"}' http://localhost:5000/querytemplate

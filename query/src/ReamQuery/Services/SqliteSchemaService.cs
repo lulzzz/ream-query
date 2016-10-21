@@ -12,22 +12,21 @@ namespace ReamQuery
     {
         public SqliteSchemaService()
         {
-            var serviceProvider = new SqliteDesignTimeServices()
-                .ConfigureDesignTimeServices(
-                    new ServiceCollection()
-                        .AddLogging()
-                        .AddSingleton<ReverseEngineeringGenerator>()
-                        .AddSingleton<ScaffoldingUtilities>()
-                        .AddSingleton<CSharpUtilities>()
-                        .AddSingleton<ConfigurationFactory>()
-                        .AddSingleton<DbContextWriter>()
-                        .AddSingleton<EntityTypeWriter>()
-                        .AddSingleton<CodeWriter, StringBuilderCodeWriter>()
-                        .AddSingleton<CandidateNamingService, EntityNamingService>()
-                        .AddSingleton(typeof(IFileService), sp => {
-                            return InMemoryFiles = new InMemoryFileService();
-                        }))
-                .BuildServiceProvider();
+            var services = new ServiceCollection()
+                .AddLogging()
+                .AddSingleton<ReverseEngineeringGenerator>()
+                .AddSingleton<ScaffoldingUtilities>()
+                .AddSingleton<CSharpUtilities>()
+                .AddSingleton<ConfigurationFactory>()
+                .AddSingleton<DbContextWriter>()
+                .AddSingleton<EntityTypeWriter>()
+                .AddSingleton<CodeWriter, StringBuilderCodeWriter>()
+                .AddSingleton<CandidateNamingService, EntityNamingService>()
+                .AddSingleton(typeof(IFileService), sp => {
+                    return InMemoryFiles = new InMemoryFileService();
+                }); 
+            new SqliteDesignTimeServices().ConfigureDesignTimeServices(services);
+            var serviceProvider = services.BuildServiceProvider();
             serviceProvider.GetService<ILoggerFactory>().AddNLog();
             Generator = serviceProvider.GetRequiredService<ReverseEngineeringGenerator>();
             ScaffoldingModelFactory = serviceProvider.GetRequiredService<IScaffoldingModelFactory>();

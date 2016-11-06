@@ -89,6 +89,7 @@ namespace ReamQuery.Services
 "    public static class DumpWrapper" + Environment.NewLine + 
 "    {" + Environment.NewLine + 
 "        public static Emitter Emitter;" + Environment.NewLine + 
+"        /// <summary>DumpWrapper.Dump</summary>" + Environment.NewLine +
 "        public static T Dump<T>(this T o)" + Environment.NewLine + 
 "        {" + Environment.NewLine + 
 "            return o.Dump(Emitter);" + Environment.NewLine + 

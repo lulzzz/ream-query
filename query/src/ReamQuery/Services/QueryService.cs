@@ -37,11 +37,11 @@ namespace ReamQuery.Services
             var assmName = Guid.NewGuid().ToIdentifierWithPrefix("a");
             var implName = Guid.NewGuid().ToIdentifierWithPrefix("UserCodeImpl");
             var programSource = CodeTemplate
-                .Replace("##SOURCE##", newInput.Text)
                 .Replace("##NS##", assmName)
                 .Replace("##SCHEMA##", "") // schema is linked
                 .Replace("##DB##", contextResult.Type.ToString())
-                .Replace("##IMPLNAME##", implName);
+                .Replace("##IMPLNAME##", implName)
+                .Replace("##SOURCE##", newInput.Text);
 
             var compileResult = _hostService.StartGenerated(input.Id, programSource, assmName, contextResult.Reference);
             return new QueryResponse
@@ -98,6 +98,7 @@ namespace ReamQuery.Services
 "    public static class DumpWrapper" + Environment.NewLine +
 "    {" + Environment.NewLine +
 "        public static Emitter Emitter;" + Environment.NewLine +
+"        /// <summary>DumpWrapper.Dump</summary>" + Environment.NewLine +
 "        public static T Dump<T>(this T o)" + Environment.NewLine +
 "        {" + Environment.NewLine +
 "            return o.Dump(Emitter);" + Environment.NewLine +

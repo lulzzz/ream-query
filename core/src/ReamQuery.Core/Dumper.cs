@@ -17,6 +17,7 @@ namespace ReamQuery.Core
         
         public const string RawValueColumnName = "<RawValue>";
 
+        /// <summary>ReamQuery.Core.Dumper.Dump</summary>
         public static T Dump<T>(this T o, Emitter emitter)
         {
             try 

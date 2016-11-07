@@ -10,6 +10,9 @@ Code can be standalone programs, or use [EntityFramework](https://github.com/asp
 
 ## Development
 
+Latest [.NET Core CLI](https://www.microsoft.com/net/core) is required to be installed 
+in path for the following commands.
+
 A nuget package must be used in order for ReamQuery.Core to be loadable in a test context.
 If updating it, be sure to clear the nuget cache (%USERPROFILE%\\.nuget)
 

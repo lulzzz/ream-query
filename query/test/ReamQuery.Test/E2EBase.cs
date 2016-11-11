@@ -40,7 +40,7 @@ namespace ReamQuery.Test
             _wsTask = StartSocketTask();
         }
 
-        protected IEnumerable<string> GetMessages(int timeoutSeconds = 5)
+        protected IEnumerable<Message> GetMessages(int timeoutSeconds = 5)
         {
             var timeout = Task.Delay(timeoutSeconds * 1000);
             var done = Task.WaitAny(_wsTask, timeout);
@@ -48,7 +48,7 @@ namespace ReamQuery.Test
         }
 
 
-        List<string> _msgs = new List<string>();
+        List<Message> _msgs = new List<Message>();
 
         Task _wsTask;
 
@@ -62,13 +62,17 @@ namespace ReamQuery.Test
             while(ws.State == WebSocketState.Open)
             {
                 var json = await ws.ReadString();
-                var msg = JsonConvert.DeserializeObject<Message>(json);
-                _msgs.Add(json);
-                _receivedCount++;
-                if(msg.Type == ItemType.Close && !_closeFlag)
+                var msgs = JsonConvert.DeserializeObject<IEnumerable<Message>>(json);
+                
+                _msgs.AddRange(msgs);
+                foreach(var msg in msgs)
                 {
-                    _closeFlag = true;
-                    _expectedCount = (long)msg.Values[0]; 
+                    _receivedCount++;
+                    if(msg.Type == ItemType.Close && !_closeFlag)
+                    {
+                        _closeFlag = true;
+                        _expectedCount = (long)msg.Values[0]; 
+                    }
                 }
                 if (_expectedCount > -1 && _closeFlag && _expectedCount == _receivedCount)
                 {
@@ -129,6 +133,42 @@ namespace ReamQuery.Test
                 new object[] { randomStuff, DatabaseProviderType.SqlServer, Api.StatusCode.ConnectionStringSyntax },
                 new object[] { randomStuff, DatabaseProviderType.NpgSql, Api.StatusCode.ConnectionStringSyntax },
             };
+        }
+
+        protected bool CompareValueLists(object[] expected, object[] actual)
+        {
+            for(var i = 0; i < expected.Length; i++)
+            {
+                try {
+                    var x = expected[i];
+                    var y = actual[i] as Newtonsoft.Json.Linq.JObject;
+                    if (x is Column && y != null)
+                    {
+                        var c = (Column) x;
+                        Xunit.Assert.Equal(c.Name, y["Name"]);
+                        if (!string.IsNullOrWhiteSpace(c.Type)) {
+                            Xunit.Assert.Equal(c.Type, y["Type"]);
+                        }
+                        continue;
+                    }
+
+                    // otherwise,
+                    var val = Convert.ChangeType(actual[i], actual[i].GetType()); 
+                    if (x is int) 
+                    {
+                        Xunit.Assert.Equal(Convert.ChangeType(x, typeof(Int64)), val);
+                    }
+                    else
+                    {
+                        Xunit.Assert.Equal(x, val);
+                    }
+                } 
+                catch
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

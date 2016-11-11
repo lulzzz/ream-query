@@ -31,7 +31,7 @@ namespace ReamQuery.Test
                 .PostAsync(EndpointAddress, new StringContent(json))
                 ;
                 
-            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
+            var msgs = GetMessages();
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
@@ -58,23 +58,32 @@ namespace ReamQuery.Test
             
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
-            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
+            var msgs = GetMessages();
             
             Assert.Equal(StatusCode.Ok, output.Code);
             Assert.Equal(2, msgs.Count(x => x.Type == ItemType.Header));
             Assert.Equal(20, msgs.Count(x => x.Type == ItemType.Row));
-            var cols = msgs.Where(x => x.Type == ItemType.Header).SelectMany(x => x.Values).Cast<JObject>();
-            var cityColumns = cols.Where(x => x["Parent"].ToString() == "1").Select(x => x["Name"].ToString());
-            var langColumns = cols.Where(x => x["Parent"].ToString() == "2").Select(x => x["Name"].ToString());
-            foreach (var col in new []{ "Id", "Name", "CountryCode", "District", "Population" })
-            {
-                Assert.Contains(col, cityColumns);
-            }
-            // npgsql includes a CountryCodeNavigation column for some reason
-            foreach (var col in new string[] { "CountryCode", "Language", "IsOfficial", "Percentage" })
-            {
-                Assert.Contains(col, langColumns);
-            }
+            var cols = msgs.Where(x => x.Type == ItemType.Header);
+            // the types might vary, so dont check those
+            var cityColumns = new object[]{ 
+                new Column { Name = "Id" },
+                new Column { Name = "Name" },
+                new Column { Name = "CountryCode" },
+                new Column { Name = "District" },
+                new Column { Name = "Population" }
+            };
+            cols.Single(x => {
+                return CompareValueLists(cityColumns, x.Values);
+            });
+            var langColumns = new object[]{ 
+                new Column { Name = "CountryCode" },
+                new Column { Name = "Language" },
+                new Column { Name = "IsOfficial" },
+                new Column { Name = "Percentage" }
+            };            
+            cols.Single(x => {
+                return CompareValueLists(langColumns, x.Values);
+            });
         }
 
         [Theory, MemberData("WorldDatabase")]
@@ -126,7 +135,7 @@ select c
             var jsonRes = await res.Content.ReadAsStringAsync();
             var output = JsonConvert.DeserializeObject<QueryResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
-            var msgs = GetMessages().Select(x => JsonConvert.DeserializeObject<Message>(x));
+            var msgs = GetMessages();
             var rows = msgs.Where(msg => msg.Type == ItemType.Row);
             Assert.NotEmpty(rows);
             Assert.All(rows, (val) => val.Values[1].ToString().StartsWith("Ca"));

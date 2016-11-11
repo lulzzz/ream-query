@@ -5,9 +5,9 @@ namespace ReamQuery.Core.Test
     using System.Collections.Generic;
     using System.Linq;
     using ReamQuery.Core;
-    using System.Threading;
     using ReamQuery.Core.Api;
     using Newtonsoft.Json;
+    using System.Threading.Tasks;
 
     public class Dumper
     {
@@ -20,15 +20,16 @@ namespace ReamQuery.Core.Test
         List<Message> RecordedMessages = new List<Message>();
 
         [Fact]
-        public void Dumps_Typed_Null_Value()
+        public async Task Dumps_Typed_Null_Value()
         {
             var sessionId = Guid.NewGuid();
-            var emitter = new Emitter(sessionId);
-            emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
+            var emitter = new Emitter(sessionId, 100);
+            emitter.Messages.Subscribe(msgs => RecordedMessages.AddRange(msgs));
             IEnumerable<string> o = null;
 
             o.Dump(emitter);
             emitter.Complete();
+            await Task.Delay(500);
 
             var emptyMsg = RecordedMessages.Single(m => m.Type == ItemType.Empty);
             var col = (Column)emptyMsg.Values.First();
@@ -36,13 +37,14 @@ namespace ReamQuery.Core.Test
         }
 
         [Theory, MemberData("Simple_Value_Expressions")]
-        public void Dumps_Simple_Value_Expressions(Guid sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
+        public async Task Dumps_Simple_Value_Expressions(Guid sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
-            var emitter = new Emitter(sessionId);
-            emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
+            var emitter = new Emitter(sessionId, 100);
+            emitter.Messages.Subscribe(msgs => RecordedMessages.AddRange(msgs));
 
             dumpExpression.Dump(emitter);
             emitter.Complete();
+            await Task.Delay(500);
 
             Assert.All(expectedMsgs, (expect) => {
                 Assert.Single(RecordedMessages, (msg) => msg.CompareWith(expect));

@@ -37,7 +37,7 @@ namespace ReamQuery.Test
             var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
 
-            var expected = JsonConvert.SerializeObject(new Message
+            var expected = new Message
             {
                 Session = id,
                 Type = ItemType.SingleAtomic,
@@ -46,14 +46,17 @@ namespace ReamQuery.Test
                     new Column { Name = "int", Type = "System.Int32" },
                     42
                 }
-            });
+            };
             Assert.True(1 < msgs.Count(), "More then 1 msg expected");
             Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
-            Assert.Contains(expected, msgs);
+            Assert.True(msgs.Any(x => {
+                return x.Id == expected.Id && x.Type == expected.Type &&
+                    CompareValueLists(expected.Values, x.Values);
+            }));
         }
 
         [Theory, MemberData("Execute_Code_Samples")]
-        public async void Returns_Expected_Data_For_Code_Sample(Guid id, string code, string[] expectedMsgs)
+        public async void Returns_Expected_Data_For_Code_Sample(Guid id, string code, Message[] expectedMsgs)
         {
             var request = new CodeRequest { Text = code, Id = id };
             var json = JsonConvert.SerializeObject(request);
@@ -67,7 +70,10 @@ namespace ReamQuery.Test
             Assert.Equal(StatusCode.Ok, output.Code);
             foreach(var expected in expectedMsgs)
             {
-                Assert.Single(msgs, expected);
+                msgs.Single(x => {
+                    return x.Id == expected.Id && x.Type == expected.Type &&
+                        CompareValueLists(expected.Values, x.Values);
+                });
             }
         }
 
@@ -83,9 +89,9 @@ namespace ReamQuery.Test
                     var x = 10;
                     x + 1
                     ",
-                    new string[]
+                    new Message[]
                     {
-                        JsonConvert.SerializeObject(new Message
+                        new Message
                         {
                             Session = id1,
                             Type = ItemType.SingleAtomic,
@@ -94,7 +100,7 @@ namespace ReamQuery.Test
                                 new Column { Name = "int", Type = "System.Int32" },
                                 11
                             }
-                        })
+                        }
                     }    
                 }
             };

@@ -14,7 +14,7 @@ namespace ReamQuery.Core
     {
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IObservable<Message> Messages = null;
+        public IObservable<IEnumerable<Message>> Messages = null;
         Subject<Message> _tables = new Subject<Message>();
         Subject<Message> _tableClosings = new Subject<Message>();
         Subject<Message> _headers = new Subject<Message>();
@@ -31,17 +31,22 @@ namespace ReamQuery.Core
         bool _completed = false;
         DateTime _started = DateTime.Now;
         
-        public Emitter(Guid session)
+        public Emitter(Guid session, int bufferDurationMs)
         {
             Logger.Debug("session {0}", session);
             Session = session;
-            Messages = _tables
+            var stream = _tables
                 .Merge(_tableClosings)
                 .Merge(_headers)
                 .Merge(_rows)
                 .Merge(_singulars)
                 .Merge(_nulls)
-                .Merge(_close);
+                .Merge(_close)
+                .Buffer(TimeSpan.FromMilliseconds(bufferDurationMs))
+                .Where(x => x.Any())
+                .Publish();
+            Messages = stream;
+            stream.Connect();
         }
 
         public void Complete()

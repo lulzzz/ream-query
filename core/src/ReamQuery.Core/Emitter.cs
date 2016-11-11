@@ -33,7 +33,7 @@ namespace ReamQuery.Core
         
         public Emitter(Guid session, int bufferDurationMs)
         {
-            Logger.Debug("session {0}", session);
+            Logger.Debug("session: {0}", session);
             Session = session;
             var stream = _tables
                 .Merge(_tableClosings)

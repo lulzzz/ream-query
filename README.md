@@ -10,18 +10,13 @@ Code can be standalone programs, or use [EntityFramework](https://github.com/asp
 
 ## Development
 
-Latest [.NET Core 1.1 CLI](https://github.com/dotnet/core/blob/master/release-notes/preview-download.md) is required to be installed 
+Latest [.NET Core 1.1](https://github.com/dotnet/core/blob/master/release-notes/preview-download.md) is required to be installed 
 in path for the following commands.
 
-A nuget package must be used in order for ReamQuery.Core to be loadable in a test context.
-If updating it, be sure to clear the nuget cache (%USERPROFILE%\\.nuget)
-
 ```
-dotnet restore core
-dotnet test core/test/ReamQuery.Core.Test
-dotnet pack -o nuget core/src/ReamQuery.Core
-dotnet restore query
-dotnet test query/test/ReamQuery.Test
+dotnet restore
+dotnet test test/ReamQuery.Core.Test
+dotnet test test/ReamQuery.Test [-parallel none]
 ```
 
 SQL scripts for supported DB providers can be found in `sql` and must be run prior to running the tests.

@@ -42,5 +42,3 @@ script:
  - dotnet pack -o nuget core/src/ReamQuery.Core
  - dotnet restore query --infer-runtimes
  - dotnet test query/test/ReamQuery.Test -parallel none
- - cat reamquery.log
- 

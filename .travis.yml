@@ -33,7 +33,6 @@ before_install:
 
 install:
  - dotnet --info
- - node -v
  - psql -c 'create database world;' -U postgres
  - psql -d world -U postgres -f $TRAVIS_BUILD_DIR/sql/world_postgresql.sql
 

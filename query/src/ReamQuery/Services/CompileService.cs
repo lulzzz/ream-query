@@ -94,7 +94,10 @@ namespace ReamQuery.Services
             }
             foreach(var diag in compilationResult.Diagnostics)
             {
-                Logger.Info("Diagnostic: {0}", diag.ToString());
+                if (diag.Severity == DiagnosticSeverity.Error)
+                {
+                    Logger.Info("Diagnostic: {0}", diag.ToString());
+                }
             }
             return compileResult;
         }

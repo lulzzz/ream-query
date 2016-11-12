@@ -45,7 +45,8 @@ namespace ReamQuery.Handlers
                     WriteTo(context.Response, res);
                     return;
                 } catch (Exception exn) {
-                    Logger.Debug("Handler failed {1} => {0}", exn.Message, exn.InnerException);
+                    Logger.Error("Handler failed {1} => {0}", exn.Message, exn.InnerException);
+                    Logger.Error("Stack {0}", exn.StackTrace);
                     return;
                 }
             }

@@ -12,6 +12,8 @@ namespace ReamQuery.Services
     using Microsoft.CodeAnalysis.Text;
     using System;
     using NLog;
+    using Core.Helpers;
+    using System.Reflection;
 
     public class CompileService
     {
@@ -31,11 +33,25 @@ namespace ReamQuery.Services
         {
             if (_references == null)
             {
-                var projs = new ProjectJsonWorkspace(_projectjsonPath)
-                    .CurrentSolution.Projects;
-                _references = projs.SelectMany(p => p.MetadataReferences);
+                var projs = new ProjectJsonWorkspace(_projectjsonPath).CurrentSolution.Projects;
+                _references = projs.SelectMany(p => p.MetadataReferences)
+                    .Concat(GetReamQueryReferences());
             }
             return _references;
+        }
+
+        public static IEnumerable<MetadataReference> GetReamQueryReferences()
+        {
+            var prefix = string.Format("file://{0}", PlatformHelper.IsWindows ? "/" : "");
+            var coreAsm = typeof(Core.Dumper).GetTypeInfo().Assembly; 
+            var thisAsm = typeof(Program).GetTypeInfo().Assembly;
+            var corePath = Path.GetFullPath(coreAsm.CodeBase.Substring(prefix.Length));
+            var thisPath = Path.GetFullPath(thisAsm.CodeBase.Substring(prefix.Length));
+            return new []
+            {
+                MetadataReference.CreateFromFile(corePath),
+                MetadataReference.CreateFromFile(thisPath)
+            };
         }
         
         public CompileResult LoadType(string source, string assemblyName, MetadataReference context = null)

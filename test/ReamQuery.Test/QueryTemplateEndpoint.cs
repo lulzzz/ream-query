@@ -4,24 +4,33 @@ namespace ReamQuery.Test
     using Xunit;
     using System.Linq;
     using ReamQuery.Api;
+    using ReamQuery.Helpers;
+    using ReamQuery.Models;
     using System.Net.Http;
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.DotNet.ProjectModel.Workspaces;
     using Microsoft.CodeAnalysis;
-    using ReamQuery.Helpers;
     using System.IO;
     using Microsoft.CodeAnalysis.Emit;
+    using Services;
 
-    public class CodeTemplateEndpoint : E2EBase
+    public class QueryTemplateEndpoint : E2EBase
     {
-        protected override string EndpointAddress { get { return  "/codetemplate"; } }
+        protected override string EndpointAddress { get { return  "/querytemplate"; } }
 
-        [Fact]
-        public async void Returns_Expected_Template_For_Code_Sample()
+        [Theory, MemberData("WorldDatabase")]
+        public async void Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
-            var request = new CodeRequest { Id = Guid.NewGuid(), Text = "" };
+            var id = Guid.NewGuid();
+            var request = new QueryRequest 
+            {
+                Id = id,
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Text = ""
+            };
             var json = JsonConvert.SerializeObject(request);
 
             var res = await _client.PostAsync(EndpointAddress, new StringContent(json));
@@ -29,16 +38,12 @@ namespace ReamQuery.Test
             var output = JsonConvert.DeserializeObject<TemplateResponse>(jsonRes);
 
             // insert some legal code at the offsets returned
-            var userCode = "var x = 10;";
+            var userCode = "city.Take(10);";
             var modifiedTemplate = output.Template.InsertTextAt(userCode, output.LineOffset, output.ColumnOffset);
 
             // setup emitting the source text to check for syntax and other errors
             var syntaxTree = CSharpSyntaxTree.ParseText(modifiedTemplate);
-            var projectjsonPath = ReamQuery.Startup.Configuration["REAMQUERY_BASEDIR"];
-            var references = new ProjectJsonWorkspace(projectjsonPath)
-                    .CurrentSolution
-                    .Projects
-                    .SelectMany(x => x.MetadataReferences);
+            var references = new CompileService(null).GetReferences();
 
             var compilation = CSharpCompilation.Create(Guid.NewGuid().ToIdentifierWithPrefix("test"))
                 .WithOptions(new CSharpCompilationOptions(outputKind: OutputKind.DynamicallyLinkedLibrary))
@@ -49,15 +54,18 @@ namespace ReamQuery.Test
             var stream = new MemoryStream();
             var compilationResult = compilation.Emit(stream, options: new EmitOptions());
             var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
-            
+
             // check we had zero errors from all this
             Assert.Equal(0, errors.Count());
 
             // check the template looks like expected
-            Assert.Equal(StatusCode.Ok, output.Code);
-            Assert.NotNull(output.Namespace);
             var nodes = syntaxTree.GetRoot().DescendantNodes();
+            var tbls = nodes.OfType<ClassDeclarationSyntax>();
+            Assert.Equal(StatusCode.Ok, output.Code);
             Assert.NotEmpty(nodes.OfType<NamespaceDeclarationSyntax>().Where(x => x.Name.ToString() == output.Namespace));
+            Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "city"));
+            Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "country"));
+            Assert.Single(tbls.Where(tbl => tbl.Identifier.ToString() == "countrylanguage"));
 
             // check that the contents of the usercode method contains the snippet inserted at the returned offsets
             var mb = nodes.OfType<MethodDeclarationSyntax>()
@@ -65,10 +73,18 @@ namespace ReamQuery.Test
 
             Assert.Contains(userCode, mb.Body.ToString());
         }
-        [Fact]
-        public async void Template_Contains_User_Text()
+
+        [Theory, MemberData("WorldDatabase")]
+        public async void Template_Contains_User_Text(string connectionString, DatabaseProviderType dbType)
         {
-            var request = new CodeRequest { Id = Guid.NewGuid(), Text = "hej mor" };
+            var id = Guid.NewGuid();
+            var request = new QueryRequest 
+            {
+                Id = id,
+                ServerType = dbType,
+                ConnectionString = connectionString,
+                Text = "hej mor"
+            };
             var json = JsonConvert.SerializeObject(request);
 
             var res = await _client.PostAsync(EndpointAddress, new StringContent(json));

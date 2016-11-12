@@ -104,7 +104,7 @@ namespace ReamQuery.Test
 
         static string SqliteConnectionString()
         {
-            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../.."));
+            var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
             var dir = Path.Combine(Path.Combine(baseDir, "sql"), "world.sqlite");
             return string.Format("Data Source={0}", Path.GetFullPath(dir));
         }

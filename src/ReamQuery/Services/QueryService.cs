@@ -95,6 +95,7 @@ namespace ReamQuery.Services
 "##SCHEMA##" + Environment.NewLine +
 "namespace ##NS##" + Environment.NewLine +
 "{" + Environment.NewLine +
+// "    public class Xoo : ReamQuery.Services.TestClass { } " + 
 "    public static class DumpWrapper" + Environment.NewLine +
 "    {" + Environment.NewLine +
 "        public static Emitter Emitter;" + Environment.NewLine +
@@ -116,5 +117,10 @@ namespace ReamQuery.Services
 "    }" + Environment.NewLine +
 "}"
 ;
+    }
+
+    public class TestClass
+    {
+
     }
 }

@@ -26,13 +26,14 @@ namespace ReamQuery.Services
         public CompileService(SchemaService schemaService) 
         {
             _schemaService = schemaService;
-            _projectjsonPath = Startup.Configuration["REAMQUERY_BASEDIR"];
+            _projectjsonPath = Startup.Configuration["REAMQUERY_DISTDIR"];
         }
 
         public IEnumerable<MetadataReference> GetReferences() 
         {
             if (_references == null)
             {
+                Logger.Debug("REAMQUERY_DISTDIR: {0}", _projectjsonPath);
                 var projs = new ProjectJsonWorkspace(_projectjsonPath).CurrentSolution.Projects;
                 _references = projs.SelectMany(p => p.MetadataReferences)
                     .Concat(GetReamQueryReferences());

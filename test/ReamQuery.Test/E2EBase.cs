@@ -26,6 +26,7 @@ namespace ReamQuery.Test
         {
             var baseDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../src/ReamQuery"));
             Environment.SetEnvironmentVariable("REAMQUERY_BASEDIR", baseDir);
+            Environment.SetEnvironmentVariable("REAMQUERY_DISTDIR", baseDir);
             
             ReamQuery.Startup.Configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()

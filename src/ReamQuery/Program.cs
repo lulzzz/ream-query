@@ -26,9 +26,14 @@
             // ProjectJsonWorkspace used by CompilerService has issues with project refs,
             // this allows the test project to inject the correct base path when testing.
             var baseDir = Startup.Configuration["REAMQUERY_BASEDIR"];
+            var distDir = Startup.Configuration["REAMQUERY_DISTDIR"];
             if (string.IsNullOrWhiteSpace(baseDir))
             {
                 Startup.Configuration["REAMQUERY_BASEDIR"] = System.AppContext.BaseDirectory;
+            }
+            if (string.IsNullOrWhiteSpace(distDir))
+            {
+                Startup.Configuration["REAMQUERY_DISTDIR"] = System.AppContext.BaseDirectory;
             }
 
             var host = new WebHostBuilder()

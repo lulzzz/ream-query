@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0-*",
+    "version": "0.1.0",
     "name": "ReamQuery.Core.Test",
     "testRunner": "xunit",
     "buildOptions": {
@@ -10,7 +10,7 @@
         "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"
     },
     "dependencies": {
-        "ReamQuery.Core": "1.0.0-*",
+        "ReamQuery.Core": "*",
         "xunit": "2.2.0-beta4-build3444",
         "dotnet-test-xunit": "2.2.0-preview2-build1029"
     },

@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0-*",
+    "version": "0.1.0-*",
     "name": "ReamQuery.Test",
     "testRunner": "xunit",
     "packOptions": {
@@ -9,8 +9,8 @@
         "emitEntryPoint": false
     },
     "dependencies": {
-        "ReamQuery": "1.0.0-*",
-        "ReamQuery.Core": "1.0.0-*",
+        "ReamQuery": "*",
+        "ReamQuery.Core": "*",
         "Microsoft.AspNetCore.TestHost": "1.1.0-rtm-22733",
         "Microsoft.AspNetCore.Hosting": "1.1.0-rtm-22733",
         "Microsoft.Extensions.Configuration": "1.1.0-rtm-22733",

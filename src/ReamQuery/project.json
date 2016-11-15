@@ -2,6 +2,7 @@
     "version": "0.1.0-*",
     "name": "ReamQuery",
     "buildOptions": {
+        "debugType": "portable",
         "emitEntryPoint": true,
         "copyToOutput": {
             "include": ["nlog.config"]

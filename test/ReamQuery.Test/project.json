@@ -6,6 +6,7 @@
         "licenseUrl": "https://raw.githubusercontent.com/stofte/ream-query/master/LICENSE"
     },
     "buildOptions": {
+        "debugType": "portable",
         "emitEntryPoint": false
     },
     "dependencies": {

@@ -111,7 +111,7 @@ namespace ReamQuery.Core
 
         public void Row(IEnumerable<object> values, int headerId)
         {
-            Logger.Debug("Row emitted, headerId {0}", headerId);
+            // Logger.Debug("Row emitted, headerId {0}", headerId);
             Interlocked.Increment(ref _emittedCount);
             _rows.OnNext(new Message
             {

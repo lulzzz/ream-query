@@ -86,6 +86,12 @@ namespace ReamQuery.Test
         protected static IEnumerable<object> WorldDatabase()
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_SQLSERVER");
+            if (sqlServer.StartsWith("\"")) {
+                sqlServer = sqlServer.Substring(1);
+            }
+            if (sqlServer.EndsWith("\"")) {
+                sqlServer = sqlServer.Substring(0, sqlServer.Length - 1);
+            }
             var npgsql = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_NPGSQL");
             var sqlite = SqliteConnectionString();
             var conns = new object[][]

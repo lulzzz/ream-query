@@ -1,23 +1,21 @@
 namespace ReamQuery.Core.Api
 {
     using System;
+    using System.Collections.Generic;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
     public class Message
     {
         public Guid Session { get; set; }
-        
-        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
-        public object Id { get; set; }
 
-        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)]
-        public object Parent { get; set; }
+        public string Title { get; set; }
+
+        public int Id { get; set; }
         
         [JsonConverter(typeof(StringEnumConverter))]
         public ItemType Type { get; set; }
-        public object[] Values { get; set; }
-
+        public IEnumerable<object> Values { get; set; }
 
         public bool CompareWith(Message other)
         {

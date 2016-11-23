@@ -14,16 +14,14 @@ namespace ReamQuery.Core
     {
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IObservable<IEnumerable<Message>> Messages = null;
-        Subject<Message> _tables = new Subject<Message>();
-        Subject<Message> _tableClosings = new Subject<Message>();
-        Subject<Message> _headers = new Subject<Message>();
-        Subject<Message> _rows = new Subject<Message>();
+        public IObservable<Message> Messages = null;
+        Subject<Message> _lists = new Subject<Message>();
+        Subject<Message> _listClosings = new Subject<Message>();
+        Subject<Message> _listValues = new Subject<Message>();
         Subject<Message> _singulars = new Subject<Message>();
-        Subject<Message> _nulls = new Subject<Message>();
         Subject<Message> _close = new Subject<Message>();
-        int _tableCounter = 0;
-        int _headerCounter = 0;
+        
+        static int _tableCounter = 0;
 
         public readonly Guid Session;
 
@@ -31,20 +29,17 @@ namespace ReamQuery.Core
         bool _completed = false;
         DateTime _started = DateTime.Now;
         
-        public Emitter(Guid session, int bufferDurationMs)
+        public Emitter(Guid session)
         {
             Logger.Debug("session: {0}", session);
             Session = session;
-            var stream = _tables
-                .Merge(_tableClosings)
-                .Merge(_headers)
-                .Merge(_rows)
+            var stream = _lists
+                .Merge(_listClosings)
+                .Merge(_listValues)
                 .Merge(_singulars)
-                .Merge(_nulls)
                 .Merge(_close)
-                .Buffer(TimeSpan.FromMilliseconds(bufferDurationMs))
-                .Where(x => x.Any())
                 .Publish();
+            
             Messages = stream;
             stream.Connect();
         }
@@ -55,7 +50,6 @@ namespace ReamQuery.Core
             {
                 throw new InvalidOperationException("completed");
             }
-            Logger.Debug("Completed, emitted {0}", _emittedCount + 1);
             _close.OnNext(new Message
             {
                 Session = Session,
@@ -64,97 +58,55 @@ namespace ReamQuery.Core
             });
         }
 
-        public int Table(string title)
+        public int List(object firstRow, string title)
         {
-            Logger.Debug("Table {0}", title);
             Interlocked.Increment(ref _emittedCount);
             var id = Interlocked.Increment(ref _tableCounter);
-            _tables.OnNext(new Message
+            _lists.OnNext(new Message
             {
-                Id = id,
                 Session = Session,
-                Type = ItemType.Table,
-                Values = new object[] { title }
+                Id = id,
+                Type = ItemType.List,
+                Title = title,
+                Values = new object[] { firstRow }
             });
             return id;
         }
 
-        public void TableClose(int tableId)
+
+
+        public void ListValues(IEnumerable<object> rows, int listId)
         {
-            Logger.Debug("TableClose, tableId {0}", tableId);
             Interlocked.Increment(ref _emittedCount);
-            _tableClosings.OnNext(new Message
+            _listValues.OnNext(new Message
             {
-                Parent = tableId,
                 Session = Session,
-                Type = ItemType.TableClose,
-                Values = new object[] { }
+                Id = listId,
+                Type = ItemType.ListValues,
+                Values = rows
             });
         }
 
-        public int Header(IEnumerable<Column> columns, int tableId)
+        public void ListClose(int listId)
         {
-            Logger.Debug("Header emitted, tableId {0}", tableId);
             Interlocked.Increment(ref _emittedCount);
-            var id = Interlocked.Increment(ref _headerCounter);
-            var msg = new Message
+            _listClosings.OnNext(new Message
             {
                 Session = Session,
-                Id = id,
-                Parent = tableId,
-                Type = ItemType.Header,
-                Values = columns.Cast<object>().ToArray()
-            };
-            _headers.OnNext(msg);
-            return id;
-        }
-
-        public void Row(IEnumerable<object> values, int headerId)
-        {
-            // Logger.Debug("Row emitted, headerId {0}", headerId);
-            Interlocked.Increment(ref _emittedCount);
-            _rows.OnNext(new Message
-            {
-                Session = Session,
-                Parent = headerId,
-                Type = ItemType.Row,
-                Values = values.ToArray()
+                Id = listId,
+                Type = ItemType.ListClose
             });
         }
 
-        public void SingleAtomic(Column title, object value)
+        public void Single(object value, string title)
         {
-            Logger.Debug("SingleAtomic emitted, title {0}", title.Name);
             Interlocked.Increment(ref _emittedCount);
             _singulars.OnNext(new Message
             {
                 Session = Session,
-                Type = ItemType.SingleAtomic,
-                Values = new object[] { title, value }
-            });
-        }
-
-        public void SingleTabular(string title, IEnumerable<Column> columns, IEnumerable<object> values)
-        {
-            Logger.Debug("SingleTabular emitted, title {0}", title);
-            Interlocked.Increment(ref _emittedCount);
-            _singulars.OnNext(new Message
-            {
-                Session = Session,
-                Type = ItemType.SingleTabular,
-                Values = new object[] { title, columns, values }
-            });
-        }
-
-        public void Null(Column title)
-        {
-            Logger.Debug("Null emitted, title {0}", title);
-            Interlocked.Increment(ref _emittedCount);
-            _singulars.OnNext(new Message
-            {
-                Session = Session,
-                Type = ItemType.Empty,
-                Values = new object[] { title }
+                Type = ItemType.Single,
+                Title = title,
+                Values = new object[] { value }
             });
         }
 
@@ -167,24 +119,18 @@ namespace ReamQuery.Core
                 if (disposing)
                 {
                     _close.OnCompleted();
-                    _nulls.OnCompleted();
-                    _headers.OnCompleted();
-                    _rows.OnCompleted();
+                    _listValues.OnCompleted();
                     _singulars.OnCompleted();
-                    _tables.OnCompleted();
+                    _lists.OnCompleted();
                     _close.Dispose();
-                    _nulls.Dispose();
-                    _headers.Dispose();
-                    _rows.Dispose();
+                    _listValues.Dispose();
                     _singulars.Dispose();
-                    _tables.Dispose();
+                    _lists.Dispose();
                 }
                 _close = null;
-                _nulls = null;
-                _headers = null;
-                _rows = null;
+                _listValues = null;
                 _singulars = null;
-                _tables = null;
+                _lists = null;
                 disposedValue = true;
                 Logger.Debug("Disposed ok");
             }

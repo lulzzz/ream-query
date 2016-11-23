@@ -8,7 +8,6 @@ namespace ReamQuery.Test
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.DotNet.ProjectModel.Workspaces;
     using Microsoft.CodeAnalysis;
     using ReamQuery.Helpers;
     using System.IO;
@@ -65,6 +64,7 @@ namespace ReamQuery.Test
 
             Assert.Contains(userCode, mb.Body.ToString());
         }
+
         [Fact]
         public async void Template_Contains_User_Text()
         {

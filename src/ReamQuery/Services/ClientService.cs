@@ -1,4 +1,3 @@
-
 namespace ReamQuery.Services
 {
     using System;
@@ -10,6 +9,7 @@ namespace ReamQuery.Services
     using NLog;
     using Microsoft.AspNetCore.Hosting;
     using System.Threading;
+    using ReamQuery.Core.Api;
 
     public class ClientService
     {
@@ -51,14 +51,21 @@ namespace ReamQuery.Services
 
         public void AddEmitter(Emitter emitter)
         {
-            var msgNr = 0;
+            // emitter.Messages.Subscribe(this.HandleMessage);
             emitter.Messages.Subscribe(async (msg) =>
             {
-                // System.Threading.Thread.Sleep(1000);
                 var json = JsonConvert.SerializeObject(msg);
-                // Logger.Debug("{2}: JSON emitted msg nr {1}, {0}", json, msgNr++, emitter.Session);
                 await _client.SendString(json);
             });
+        }
+
+        void HandleMessage(Message msg)
+        {
+            var serializer = new JsonSerializer();
+            using (var writer = new WebSocketWriter(_client))
+            {
+                serializer.Serialize(writer, msg);
+            }
         }
     }
 }

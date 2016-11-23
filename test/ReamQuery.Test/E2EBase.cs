@@ -14,6 +14,7 @@ namespace ReamQuery.Test
     using System.Linq;
     using System.Net.WebSockets;
     using System.Threading.Tasks;
+    using System.Diagnostics;
 
     public abstract class E2EBase
     {
@@ -45,44 +46,39 @@ namespace ReamQuery.Test
         {
             var timeout = Task.Delay(timeoutSeconds * 1000);
             var done = Task.WaitAny(_wsTask, timeout);
-            return _msgs;
+            var currentMsgs = _msgs;
+            // not thread safe
+            _msgs = new List<Message>();
+            _timer.Stop();
+            return currentMsgs;
         }
 
-
         List<Message> _msgs = new List<Message>();
-
         Task _wsTask;
+
+        Stopwatch _timer = new Stopwatch();
 
         async Task StartSocketTask()
         {
-            bool _closeFlag = false;
-            long _expectedCount = -1;
-            long _receivedCount = 0;
             var ws = await _wsClient.ConnectAsync(new System.Uri("ws://localhost/ws"), System.Threading.CancellationToken.None);
             byte[] buffer = new byte[1024 * 4];
             while(ws.State == WebSocketState.Open)
             {
                 var json = await ws.ReadString();
-                var msgs = JsonConvert.DeserializeObject<IEnumerable<Message>>(json);
-                
-                _msgs.AddRange(msgs);
-                foreach(var msg in msgs)
+                if (!_timer.IsRunning)
                 {
-                    _receivedCount++;
-                    if(msg.Type == ItemType.Close && !_closeFlag)
-                    {
-                        _closeFlag = true;
-                        _expectedCount = (long)msg.Values[0]; 
-                    }
+                    _timer.Restart();
                 }
-                if (_expectedCount > -1 && _closeFlag && _expectedCount == _receivedCount)
+                // Console.WriteLine("socket: {0}", json);
+                var msg = JsonConvert.DeserializeObject<Message>(json);
+                if (msg.Type == ItemType.Close)
                 {
-                    break;
+                    // Console.WriteLine("Start to close took {0} ms", _timer.ElapsedMilliseconds);
                 }
+                _msgs.Add(msg);
             }
             return;
         }
-
         protected static IEnumerable<object> WorldDatabase()
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_SQLSERVER");
@@ -145,13 +141,13 @@ namespace ReamQuery.Test
             };
         }
 
-        protected bool CompareValueLists(object[] expected, object[] actual)
+        protected bool CompareValueLists(IEnumerable<object> expected, IEnumerable<object> actual)
         {
-            for(var i = 0; i < expected.Length; i++)
+            for(var i = 0; i < expected.Count(); i++)
             {
                 try {
-                    var x = expected[i];
-                    var y = actual[i] as Newtonsoft.Json.Linq.JObject;
+                    var x = expected.ElementAt(i);
+                    var y = actual.ElementAt(i) as Newtonsoft.Json.Linq.JObject;
                     if (x is Column && y != null)
                     {
                         var c = (Column) x;
@@ -163,7 +159,7 @@ namespace ReamQuery.Test
                     }
 
                     // otherwise,
-                    var val = Convert.ChangeType(actual[i], actual[i].GetType()); 
+                    var val = Convert.ChangeType(actual.ElementAt(i), actual.ElementAt(i).GetType()); 
                     if (x is int) 
                     {
                         Xunit.Assert.Equal(Convert.ChangeType(x, typeof(Int64)), val);

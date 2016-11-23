@@ -20,27 +20,26 @@ namespace ReamQuery.Core.Test
         List<Message> RecordedMessages = new List<Message>();
 
         [Fact]
-        public async Task Dumps_Typed_Null_Value()
+        public async Task Dumps_With_Optional_Title()
         {
             var sessionId = Guid.NewGuid();
-            var emitter = new Emitter(sessionId, 100);
-            emitter.Messages.Subscribe(msgs => RecordedMessages.AddRange(msgs));
-            IEnumerable<string> o = null;
+            var emitter = new Emitter(sessionId);
+            emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
+            var foo = 42;
 
-            o.Dump(emitter);
+            foo.Dump(emitter, title: "custom");
             emitter.Complete();
             await Task.Delay(500);
 
-            var emptyMsg = RecordedMessages.Single(m => m.Type == ItemType.Empty);
-            var col = (Column)emptyMsg.Values.First();
-            Assert.Equal("string[]", col.Name);
+            var listMsg = RecordedMessages.Single(m => m.Type == ItemType.Single);
+            Assert.Equal("custom", listMsg.Title);
         }
 
         [Theory, MemberData("Simple_Value_Expressions")]
         public async Task Dumps_Simple_Value_Expressions(Guid sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
-            var emitter = new Emitter(sessionId, 100);
-            emitter.Messages.Subscribe(msgs => RecordedMessages.AddRange(msgs));
+            var emitter = new Emitter(sessionId);
+            emitter.Messages.Subscribe(msg => RecordedMessages.Add(msg));
 
             dumpExpression.Dump(emitter);
             emitter.Complete();
@@ -71,14 +70,15 @@ namespace ReamQuery.Core.Test
                             new Message
                             {
                                 Session = id1,
-                                Type = ItemType.Empty,
+                                Type = ItemType.Single,
                                 Values = new object[]
                                 {
-                                    new Column { Name = "object", Type = "System.Object" },
+                                    null
                                 }
                             }
                         }
-                    },
+                    }
+                    ,
                     new object[]
                     {
                         id2,
@@ -87,12 +87,11 @@ namespace ReamQuery.Core.Test
                         {
                             new Message {
                                 Session = id2,
-                                Type = ItemType.SingleAtomic,
+                                Type = ItemType.Single,
                                 Values = new object[]
                                 {
-                                    new Column { Name = "int", Type = "System.Int32" },
                                     42
-                                } 
+                                }
                             },
                         }
                     },
@@ -104,10 +103,9 @@ namespace ReamQuery.Core.Test
                         {
                             new Message {
                                 Session = id3,
-                                Type = ItemType.SingleAtomic,
+                                Type = ItemType.Single,
                                 Values = new object[]
                                 {
-                                    new Column { Name = "string", Type = "System.String" },
                                     "hello world" 
                                 } 
                             }
@@ -123,34 +121,26 @@ namespace ReamQuery.Core.Test
                         },
                         new List<Message>
                         {
-                            new Message { Session = id4, Id = 1, Type = ItemType.Table, Values = new object[] { "TestClassForDump[]" } },
                             new Message
                             {
                                 Session = id4,
                                 Id = 1,
-                                Parent = 1,
-                                Type = ItemType.Header,
+                                Type = ItemType.List,
+                                // includes first row item, for possible type info dumping
+                                Values = new object[] { new TestClassForDump { Id = 1, Foo = "hello" } } 
+                            },
+                            new Message
+                            {
+                                Session = id4,
+                                Id = 1,
+                                Type = ItemType.ListValues,
                                 Values = new object[]
                                 {
-                                    new Column { Parent = 1, Name = "Id", Type = "System.Int32" },
-                                    new Column { Parent = 1, Name = "Foo", Type = "System.String" },
+                                    new TestClassForDump { Id = 1, Foo = "hello" },
+                                    new TestClassForDump { Id = 2, Foo = "world" }
                                 } 
                             },
-                            new Message
-                            {
-                                Session = id4,
-                                Parent = 1,
-                                Type = ItemType.Row,
-                                Values = new object[] { 1, "hello" } 
-                            },
-                            new Message
-                            {
-                                Session = id4,
-                                Parent = 1,
-                                Type = ItemType.Row,
-                                Values = new object[] { 2, "world" } 
-                            },
-                            new Message { Session = id4, Type = ItemType.TableClose, Parent = 1, Values = new object[] { } }
+                            new Message { Session = id4, Id = 1, Type = ItemType.ListClose }
                         }
                     },
                 };

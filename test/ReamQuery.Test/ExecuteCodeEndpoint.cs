@@ -37,22 +37,8 @@ namespace ReamQuery.Test
             var output = JsonConvert.DeserializeObject<CodeResponse>(jsonRes);
             Assert.Equal(StatusCode.Ok, output.Code);
 
-            var expected = new Message
-            {
-                Session = id,
-                Type = ItemType.SingleAtomic,
-                Values = new object[]
-                {
-                    new Column { Name = "int", Type = "System.Int32" },
-                    42
-                }
-            };
             Assert.True(1 < msgs.Count(), "More then 1 msg expected");
             Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
-            Assert.True(msgs.Any(x => {
-                return x.Id == expected.Id && x.Type == expected.Type &&
-                    CompareValueLists(expected.Values, x.Values);
-            }));
         }
 
         [Theory, MemberData("Execute_Code_Samples")]
@@ -94,10 +80,9 @@ namespace ReamQuery.Test
                         new Message
                         {
                             Session = id1,
-                            Type = ItemType.SingleAtomic,
+                            Type = ItemType.Single,
                             Values = new object[]
                             {
-                                new Column { Name = "int", Type = "System.Int32" },
                                 11
                             }
                         }

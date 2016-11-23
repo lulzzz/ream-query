@@ -45,8 +45,7 @@ namespace ReamQuery.Services
 
         async Task StartInternal(Guid id, IGenerated instance)
         {
-            // todo make buffer window configurable
-            using (var emitter = new Emitter(id, 100))
+            using (var emitter = new Emitter(id))
             {
                 _clientService.AddEmitter(emitter); // should unsub when disposing
                 await instance.Run(emitter);

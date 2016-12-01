@@ -71,6 +71,7 @@ namespace ReamQuery.Core.Test
                             {
                                 Session = id1,
                                 Type = ItemType.Single,
+                                Title = "<Null>",
                                 Values = new object[]
                                 {
                                     null
@@ -88,6 +89,7 @@ namespace ReamQuery.Core.Test
                             new Message {
                                 Session = id2,
                                 Type = ItemType.Single,
+                                Title = "int",
                                 Values = new object[]
                                 {
                                     42
@@ -104,6 +106,7 @@ namespace ReamQuery.Core.Test
                             new Message {
                                 Session = id3,
                                 Type = ItemType.Single,
+                                Title = "string",
                                 Values = new object[]
                                 {
                                     "hello world" 
@@ -126,6 +129,7 @@ namespace ReamQuery.Core.Test
                                 Session = id4,
                                 Id = 1,
                                 Type = ItemType.List,
+                                Title = "TestClassForDump",
                                 // includes first row item, for possible type info dumping
                                 Values = new object[] { new TestClassForDump { Id = 1, Foo = "hello" } } 
                             },

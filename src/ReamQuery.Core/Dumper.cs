@@ -22,17 +22,23 @@ namespace ReamQuery.Core
         {
             try 
             {
+                string dumpTitle = title;
                 var wasList = false;
                 if (o != null)
                 {
                     var oType = o.GetType();
                     Type listType;
+
                     if (oType.TryGetListType(out listType))
                     {
                         int listId = -1;
                         var initialEmit = true;
                         var asEnum = o as IEnumerable<object>;
                         Debug.Assert(asEnum != null, "expected list");
+                        if (string.IsNullOrWhiteSpace(dumpTitle))
+                        {
+                            dumpTitle = listType.GetDisplayName();
+                        }
                         while (true) {
                             var rows = asEnum.Take(batchSize).ToList();
                             asEnum = asEnum.Skip(batchSize);
@@ -45,7 +51,7 @@ namespace ReamQuery.Core
                                 if (initialEmit && rows.Count > 0)
                                 {
                                     var first = rows.First();
-                                    listId = emitter.List(first, title);
+                                    listId = emitter.List(first, dumpTitle);
                                     emitter.ListValues(rows, listId);
                                     initialEmit = false;
                                 }
@@ -58,11 +64,19 @@ namespace ReamQuery.Core
                         emitter.ListClose(listId);
                         wasList = true;
                     }
+                    else if (string.IsNullOrWhiteSpace(dumpTitle))
+                    {
+                        dumpTitle = oType.GetDisplayName();
+                    }
+                }
+                else if (string.IsNullOrWhiteSpace(dumpTitle))
+                {
+                    dumpTitle = "<Null>";
                 }
                 
                 if (!wasList)
                 {
-                    emitter.Single(o, title);
+                    emitter.Single(o, dumpTitle);
                 }
             }
             catch (Exception exn)

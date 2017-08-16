@@ -3,7 +3,6 @@ namespace ReamQuery.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.IO;
-    using Microsoft.DotNet.ProjectModel.Workspaces;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Emit;
@@ -33,12 +32,9 @@ namespace ReamQuery.Services
         {
             if (_references == null)
             {
-                Logger.Debug("REAMQUERY_DISTDIR: {0}", _projectjsonPath);
-                var projs = new ProjectJsonWorkspace(_projectjsonPath).CurrentSolution.Projects;
-                _references = projs.SelectMany(p => p.MetadataReferences)
-                    .Concat(GetReamQueryReferences());
+            
             }
-            return _references;
+            return null;
         }
 
         public static IEnumerable<MetadataReference> GetReamQueryReferences()

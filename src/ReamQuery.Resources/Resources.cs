@@ -20,7 +20,7 @@
         {
             _assembly = typeof(Resources).Assembly;
             _names = _assembly.GetManifestResourceNames();
-            _metadataPrefix = string.Format("{0}.metadata_files", typeof(Resources).Assembly.GetName().Name);
+            _metadataPrefix = string.Format("{0}.MetadataFiles", typeof(Resources).Assembly.GetName().Name);
         }
 
         public static IEnumerable<Stream> Metadata()

@@ -55,10 +55,14 @@ namespace ReamQuery.Server.Services
                     resFiles = resFilesTask.Result;
                 }
             }
-            catch (System.Exception exn) when (exn.ExpectedError())
+            catch (Exception exn) when (exn.ExpectedError())
             {
                 Logger.Debug("Known error {0}", exn.Message);
                 return new SchemaResult { Code = exn.StatusCode(), Message = exn.Message };
+            }
+            catch (Exception exn) {
+                Logger.Debug("Uknown error {0}", exn.Message);
+                throw exn;
             }
             var output = new StringBuilder();
             var dbCtx = CreateContext(InMemoryFiles.RetrieveFileContents(outputPath, programName + ".cs"), isLibrary: withUsings);

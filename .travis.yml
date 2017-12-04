@@ -17,19 +17,13 @@ addons:
 
 env:
   global:
-    - CLI_VERSION=latest
-    - CLI_ARCH=x64
-    - DOTNETCLI_URL=https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.sh
-    - DOTNET_INSTALL_DIR=$TRAVIS_BUILD_DIR/.dotnetcli
     - REAMQUERY_WORLDDB_NPGSQL='Server=localhost; User Id=postgres; Password=; Database=world'
 
 before_install:
  - ulimit -n 1024
- # https://github.com/dotnet/core/blob/master/release-notes/preview-download.md
- - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
- - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 417A0893
- - sudo apt-get update
- - sudo apt-get install dotnet-dev-1.0.0-preview2.1-003155
+ # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script
+ - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version 2.0.2 --install-dir ~/.dotnetcli
+ - PATH="~/.dotnetcli:$PATH"
 
 install:
  - dotnet --info

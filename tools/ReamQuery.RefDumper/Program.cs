@@ -49,11 +49,14 @@
                     File.Delete(file);
                 }
             }
+            int copied = 0;
             foreach(var file in files)
             {
                 var filename = Path.GetFileName(file);
                 File.Copy(file, Path.Combine(folder, filename), true);
+                copied++;
             }
+            Console.WriteLine("{0} reference files", copied);
         }
     }
 }

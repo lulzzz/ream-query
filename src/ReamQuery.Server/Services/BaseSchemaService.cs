@@ -61,7 +61,7 @@ namespace ReamQuery.Server.Services
                 return new SchemaResult { Code = exn.StatusCode(), Message = exn.Message };
             }
             catch (Exception exn) {
-                Logger.Debug("Uknown error {0}", exn.Message);
+                Logger.Debug("Uknown error {0} (HResult: {1})", exn.Message, exn.HResult);
                 throw exn;
             }
             var output = new StringBuilder();

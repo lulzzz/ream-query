@@ -1,4 +1,4 @@
-namespace ReamQuery.Test
+namespace ReamQuery.Server.Test
 {
     using System.IO;
     using ReamQuery.Models;
@@ -79,7 +79,7 @@ namespace ReamQuery.Test
             }
             return;
         }
-        protected static IEnumerable<object> WorldDatabase()
+        public static IEnumerable<object[]> WorldDatabase()
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_WORLDDB_SQLSERVER");
             if (!string.IsNullOrWhiteSpace(sqlServer))
@@ -115,7 +115,7 @@ namespace ReamQuery.Test
             return string.Format("Data Source={0}", Path.GetFullPath(dir));
         }
 
-        protected static IEnumerable<object> SqlServer_TypeTestDatabase()
+        public static IEnumerable<object[]> SqlServer_TypeTestDatabase()
         {
             var sqlServer = Environment.GetEnvironmentVariable("REAMQUERY_TYPETEST_SQLSERVER");
             if (string.IsNullOrWhiteSpace(sqlServer))
@@ -126,7 +126,7 @@ namespace ReamQuery.Test
             return conns;
         }
 
-        protected static IEnumerable<object> InvalidConnectionStrings()
+        public static IEnumerable<object[]> InvalidConnectionStrings()
         {
             var sqlServerConn1 = @"Data Source=noservershouldbenamedthis; User Id=sa; Password=p; Initial Catalog=db";
             var npgsqlConn1 = @"Server=noservershouldbenamedthis; User Id=sa; Password=p; Database=db";

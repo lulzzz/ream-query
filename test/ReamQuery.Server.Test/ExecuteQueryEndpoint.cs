@@ -1,4 +1,4 @@
-namespace ReamQuery.Test
+namespace ReamQuery.Server.Test
 {
     using System;
     using System.Linq;

@@ -1,4 +1,4 @@
-namespace ReamQuery.Test
+namespace ReamQuery.Server.Test
 {
     using System;
     using System.Net.Http;
@@ -63,7 +63,7 @@ namespace ReamQuery.Test
             }
         }
 
-        protected static IEnumerable<object> Execute_Code_Samples()
+        public static IEnumerable<object[]> Execute_Code_Samples()
         {
             var id1 = Guid.NewGuid();
             return new object[][]

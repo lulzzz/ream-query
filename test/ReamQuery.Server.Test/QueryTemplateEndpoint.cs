@@ -42,7 +42,7 @@ namespace ReamQuery.Server.Test
 
             // setup emitting the source text to check for syntax and other errors
             var syntaxTree = CSharpSyntaxTree.ParseText(modifiedTemplate);
-            var references = new CompileService(null).GetReferences();
+            var references = new ReferenceProvider().GetReferences();
 
             var compilation = CSharpCompilation.Create(Guid.NewGuid().ToIdentifierWithPrefix("test"))
                 .WithOptions(new CSharpCompilationOptions(outputKind: OutputKind.DynamicallyLinkedLibrary))

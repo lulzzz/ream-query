@@ -19,20 +19,12 @@ namespace ReamQuery.Server.Services
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         SchemaService _schemaService;
-        IEnumerable<MetadataReference> _references;
+        ReferenceProvider _referenceProvider;
 
-        public CompileService(SchemaService schemaService) 
+        public CompileService(SchemaService schemaService, ReferenceProvider referenceProvider) 
         {
             _schemaService = schemaService;
-        }
-
-        public IEnumerable<MetadataReference> GetReferences() 
-        {
-            if (_references == null)
-            {
-            
-            }
-            return null;
+            _referenceProvider = referenceProvider;
         }
 
         public static IEnumerable<MetadataReference> GetReamQueryReferences()
@@ -51,7 +43,7 @@ namespace ReamQuery.Server.Services
         
         public CompileResult LoadType(string source, string assemblyName, MetadataReference context = null)
         {
-            var references = GetReferences();
+            var references = _referenceProvider.GetReferences();
             if (context != null)
             {
                 references = references.Concat(new MetadataReference[] { context });

@@ -29,4 +29,4 @@ build_script:
 
 test_script:
   - dotnet test test\ReamQuery.Core.Test
-  - dotnet test test\ReamQuery.Server.Test -parallel none
+  - dotnet test test\ReamQuery.Server.Test

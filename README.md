@@ -10,13 +10,14 @@ Code can be standalone programs, or use [EntityFramework](https://github.com/asp
 
 ## Development
 
-Latest [.NET Core 1.1](https://github.com/dotnet/core/blob/master/release-notes/preview-download.md) is required to be installed 
+Latest [.NET Core 2.0](https://www.microsoft.com/net/download) is required to be installed 
 in path for the following commands.
 
 ```
 dotnet restore
+dontet run -p tools/ReamQuery.RefDumper
 dotnet test test/ReamQuery.Core.Test
-dotnet test test/ReamQuery.Test [-parallel none]
+dotnet test test/ReamQuery.Server.Test
 ```
 
 SQL scripts for supported DB providers can be found in `sql` and must be run prior to running the tests.

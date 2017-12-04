@@ -20,6 +20,7 @@
         static IEnumerable<string> CreateJsonRefList()
         {
             var projPath = Path.Combine(Helper.ProjectFolder, "src", "ReamQuery.Server", "ReamQuery.Server.csproj");
+            Console.WriteLine("Project file: {0} (exists: {1})", projPath, File.Exists(projPath));
             var manager = new AnalyzerManager();
             var analyzer = manager.GetProject(projPath);
             analyzer.Load();

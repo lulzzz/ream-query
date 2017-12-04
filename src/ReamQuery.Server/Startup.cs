@@ -10,6 +10,7 @@ namespace ReamQuery
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Hosting;
     using System.IO;
+    using ReamQuery.Server.Services;
 
     public class Startup
     {
@@ -41,6 +42,7 @@ namespace ReamQuery
             services.AddSingleton<FragmentService>();
             services.AddSingleton<CSharpCodeService>();
             services.AddSingleton<HostService>();
+            services.AddSingleton<ReferenceProvider>();
         }
     }
 }

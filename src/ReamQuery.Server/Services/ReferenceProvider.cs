@@ -18,7 +18,13 @@ namespace ReamQuery.Server.Services
 
         public IEnumerable<MetadataReference> GetReferences()
         {
-            return _references.Value;
+            var list = new List<MetadataReference>();
+            foreach(var stream in ReamQuery.Resource.Resources.Metadata())
+            {
+                list.Add(MetadataReference.CreateFromStream(stream));
+            }
+            return list;
+            // return _references.Value;
         }
     }
 }

@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="ref-list.json" />
-    <EmbeddedResource Include="metadata-files\*.dll" />
+    <EmbeddedResource Include="ReferenceList.json" />
+    <EmbeddedResource Include="MetadataFiles\*.dll" />
   </ItemGroup>
 
   <ItemGroup>

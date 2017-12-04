@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Text;
+    using System.Threading;
     using Newtonsoft.Json;
 
     public static class Resources
@@ -13,19 +14,20 @@
         static Assembly _assembly;
         static IEnumerable<string> _names;
 
-        const string MetadataPrefix = "metadata-ref";
+        static string _metadataPrefix;
 
         static Resources()
         {
             _assembly = typeof(Resources).Assembly;
             _names = _assembly.GetManifestResourceNames();
+            _metadataPrefix = string.Format("{0}.metadata_files", typeof(Resources).Assembly.GetName().Name);
         }
 
         public static IEnumerable<Stream> Metadata()
         {
             foreach(var name in _names)
             {
-                if (name.StartsWith(MetadataPrefix))
+                if (name.StartsWith(_metadataPrefix))
                 {
                     yield return _assembly.GetManifestResourceStream(name);
                 }

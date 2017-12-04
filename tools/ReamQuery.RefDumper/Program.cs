@@ -29,14 +29,14 @@
                 throw new InvalidOperationException("Unexpected duplicates");
             }
             var json = JsonConvert.SerializeObject(refs.Select(x => Path.GetFileName(x)), Formatting.Indented);
-            var jsonPath = Path.Combine(Helper.ProjectFolder, "src", "ReamQuery.Resources", "ref-list.json");
+            var jsonPath = Path.Combine(Helper.ProjectFolder, "src", "ReamQuery.Resources", "ReferenceList.json");
             File.WriteAllText(jsonPath, json);
             return refs;
         }
 
         static void CopyReferenceFiles(IEnumerable<string> files)
         {
-            var folder = Path.Combine(Helper.ProjectFolder, "src", "ReamQuery.Resources", "metadata-files");
+            var folder = Path.Combine(Helper.ProjectFolder, "src", "ReamQuery.Resources", "MetadataFiles");
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);

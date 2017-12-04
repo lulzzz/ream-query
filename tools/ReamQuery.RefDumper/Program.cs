@@ -25,7 +25,7 @@
             Console.WriteLine("Project file: {0} (exists: {1})", projPath, File.Exists(projPath));
             var lf = new LoggerFactory();
             lf.AddConsole();
-            var manager = new AnalyzerManager(lf, LoggerVerbosity.Normal);
+            var manager = new AnalyzerManager(lf, LoggerVerbosity.Minimal);
             var analyzer = manager.GetProject(projPath);
             analyzer.Load();
             var refs = analyzer.GetReferences();

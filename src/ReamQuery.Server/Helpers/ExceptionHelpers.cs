@@ -27,10 +27,11 @@ namespace ReamQuery.Server.Helpers
         static bool IsServerUnreachable(Exception exn)
         {
             var hresults = new [] {
-                2147467259, // The network path was not found
-                2146232060, // sqlserver => Named Pipes Provider, error: 40 - Could not open a connection to SQL Server
-                2146233088, // npgsql => One or more errors occurred. (No such host is known)
-            }.Select(x => -1 * x);
+                -2147467259, // The network path was not found
+                -2146232060, // sqlserver => Named Pipes Provider, error: 40 - Could not open a connection to SQL Server
+                -2146233088, // npgsql => One or more errors occurred. (No such host is known),
+                5 // npgsql => No such device or address
+            };
             return hresults.Contains(exn.HResult);
         }
 

@@ -6,9 +6,7 @@
     "tasks": [
         {
             "taskName": "build",
-            "args": [
-                "${workspaceRoot}/src/ReamQuery/project.json"
-            ],
+            "args": [""],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
         }

@@ -10,7 +10,6 @@ namespace ReamQuery.Test
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.DotNet.ProjectModel.Workspaces;
     using Microsoft.CodeAnalysis;
     using System.IO;
     using Microsoft.CodeAnalysis.Emit;

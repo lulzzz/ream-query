@@ -1,5 +1,8 @@
 namespace ReamQuery.Core.Helpers
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
     using System.Runtime.InteropServices;
 
     public static class PlatformHelper

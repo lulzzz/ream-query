@@ -2,22 +2,28 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": ".NET Core (ReamQuery.RefDumper)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/ReamQuery/bin/Debug/netcoreapp1.1/ReamQuery.dll",
+            "program": "${workspaceRoot}/tools/ReamQuery.RefDumper/bin/Debug/netcoreapp2.0/ReamQuery.RefDumper.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
-            "externalConsole": true,
+            "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": ".NET Core Attach",
+            "name": ".NET Core (ReamQuery.Server)",
             "type": "coreclr",
-            "request": "attach",
-            "processId": "${command.pickProcess}"
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/ReamQuery.Server/bin/Debug/netcoreapp2.0/ReamQuery.Server.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }

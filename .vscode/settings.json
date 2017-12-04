@@ -3,6 +3,7 @@
     "files.exclude": {
 		"nuget": true,
 		"/**/bin": true,
-		"/**/obj": true
+		"/**/obj": true,
+		".vs": true
 	}
 }

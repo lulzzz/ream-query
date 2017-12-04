@@ -26,6 +26,7 @@ before_build:
 
 # need build_script, or appveyor starts looking for a sln file
 build_script:
+  - dotnet restore
   - dotnet run -p tools\ReamQuery.RefDumper
 
 test_script:

@@ -17,10 +17,7 @@ namespace ReamQuery.RefDumper
             get
             {
                 var path = Path.GetDirectoryName(ApplicationPath);
-                if (!path.EndsWith(@"tools\ReamQuery.RefDumper\bin\Debug\netcoreapp2.0"))
-                {
-                    throw new InvalidOperationException("Unexpected path");
-                }
+                // assume this is run in the source folder layout
                 return Path.GetFullPath(Path.Combine(path, "..", "..", "..", "..", ".."));
             }
         }

@@ -50,7 +50,7 @@ namespace ReamQuery.Server.Test
                 Console.WriteLine("err: {0}", err.GetMessage());
             }
             // check we had zero errors from all this
-            Assert.Equal(0, errors.Count());
+            Assert.Empty(errors);
 
             // check the template looks like expected
             Assert.Equal(StatusCode.Ok, output.Code);

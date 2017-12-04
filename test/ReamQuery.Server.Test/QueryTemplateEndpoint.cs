@@ -55,7 +55,7 @@ namespace ReamQuery.Server.Test
             var errors = compilationResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error);
 
             // check we had zero errors from all this
-            Assert.Equal(0, errors.Count());
+            Assert.Empty(errors);
 
             // check the template looks like expected
             var nodes = syntaxTree.GetRoot().DescendantNodes();

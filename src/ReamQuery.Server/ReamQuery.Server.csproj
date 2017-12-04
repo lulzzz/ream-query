@@ -41,5 +41,7 @@
     <ProjectReference Include="..\ReamQuery.Core\ReamQuery.Core.csproj" />
     <ProjectReference Include="..\ReamQuery.Resources\ReamQuery.Resources.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

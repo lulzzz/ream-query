@@ -17,7 +17,7 @@ namespace ReamQuery
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IHostingEnvironment env)
         {
-            loggerFactory.AddNLog().ConfigureNLog(Path.Combine(Configuration["REAMQUERY_BASEDIR"], "nlog.config"));
+            loggerFactory.AddNLog().ConfigureNLog("nlog.config");
             app.UseWebSockets();
             app.UseMiddleware<CheckReadyStatusHandler>();
             app.UseMiddleware<ExecuteQueryHandler>();

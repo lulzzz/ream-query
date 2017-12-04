@@ -19,13 +19,11 @@ namespace ReamQuery.Services
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         SchemaService _schemaService;
-        string _projectjsonPath;
         IEnumerable<MetadataReference> _references;
 
         public CompileService(SchemaService schemaService) 
         {
             _schemaService = schemaService;
-            _projectjsonPath = Startup.Configuration["REAMQUERY_DISTDIR"];
         }
 
         public IEnumerable<MetadataReference> GetReferences() 

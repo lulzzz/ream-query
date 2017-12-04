@@ -1,4 +1,4 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System.IO;
     using System.Collections.Generic;

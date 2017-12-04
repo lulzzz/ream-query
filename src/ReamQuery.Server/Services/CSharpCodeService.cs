@@ -1,12 +1,12 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System;
     using System.Diagnostics;
     using System.Reflection;
     using System.Threading.Tasks;
-    using ReamQuery.Api;
+    using ReamQuery.Server.Api;
     using ReamQuery.Core;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Helpers;
     using System.Linq;
     using NLog;
     using Newtonsoft.Json;

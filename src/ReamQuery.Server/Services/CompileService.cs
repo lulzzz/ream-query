@@ -1,4 +1,4 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -7,7 +7,7 @@ namespace ReamQuery.Services
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Emit;
     using Microsoft.CodeAnalysis.CSharp;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
     using Microsoft.CodeAnalysis.Text;
     using System;
     using NLog;

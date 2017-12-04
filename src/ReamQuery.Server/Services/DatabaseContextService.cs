@@ -1,10 +1,10 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using ReamQuery.Models;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Models;
+    using ReamQuery.Server.Helpers;
 
     /// <summary>
     /// Provides EF7 based database contexts

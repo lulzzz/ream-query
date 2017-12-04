@@ -3,13 +3,13 @@ namespace ReamQuery.Server.Test
     using System;
     using Xunit;
     using System.Linq;
-    using ReamQuery.Api;
+    using ReamQuery.Server.Api;
     using System.Net.Http;
     using Newtonsoft.Json;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Helpers;
     using System.IO;
     using Microsoft.CodeAnalysis.Emit;
     using Services;

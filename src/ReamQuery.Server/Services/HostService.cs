@@ -1,8 +1,8 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System;
     using Microsoft.CodeAnalysis;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
     using NLog;
     using ReamQuery.Core;
     using System.Diagnostics;

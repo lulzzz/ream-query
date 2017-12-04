@@ -1,4 +1,4 @@
-namespace ReamQuery.Converters
+namespace ReamQuery.Server.Converters
 {
     using System;
     using Newtonsoft.Json;

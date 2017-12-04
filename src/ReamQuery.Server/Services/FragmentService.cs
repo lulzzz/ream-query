@@ -1,4 +1,4 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System;
     using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace ReamQuery.Services
     using System.Text.RegularExpressions;
     using System.Text;
     using Microsoft.CodeAnalysis.Text;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
     using NLog;
 
     public class FragmentService 

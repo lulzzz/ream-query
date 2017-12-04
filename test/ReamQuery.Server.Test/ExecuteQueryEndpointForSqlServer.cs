@@ -3,8 +3,8 @@ namespace ReamQuery.Server.Test
     using System;
     using Xunit;
     using System.Linq;
-    using ReamQuery.Api;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Api;
+    using ReamQuery.Server.Models;
     using ReamQuery.Core.Api;
     using System.Net.Http;
     using Newtonsoft.Json;

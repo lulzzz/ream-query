@@ -1,9 +1,9 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System;
     using System.Threading.Tasks;
-    using ReamQuery.Api;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Api;
+    using ReamQuery.Server.Helpers;
     using System.Linq;
     using NLog;
     using Microsoft.CodeAnalysis.Text;

@@ -1,8 +1,8 @@
-namespace ReamQuery.Api
+namespace ReamQuery.Server.Api
 {
     using System;
     using System.Collections.Generic;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
 
     public class CodeResponse : ResponseBase
     {

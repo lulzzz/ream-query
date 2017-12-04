@@ -1,4 +1,4 @@
-namespace ReamQuery.Api
+namespace ReamQuery.Server.Api
 {
     using System;
 

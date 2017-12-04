@@ -1,9 +1,9 @@
-namespace ReamQuery.Models
+namespace ReamQuery.Server.Models
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using ReamQuery.Api;
+    using ReamQuery.Server.Api;
     using Microsoft.CodeAnalysis;
 
     public class CompileResult : ResponseBase

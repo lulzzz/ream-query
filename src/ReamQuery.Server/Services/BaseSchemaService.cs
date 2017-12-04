@@ -1,15 +1,15 @@
-namespace ReamQuery
+namespace ReamQuery.Server.Services
 {
     using System;
     using System.Linq;
     using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-    using ReamQuery.Services;
+    using ReamQuery.Server.Services;
     using Microsoft.EntityFrameworkCore.Scaffolding;
     using System.Threading.Tasks;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
     using System.Text;
     using System.Text.RegularExpressions;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Helpers;
     using NLog;
 
     public abstract class BaseSchemaService

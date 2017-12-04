@@ -1,7 +1,7 @@
 
-namespace ReamQuery.Models 
+namespace ReamQuery.Server.Models 
 {
-    using ReamQuery.Api;
+    using ReamQuery.Server.Api;
 
     public class SchemaResult : ResponseBase
     {

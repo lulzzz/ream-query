@@ -1,7 +1,7 @@
-namespace ReamQuery.Handlers
+namespace ReamQuery.Server.Handlers
 {
     using System.Threading.Tasks;
-    using ReamQuery.Services;
+    using ReamQuery.Server.Services;
     using Microsoft.AspNetCore.Http;
     using System;
 

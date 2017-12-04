@@ -1,4 +1,4 @@
-namespace ReamQuery.Helpers
+namespace ReamQuery.Server.Helpers
 {
     using System;
     using System.IO;

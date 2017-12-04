@@ -1,9 +1,9 @@
 namespace ReamQuery.Server.Test
 {
     using System.IO;
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
     using ReamQuery.Core.Api;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Helpers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Configuration;

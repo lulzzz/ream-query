@@ -5,12 +5,11 @@ namespace ReamQuery
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using NLog.Extensions.Logging;
-    using ReamQuery.Services;
-    using ReamQuery.Handlers;
+    using ReamQuery.Server.Services;
+    using ReamQuery.Server.Handlers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.AspNetCore.Hosting;
     using System.IO;
-    using ReamQuery.Server.Services;
 
     public class Startup
     {

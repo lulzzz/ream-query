@@ -1,9 +1,9 @@
-namespace ReamQuery.Services
+namespace ReamQuery.Server.Services
 {
     using System;
     using System.Net.WebSockets;
     using ReamQuery.Core;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Helpers;
     using Newtonsoft.Json;
     using System.Threading.Tasks;
     using NLog;

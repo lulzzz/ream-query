@@ -1,6 +1,6 @@
-namespace ReamQuery.Api
+namespace ReamQuery.Server.Api
 {
-    using ReamQuery.Models;
+    using ReamQuery.Server.Models;
     
     public class QueryRequest : BaseRequest
     {

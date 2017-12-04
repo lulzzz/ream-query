@@ -1,5 +1,5 @@
 
-namespace ReamQuery.Models
+namespace ReamQuery.Server.Models
 {
     using System;
     using System.Collections.Generic;

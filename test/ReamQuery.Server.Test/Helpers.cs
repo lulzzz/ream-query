@@ -2,7 +2,7 @@ namespace ReamQuery.Server.Test
 {
     using System;
     using Xunit;
-    using ReamQuery.Helpers;
+    using ReamQuery.Server.Helpers;
     using Microsoft.CodeAnalysis.Text;
 
     public class Helpers

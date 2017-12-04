@@ -1,4 +1,4 @@
-namespace ReamQuery.Models 
+namespace ReamQuery.Server.Models 
 {
     public enum DatabaseProviderType 
     {

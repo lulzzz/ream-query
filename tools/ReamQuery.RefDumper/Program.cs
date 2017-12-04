@@ -7,6 +7,8 @@
     using Buildalyzer;
     using Newtonsoft.Json;
     using System.Collections.Generic;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Build.Framework;
 
     class Program
     {
@@ -21,7 +23,9 @@
         {
             var projPath = Path.Combine(Helper.ProjectFolder, "src", "ReamQuery.Server", "ReamQuery.Server.csproj");
             Console.WriteLine("Project file: {0} (exists: {1})", projPath, File.Exists(projPath));
-            var manager = new AnalyzerManager();
+            var lf = new LoggerFactory();
+            lf.AddConsole();
+            var manager = new AnalyzerManager(lf, LoggerVerbosity.Normal);
             var analyzer = manager.GetProject(projPath);
             analyzer.Load();
             var refs = analyzer.GetReferences();

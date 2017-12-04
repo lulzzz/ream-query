@@ -19,7 +19,7 @@ namespace ReamQuery.Server.Test
     {
         protected override string EndpointAddress { get { return  "/querytemplate"; } }
 
-        [Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData(nameof(WorldDatabase))]
         public async void Returns_Expected_Template_For_Database(string connectionString, DatabaseProviderType dbType)
         {
             var id = Guid.NewGuid();
@@ -73,7 +73,7 @@ namespace ReamQuery.Server.Test
             Assert.Contains(userCode, mb.Body.ToString());
         }
 
-        [Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData(nameof(WorldDatabase))]
         public async void Template_Contains_User_Text(string connectionString, DatabaseProviderType dbType)
         {
             var id = Guid.NewGuid();

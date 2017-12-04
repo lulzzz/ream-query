@@ -15,7 +15,7 @@ namespace ReamQuery.Server.Test
     {
         protected override string EndpointAddress { get { return  "/executequery"; } }
 
-        [Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData(nameof(WorldDatabase))]
         public async void Returns_Expected_Data_For_Database(string connectionString, DatabaseProviderType dbType)
         {
             var id = Guid.NewGuid();
@@ -39,7 +39,7 @@ namespace ReamQuery.Server.Test
             Assert.Equal(10, rows.Count());
         }
 
-        [Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData(nameof(WorldDatabase))]
         public async void Handles_Multiple_Expressions(string connectionString, DatabaseProviderType dbType)
         {
             var id = Guid.NewGuid();
@@ -66,7 +66,7 @@ namespace ReamQuery.Server.Test
             Assert.Equal(20, msgs.Where(x => x.Type == ItemType.ListValues).SelectMany(x => x.Values).Count());
         }
 
-        [Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData(nameof(WorldDatabase))]
         public async void Handles_Malformed_Source_Code_In_Request(string connectionString, DatabaseProviderType dbType)
         {
             var id = Guid.NewGuid();
@@ -94,7 +94,7 @@ namespace ReamQuery.Server.Test
             Assert.Equal(4, output.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error).First().Column);
         }
 
-        [Theory, MemberData("WorldDatabase")]
+        [Theory, MemberData(nameof(WorldDatabase))]
         public async void Executes_Linq_Style_Statements(string connectionString, DatabaseProviderType dbType)
         {
             var id = Guid.NewGuid();
@@ -121,7 +121,7 @@ select c
             Assert.All(rows, (val) => ((string)((JObject)val)["Name"]).StartsWith("Ca"));
         }
 
-        [Theory, MemberData("InvalidConnectionStrings")]
+        [Theory, MemberData(nameof(InvalidConnectionStrings))]
         public async void Returns_Expected_StatusCode_For_Invalid_ConnectionString(string connectionString, DatabaseProviderType dbType, Api.StatusCode expectedCode)
         {
             var id = Guid.NewGuid();

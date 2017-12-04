@@ -35,7 +35,7 @@ namespace ReamQuery.Core.Test
             Assert.Equal("custom", listMsg.Title);
         }
 
-        [Theory, MemberData("Simple_Value_Expressions")]
+        [Theory, MemberData(nameof(Simple_Value_Expressions))]
         public async Task Dumps_Simple_Value_Expressions(Guid sessionId, object dumpExpression, IEnumerable<Message> expectedMsgs)
         {
             var emitter = new Emitter(sessionId);

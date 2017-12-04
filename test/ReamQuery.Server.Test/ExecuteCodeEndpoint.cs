@@ -41,7 +41,7 @@ namespace ReamQuery.Server.Test
             Assert.True(msgs.Count() < 10, "Less than 10 msgs expected");
         }
 
-        [Theory, MemberData("Execute_Code_Samples")]
+        [Theory, MemberData(nameof(Execute_Code_Samples))]
         public async void Returns_Expected_Data_For_Code_Sample(Guid id, string code, Message[] expectedMsgs)
         {
             var request = new CodeRequest { Text = code, Id = id };

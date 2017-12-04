@@ -4,6 +4,7 @@ namespace ReamQuery.Server.Services
     using System.Linq;
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
+    using ReamQuery.Core;
 
     public class ReferenceProvider
     {
@@ -23,6 +24,10 @@ namespace ReamQuery.Server.Services
             {
                 list.Add(MetadataReference.CreateFromStream(stream));
             }
+            var coreAsm = new Uri(typeof(IGenerated).Assembly.CodeBase).LocalPath;
+            var serverAsm = new Uri(typeof(Emitter).Assembly.CodeBase).LocalPath;
+            list.Add(MetadataReference.CreateFromFile(coreAsm));
+            list.Add(MetadataReference.CreateFromFile(serverAsm));
             return list;
             // return _references.Value;
         }

@@ -35,3 +35,5 @@ script:
  - dotnet run -p tools/ReamQuery.RefDumper
  - dotnet test test/ReamQuery.Core.Test
  - dotnet test test/ReamQuery.Server.Test
+ - cat test/ReamQuery.Server.Test/bin/Debug/netcoreapp2.0/reamquery.log
+ 

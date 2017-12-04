@@ -14,7 +14,7 @@ environment:
   REAMQUERY_TYPETEST_SQLSERVER: Data Source=.\SQL2014; User Id=sa; Password=Password12!; Initial Catalog=typetest
 
 install:
-  - powershell -NoProfile -ExecutionPolicy unrestricted -Command "&([scriptblock]::Create((Invoke-WebRequest -useb 'https://dot.net/v1/dotnet-install.ps1'))) -Version 2.0.2"
+#  - powershell -NoProfile -ExecutionPolicy unrestricted -Command "&([scriptblock]::Create((Invoke-WebRequest -useb 'https://dot.net/v1/dotnet-install.ps1'))) -Version 2.0.2"
   - dotnet --info
 
 before_build:
